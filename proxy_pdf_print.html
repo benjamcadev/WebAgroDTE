@@ -1,0 +1,13 @@
+<body onload="prueba();">
+  
+  <iframe id="pdf" src=""></iframe>
+</body>
+
+<script type="text/javascript">
+  function prueba(){
+   var url_string = window.location.href;
+   var url = new URL(url_string);
+   var pdf_base64 = url.searchParams.get("pdf_base64");
+   document.getElementById('pdf').src = "data:application/pdf;base64, "+pdf_base64;
+  }
+</script>
