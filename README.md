@@ -1,75 +1,25 @@
-AdminBSB - Material Design
+Web AgroDTE 
 =======================
-[![npm version](https://img.shields.io/npm/v/adminbsb-materialdesign.svg)](https://www.npmjs.com/package/adminbsb-materialdesign)
-![Bower version](https://img.shields.io/bower/v/adminbsb-materialdesign.svg)
+
 
 **AdminBSB - Material Design is a fully responsive and free admin template.** It was developed with [Bootstrap 3.x Framework](http://getbootstrap.com) and [Google Material Design](https://material.google.com) of powers.
 
-It's really easy to customize and usage. You can use for from 320px to large resolution pixels of new generation screens and mobile devices. (**Fully Responsive Material Design**)
+FrontEnd el cual sirve se comunica con el proyecto de Backend ApiAgroDTE, para poder generar documentos DTE, Tambien poder visualizarlos, descargarlos y enviarlos.
 
-Looking for Premium Templates?
+Tambien se visualizan documentos DTE de compra el cual llegan a un correo de intercambio de XML
+
+Enlaces a cambiar para produccion
 ----------------
-**If you need more features please visit portfolio of mine which page link is [https://themeforest.net/user/gurayyarar/portfolio](http://bit.ly/2oPFpmQ)**
+Clases\Conexion.php 
+**CAMBIAR CREDENCIALES SERVIDOR**
 
-Demo
-----------------
-You can check the website preview with **[this link](https://gurayyarar.github.io/AdminBSBMaterialDesign/)**  
-
-![AdminBSB - Free Admin Template With Material Design](https://raw.githubusercontent.com/gurayyarar/AdminBSBMaterialDesign/master/images/screenshot.png)
-
-Installation
-----------------
-You can choose one from multiple ways for installation.
-
-**GitHub**
-- Fork the repository ([here is the guide](https://help.github.com/articles/fork-a-repo/)).
-- Clone to your machine
+Clases\Envio_dte.php 
 ```
-git clone https://github.com/gurayyarar/AdminBSBMaterialDesign.git
-```
-
-**npm**
-```
-npm install adminbsb-materialdesign
-```
-
-**bower**
-```
-bower install adminbsb-materialdesign
-```
-
-Documentation
-----------
-Visit the **[documentation](https://gurayyarar.github.io/AdminBSBMaterialDesign/documentation/)**
-
-Browser Support
-----------
-- IE 10 +
-- Microsoft Edge (Latest)
-- Mozilla Firefox (Latest)
-- Google Chrome (Latest)
-- Opera (Latest)
-- Safari (Latest)
-
-Change Logs
-----------
-You can display all release notes with **[this link](https://gurayyarar.github.io/AdminBSBMaterialDesign/pages/changelogs.html)**
+    86 - $url = 'http://192.168.1.9:90/api_agrodte/api/dte/document/envioboleta';
+    137 - $response_xml = file_get_contents('http://192.168.1.9:90/WebServiceEnvioDTE/EnvioSobreDTE.asmx/enviarSobreSII?archivo='.$datos[0]['rutaxml_envio_dte'].'&rutEmisor=6402678-k&rutEmpresa=76958430-7');
+```  
 
 
-FAQ
-===
-**Can I use this template for personal or commercial websites/web projects?**  
-Sure, you can use both of personal and commercial websites/web projects.
 
-**Is the attribution link required?**  
-No, not required. (Though very much appreciated)
 
-License
-----------
-**AdminBSB - Material Design** is an open source project that is licensed under the [MIT license](http://opensource.org/licenses/MIT).
 
-Donations
-----------
-Donations are **greatly appreciated!**
-
-**[BUY ME A COFFEE](http://bit.ly/2yEjtx5)**
