@@ -655,11 +655,23 @@
                                 <div class="switch">
                                     <label>Codigo
                                         <input id="checkbox_tipo_busqueda" type="checkbox" >
+                                       
                                         <span class="lever"></span>
                                     Descripción</label>
+
+                                    <input type="checkbox" id="basic_checkbox_2" class="filled-in" onclick="disableMayus()" >
+                                    <label for="basic_checkbox_2">Desactivar Mayusculas</label>
                                 </div>
+
+                               
+
+                                <div class="checkbox_mayus">
+                                
+                                </div>
+                               
                                         <div class="form-line">
-                                            <input type="text" id="input_busqueda_producto"  onkeypress="enter(event)" class="form-control" placeholder="Ingresa Codigo o Descripción" />
+                                        
+                                            <input type="text" oninput="this.value = this.value.toUpperCase()" id="input_busqueda_producto"  onkeypress="enter(event)" class="form-control" placeholder="Ingresa Codigo o Descripción" />
                                         </div>
 
 
@@ -723,6 +735,8 @@
 
     <script type="text/javascript"> 
 
+   
+
          $("#lista_emitir_dte_factura_menu").addClass("active");
           $("#lista_emitir_dte_menu").addClass("active");
         $('#datepicker_container input').datepicker({
@@ -731,7 +745,23 @@
         format: 'yyyy-mm-dd',
         language: 'es'
         
-    }); </script>
+    }); 
+    
+
+    let mayusculas_busqueda_prod = true;
+    function disableMayus(){
+
+        if (mayusculas_busqueda_prod) {
+            document.getElementById("input_busqueda_producto").removeAttribute("oninput");
+            mayusculas_busqueda_prod = false;
+        }else{
+            document.getElementById("input_busqueda_producto").setAttribute("oninput", "this.value = this.value.toUpperCase()");
+            mayusculas_busqueda_prod = true;
+        }
+        
+    }
+    
+    </script>
 
       <!-- captura datos para enviarlos a la api -->
     <script type="text/javascript" src="js/enviardatos.js"></script>

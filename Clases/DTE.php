@@ -409,7 +409,7 @@ function cargarDatosReferencia($tipo_dte_referencia,$folio_referencia){
 	}
 	if($tipo_dte_referencia == "34"){
 		$campo_tabla = "factura_exenta";
-		$campo_fecha = "fchemis_facura_exenta";
+		$campo_fecha = "fchemis_factura_exenta";
 		$campo_folio_ref ="folioref_factura_exenta";
 		$campo_tipo_dteref ="tipo_dteref_factura_exenta";
 		$campo_folio= "folio_factura_exenta";
@@ -446,6 +446,7 @@ function cargarDatosReferencia($tipo_dte_referencia,$folio_referencia){
 	$conexion = new conexion();
 	$sqlDatos_referencia = "SELECT ".$campo_fecha." AS fecha,".$campo_folio_ref." AS folio,".$campo_tipo_dteref." AS tipo FROM ".$campo_tabla." WHERE ".$campo_folio."='".$folio_referencia."'";
 		
+	//print_r($sqlDatos_referencia);
 	$datosReferencia = $conexion->obtenerDatos($sqlDatos_referencia);
 	//print_r($sqlDatos_referencia);
 
