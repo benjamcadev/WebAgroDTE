@@ -2,8 +2,6 @@ Web AgroDTE
 =======================
 
 
-**AdminBSB - Material Design is a fully responsive and free admin template.** It was developed with [Bootstrap 3.x Framework](http://getbootstrap.com) and [Google Material Design](https://material.google.com) of powers.
-
 FrontEnd el cual sirve se comunica con el proyecto de Backend ApiAgroDTE, para poder generar documentos DTE, Tambien poder visualizarlos, descargarlos y enviarlos.
 
 Tambien se visualizan documentos DTE de compra el cual llegan a un correo de intercambio de XML
