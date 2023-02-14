@@ -216,6 +216,7 @@ if ($apikey == "928e15a2d14d4a6292345f04960f4cc3") {
 
 
 		//REGISTRAR EN EL LOG
+		session_start();
 		$conexion = new conexion();
 		$rut = $_SESSION["rut_usuario"];
 		$ip_client = $_SERVER['REMOTE_ADDR'];
