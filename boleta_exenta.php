@@ -279,7 +279,7 @@
                                          <div class="input-group"> <!-- <div class="form-group"> -->
                                         <div class="form-line">
                                             <small> Item (*)</small>
-                                            <input id="item_1" name="1" type="text" class="form-control" placeholder="Item" required />
+                                            <input id="item_1" name="1" type="text" class="form-control" placeholder="Item" maxlength="79" required />
 
                                         </div>
                                           <span class="input-group-addon">

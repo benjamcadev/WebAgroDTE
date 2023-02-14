@@ -514,7 +514,7 @@ function AgregarDetalle(){
                                 '<div class="input-group">'+
                                     '<div class="form-line">'+
                                         '<small> Item</small>'+
-                                        '<input id="item_'+filaDetalle+'" name="'+filaDetalle+'" type="text" class="form-control" placeholder="Item" required />'+
+                                        '<input id="item_'+filaDetalle+'" name="'+filaDetalle+'" type="text" class="form-control" placeholder="Item" maxlength="79" required />'+
                                     '</div>'+
                                     '<span class="input-group-addon">'+
                                         '<i class="material-icons" id="busqueda_item_'+ filaDetalle +'" name="'+ filaDetalle +'" onclick="modalBusqueda(this)" style="font-size: 25px;">search</i>'+
@@ -526,7 +526,7 @@ function AgregarDetalle(){
                                 '<div class="input-group">'+
                                     '<div class="form-line">'+
                                         '<small> Item</small>'+
-                                        '<input id="item_'+filaDetalle+'" name="'+filaDetalle+'" type="text" class="form-control" placeholder="Item" required />'+
+                                        '<input id="item_'+filaDetalle+'" name="'+filaDetalle+'" type="text" class="form-control" placeholder="Item" maxlength="79" required />'+
                                     '</div>'+
                                     '<span class="input-group-addon">'+
                                         '<i class="material-icons" id="busqueda_item_'+ filaDetalle +'" name="'+ filaDetalle +'" onclick="modalBusqueda(this)" style="font-size: 25px;">search</i>'+
