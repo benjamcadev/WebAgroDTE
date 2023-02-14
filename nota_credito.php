@@ -219,67 +219,7 @@
                 </div>
             </div>
             <!-- #END# Input -->
-            <!-- REFERENCIAS DEL DOCUMENTO -->
-            <div id="div_referencias">
-                 <div id="div_fila_referencia" class="row clearfix">
-                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                        <div class="card">
-                            <div class="header">
-                                <h2>REFERENCIAS DEL DOCUMENTO</h2>
-                                <small>(*) Campo obligatorio</small>                                          
-                            </div>
-                            <div class="body">                          
-                                <div class="row clearfix">
-                                     <div class="col-sm-3">
-                                        <div class="form-line">
-                                            <small> Tipo de documento (*)</small>                                    
-                                                <select id="tipo_doc_ref" class="form-control show-tick">
-                                                    <option value="33"> Factura Electrónica </option> 
-                                                    <option value="34"> Factura Exenta Electrónica </option>
-                                                    <option value="39"> Boleta Electrónica </option>
-                                                    <option value="41"> Boleta Exenta Electrónica </option>               
-                                                  <!--  <option value="56"> Nota de Débito Electrónica </option>  no está desarrollado en la api, pero no creemos que se use -->
-                                                </select>                                   
-                                            </div>
-                                        </div>
-                                    <div class="col-sm-2">
-                                        <div class="form-group">
-                                            <div class="form-line">
-                                                <small> Folio (*)</small>
-                                                <input id="folio_ref" type="text" class="form-control" placeholder="00000" onchange="cargarReferencia()" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-2">
-                                         <small> Fecha de emisión (*)</small>
-                                        <div class="form-group">
-                                            <div class="form-line" id="datepicker_container">
-                                                <input id="fecha_ref" type="text" class="form-control" placeholder="AAAA-MM-DD" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-5">
-                                        <div >
-                                            <div class="form-line">
-                                                <small> Razón de referencia (*)</small>
-                                                <select id="razon_ref" class="form-control show-tick">
-                                                    <option value="0">- Seleccione -</option>
-                                                    <option value="1">Anula Documento de Referencia</option>
-                                                    <option value="2">Corrige Texto Documento de Referencia</option>
-                                                    <option value="3">Corrige montos</option>
-                                                </select>
-
-                                            </div>
-                                        </div>
-                                    </div>                             
-                                </div>                        
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                            
-            </div>
-            <!-- #END# REFERENCIAS DEL DOCUMENTO -->
+           
             <!-- DATOS GENERALES -->
             <div class="row clearfix">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -331,7 +271,10 @@
                     <div class="card">
                         <div class="header">
                             <h2>DATOS RECEPTOR</h2>
-                            <small>(*) Campo obligatorio</small>                           
+                            <small>(*) Campo obligatorio</small> 
+                            <div class="switch">
+                                <label>OTROS<input type="checkbox"><span class="lever"></span>BOLETA</label>
+                            </div>                          
                         </div>
                         <div class="body">
                             <div class="row clearfix">
@@ -492,7 +435,67 @@
             </div>
             <!-- #END# DETALLE DEL DOCUMENTO -->
            
-            
+             <!-- REFERENCIAS DEL DOCUMENTO -->
+            <div id="div_referencias">
+                 <div id="div_fila_referencia" class="row clearfix">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                        <div class="card">
+                            <div class="header">
+                                <h2>REFERENCIAS DEL DOCUMENTO</h2>
+                                <small>(*) Campo obligatorio</small>                                          
+                            </div>
+                            <div class="body">                          
+                                <div class="row clearfix">
+                                     <div class="col-sm-3">
+                                        <div class="form-line">
+                                            <small> Tipo de documento (*)</small>                                    
+                                                <select id="tipo_doc_ref" class="form-control show-tick">
+                                                    <option value="33"> Factura Electrónica </option> 
+                                                    <option value="34"> Factura Exenta Electrónica </option>
+                                                    <option value="39"> Boleta Electrónica </option>
+                                                    <option value="41"> Boleta Exenta Electrónica </option>               
+                                                  <!--  <option value="56"> Nota de Débito Electrónica </option>  no está desarrollado en la api, pero no creemos que se use -->
+                                                </select>                                   
+                                            </div>
+                                        </div>
+                                    <div class="col-sm-2">
+                                        <div class="form-group">
+                                            <div class="form-line">
+                                                <small> Folio (*)</small>
+                                                <input id="folio_ref" type="text" class="form-control" placeholder="00000" onchange="cargarReferencia()" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
+                                         <small> Fecha de emisión (*)</small>
+                                        <div class="form-group">
+                                            <div class="form-line" id="datepicker_container">
+                                                <input id="fecha_ref" type="text" class="form-control" placeholder="AAAA-MM-DD" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-5">
+                                        <div >
+                                            <div class="form-line">
+                                                <small> Razón de referencia (*)</small>
+                                                <select id="razon_ref" class="form-control show-tick">
+                                                    <option value="0">- Seleccione -</option>
+                                                    <option value="1">Anula Documento de Referencia</option>
+                                                    <option value="2">Corrige Texto Documento de Referencia</option>
+                                                    <option value="3">Corrige montos</option>
+                                                </select>
+
+                                            </div>
+                                        </div>
+                                    </div>                             
+                                </div>                        
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                            
+            </div>
+            <!-- #END# REFERENCIAS DEL DOCUMENTO -->
              <!-- TOTALES -->
             <div class="row clearfix">                
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">

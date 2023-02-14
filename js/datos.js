@@ -859,9 +859,13 @@ function seleccionarBusqueda(input_seleccionado){
     $("#"+id_input_descripcion).val(input_seleccionado.value);
      $('#busquedaModal').modal('hide');
      $("#lista_busqueda_producto").empty();
-     $('#input_busqueda_producto').val('');
+     $('#input_busqueda_producto').val('');    
 
-    
+}   
 
-}    
+function cargarDatosBoleta(){
+    $('#rut_receptor').val('66666666-6');
+}
+
+
 
