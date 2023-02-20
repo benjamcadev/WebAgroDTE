@@ -591,6 +591,10 @@ function EliminarDetalle(){
      }
 } 
 
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< AGREGAR REGERENCIAS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 function AgregarReferencias(){
 
     var referencia_add;
@@ -733,6 +737,10 @@ function EliminarReferencias(){
         '</ul>');        
 }
 
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< BUSQUEDA PRODUCTOS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 function modalBusqueda(input){
                 //abrir modal
                 $('#busquedaModal').modal('show');
@@ -861,11 +869,49 @@ function seleccionarBusqueda(input_seleccionado){
      $("#lista_busqueda_producto").empty();
      $('#input_busqueda_producto').val('');    
 
-}   
+}  
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< RELLENAR NC BOLETA >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 function cargarDatosBoleta(){
-    $('#rut_receptor').val('66666666-6');
+
+    var switch_boleta =$('#switch_boleta').val();
+
+    if($('#switch_boleta').prop('checked') ){
+        
+        $('#rut_receptor').val('66666666-6');
+        $('#razon_social_receptor').val('Contacto Anonimo');
+        $('#input_giro_receptor').val('Sin Datos');
+        $('#input_direccion_receptor').val('Sin Datos');
+        $('#comuna_receptor').val('Sin Datos');
+
+        $('#rut_receptor').attr('disabled',true);
+        $('#razon_social_receptor').attr('disabled',true);
+        $('#input_giro_receptor').attr('disabled',true);
+        $('#input_direccion_receptor').attr('disabled',true);
+        $('#comuna_receptor').attr('disabled',true);
+
+
+    }else{
+
+        $('#rut_receptor').val('');
+        $('#razon_social_receptor').val('');
+        $('#input_giro_receptor').val('');
+        $('#input_direccion_receptor').val('');
+        $('#comuna_receptor').val('');
+
+        $('#rut_receptor').attr('disabled',false);
+        $('#razon_social_receptor').attr('disabled',false);
+        $('#input_giro_receptor').attr('disabled',false);
+        $('#input_direccion_receptor').attr('disabled',false);
+        $('#comuna_receptor').attr('disabled',false);
+    }
+    
 }
+
+
 
 
 

@@ -347,18 +347,28 @@
                                     <i class="material-icons">file_download</i>
                             </button>
 
-                             <button onclick="descargarXML();" type="button" class="btn btn-default btn-circle-lg waves-effect waves-circle waves-float" data-toggle="tooltip" data-placement="bottom" title="Descargar XML">
+                            <button onclick="descargarXML();" type="button" class="btn btn-default btn-circle-lg waves-effect waves-circle waves-float" data-toggle="tooltip" data-placement="bottom" title="Descargar XML">
                                     <i class="material-icons">settings_ethernet</i>
+                            </button>
+                            <button onclick="anularDTE();" type="button" class="btn btn-default btn-circle-lg waves-effect waves-circle waves-float" data-toggle="tooltip" data-placement="bottom" title="Anular">
+                                    <i class="material-icons">do_not_disturb</i>
                             </button>
 
                              <button type="button" class="close" data-dismiss="modal">&times;</button>
+
+                    
+
+                             
+                        </div>
+                        <div class="modal-header" id="referencia_dte">
+
                         </div>
                         <div class="modal-body" id="pdfModal_body">
+                        
                             <canvas style="width: 100%; height: 100%;"  id="canvas-pdf"></canvas>
                            
                         </div>
-                        <div class="modal-footer">
-                        
+                        <div class="modal-footer">                            
                             <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">Cerrar</button>
                         </div>
                     </div>
@@ -638,7 +648,7 @@
                                                                                  
                                     { title: "Fecha",data: 'fecha' },
                                     { title: "Detalle",data: 'folio', render: function(data,type, row, meta){
-                                                                                return '<a onclick="crearPDF('+data+','+row['tipo_dte']+')" style="color: brown;"  class="material-icons">content_paste</a>'
+                                                                                return '<a role="button" onclick="crearPDF('+data+','+row['tipo_dte']+')"><i style="color: brown;"  class="material-icons">content_paste</i></a>'
                                     } }
 
 
@@ -679,11 +689,10 @@
 
                     const byteArray = new Uint8Array(byteNumbers);
                     byteArrays.push(byteArray);
-  }
-
-  const blob = new Blob(byteArrays, {type: contentType});
-  return blob;
-}
+                }
+                const blob = new Blob(byteArrays, {type: contentType});
+                return blob;
+            }
 
             function imprimirPDF(){
 
@@ -841,13 +850,7 @@
                         }   
                 }else{
                     alert("No ha escrito un Correo Valido");
-                }
-
-
-              
-
-
-               
+                }   
 
             }
 
@@ -858,6 +861,60 @@
                 $("#xml_nombre").text("");
                 $("#pdf_nombre").text("DTE_"+tipo_dte+"_"+folio+".pdf");
                 $("#xml_nombre").text("DTE_"+tipo_dte+"_"+folio+".xml");
+
+                //buscar si tiene dte relacionado
+                let tipo_dte_ref = "";
+                let nombre_dte_ref = "";
+
+                if (tipo_dte == "33") {
+                    tipo_dte_ref = "61";
+                    nombre_dte_ref = "Nota de Credito";
+                }
+                if (tipo_dte == "61") {
+                    tipo_dte_ref = "56";
+                    nombre_dte_ref = "Nota de Debito";
+                }
+                if (tipo_dte == "39") {
+                    tipo_dte_ref = "61";
+                    nombre_dte_ref = "Nota de Credito";
+                }
+                if (tipo_dte == "52") {
+                    tipo_dte_ref = "61";
+                    nombre_dte_ref = "Nota de Credito";
+                }
+
+                var parametros2 = {"folio_referencia": folio, 
+                "tipo_dte_referencia": tipo_dte_ref
+                }; 
+                $.ajax({
+                    type: 'POST',
+                    data:  parametros2,
+                    headers: {
+                                    'apikey':'928e15a2d14d4a6292345f04960f4cc3' 
+                                },
+                    dataType: "json",
+                    url: "Clases/DTE.php?funcion=cargarDatosReferenciaEmitidos",
+                    success:function(data){
+                        console.log(data);
+
+                        if (data.length == 0) {
+                            //NO TIENE REFERENCIA
+                            //swal("Sin Registros", "No hay datos de DTE", "error");
+                            $('#referencia_dte').empty();
+                            
+                        }
+                        if (data.length > 0) {
+                            //TIENE REFERENCIA
+                            
+                            $('#referencia_dte').empty();
+                            $("#referencia_dte").append("<h4><span class=\"label label-danger\">Anulada Con "+nombre_dte_ref+" Folio "+data[0].folio+"</span></h4>");
+                            //swal("Sin Registros", "No hay datos de DTE", "error");
+                            
+                        }
+                        
+                    }
+                });
+                
 
 
              var parametros = {"folio": folio, 
@@ -933,25 +990,14 @@
                                 },function (reason) {
                                   // PDF loading error
                                   console.error(reason);
-                                });
-                              
-
-                           
+                                });                  
                             
-                        }
+                            }
 
-
-
-                     }
-                
-                }
-                });
-        }
-
-
-           
-
-
+                        }                
+                    }
+                 });
+            }
 
             function selectBusquedaAvanzada(select){
                 switch(select.value) {
@@ -1101,30 +1147,93 @@
 
            function busquedaAvanzadaAjax(parametros){
 
-            $.ajax({
-            type: 'POST',
-            data:  parametros,
-            headers: {
+                $.ajax({
+                    type: 'POST',
+                    data:  parametros,
+                    headers: {
+                                    'apikey':'928e15a2d14d4a6292345f04960f4cc3' 
+                                },
+                    dataType: "json",
+                    url: "Clases/DTE.php?funcion=busquedaAvanzada",
+                    success:function(data){
+                        console.log(data);
+
+                        if (data.length == 0) {
+                            swal("Sin Registros", "No hay datos de DTE", "error");
+                        }
+                        $('#tabla_dte_emitidos').DataTable().destroy();
+                        cargarTabla(data);
+                    }
+                });
+            }
+
+
+            function anularDTE(){
+                var tipo_doc_ref = $("#tipo_doc_ref").val();
+                var folio_ref = $('#folio_ref').val();
+                var parametros = {"tipo_dte_referencia": tipo_doc_ref,"folio_referencia": folio_ref}; 
+
+                // SI ES ORDEN DE COMPRA NO LA BUSCA, YA QUE NO SE REGISTRAN
+                if(tipo_doc_ref != "801"){
+
+                     $.ajax({
+                        type: "POST",
+                        data:  parametros,
+                        headers: {
                             'apikey':'928e15a2d14d4a6292345f04960f4cc3' 
                         },
-            dataType: "json",
-            url: "Clases/DTE.php?funcion=busquedaAvanzada",
-            success:function(data){
-                console.log(data);
+                        dataType: "json",
+                        url: "Clases/DTE.php?funcion=cargarDatosReferencia",
+                        beforeSend: function() {
 
-                if (data.length == 0) {
-                    swal("Sin Registros", "No hay datos de DTE", "error");
+                            //mensaje temporal de busqueda de datos
+                            swal({
+                                title: '<div class="preloader pl-size-xl">'+
+                                          '     <div class="spinner-layer pl-light-blue">'+
+                                          '         <div class="circle-clipper left">'+
+                                          '             <div class="circle"></div>'+
+                                          '         </div>'+
+                                          '         <div class="circle-clipper right">'+
+                                          '             <div class="circle"></div>'+
+                                          '         </div>'+
+                                          '     </div>'+
+                                          ' </div>', 
+                                text: "Cargando datos ...",
+                                showConfirmButton: false,
+                                //timer: 1800,
+                                html: true           
+                            });
+                        },
+                        success: function(data) {        
+                            
+                            console.log(data.length);
+                            if (data.length == 0) {
+
+                                swal("Error", "No se encuentra el folio de referencia", "error");
+
+                            }else{
+
+                                swal.close();
+                                //console.log(data.fchemis_factura);
+                                $('#fecha_ref').val(data[0].fecha);
+
+                                if(data[0].tipo == "34" || data[0].tipo == "41"){
+                                    dte_referencia_exento = true;
+                                }
+                                if(document.getElementById("subtotal_1") != null){
+                                    calcularSubTotalGlobal();   
+                                }
+                                                                  
+                                
+                            }
+                        }
+                    });
+
                 }
-                 $('#tabla_dte_emitidos').DataTable().destroy();
-                 cargarTabla(data);
-
-
             }
-        });
-           } 
 
 
-    </script>
+</script>
 </body>
 
 </html>

@@ -44,6 +44,12 @@ if ($apikey == "928e15a2d14d4a6292345f04960f4cc3") {
 			cargarDatosReferencia($tipo_dte_referencia,$folio_referencia);
 			break;
 
+		case 'cargarDatosReferenciaEmitidos':
+			$tipo_dte_referencia = $_POST['tipo_dte_referencia'];
+			$folio_referencia = $_POST['folio_referencia'];
+			cargarDatosReferenciaEmitidos($tipo_dte_referencia,$folio_referencia);
+			break;
+
 		case 'enviarSobre':
 			$id_sobre = $_GET['id_sobre'];
 			$rut_emisor = $_GET['rut_emisor'];
@@ -225,6 +231,7 @@ if ($apikey == "928e15a2d14d4a6292345f04960f4cc3") {
 
 		print_r($response);
 	}
+
 
 function crearPDF($folio,$tipo_dte){
 	//Identificar tipo de dte
@@ -463,6 +470,69 @@ function cargarDatosReferencia($tipo_dte_referencia,$folio_referencia){
 	//print_r(json_encode($datos));
 }
 
+function cargarDatosReferenciaEmitidos($tipo_dte_referencia,$folio_referencia){
+
+	$campo_tabla = ""; 
+	$campo_fecha= ""; 
+	$campo_folio_ref= "";
+	$campo_tipo_dteref= "";
+	$campo_folio= "";
+	
+	if($tipo_dte_referencia == "33"){
+		$campo_tabla = "factura";
+		$campo_fecha = "fchemis_factura";
+		$campo_folio_ref ="folioref_factura";
+		$campo_tipo_dteref ="tipo_dteref_factura";
+		$campo_folio= "folio_factura";
+	}
+	if($tipo_dte_referencia == "34"){
+		$campo_tabla = "factura_exenta";
+		$campo_fecha = "fchemis_factura_exenta";
+		$campo_folio_ref ="folioref_factura_exenta";
+		$campo_tipo_dteref ="tipo_dteref_factura_exenta";
+		$campo_folio= "folio_factura_exenta";
+	}
+	if($tipo_dte_referencia == "39"){
+		$campo_tabla = "boleta";
+		$campo_fecha = "fechaemis_boleta";
+		$campo_folio_ref ="folioref_boleta";
+		$campo_tipo_dteref ="tipo_dteref_boleta";
+		$campo_folio= "folio_boleta";
+	}
+	if($tipo_dte_referencia == "41"){
+		$campo_tabla = "boleta_exenta";
+		$campo_fecha = "fechaemis_boleta_exenta";
+		$campo_folio_ref ="folioref_boleta_exenta";
+		$campo_tipo_dteref ="tipo_dteref_boleta_exenta";
+		$campo_folio= "folio_boleta_exenta";
+	}	
+	if($tipo_dte_referencia == "56"){
+		$campo_tabla = "nota_debito";
+		$campo_fecha = "fchemis_nota_debito";
+		$campo_folio_ref ="folioref_nota_debito";
+		$campo_tipo_dteref ="tipo_dteref_nota_debito";
+		$campo_folio= "folio_nota_debito";
+	}
+	if($tipo_dte_referencia == "61"){
+		$campo_tabla = "nota_credito";
+		$campo_fecha = "fchemis_nota_credito";
+		$campo_folio_ref ="folioref_nota_credito";
+		$campo_tipo_dteref ="tipo_dteref_nota_credito";
+		$campo_folio= "folio_nota_credito";
+	}
+
+	$conexion = new conexion();
+	$sqlDatos_referencia = "SELECT ".$campo_fecha." AS fecha,".$campo_folio." AS folio FROM ".$campo_tabla." WHERE ".$campo_folio_ref."='".$folio_referencia."'";
+		
+	//print_r($sqlDatos_referencia);
+	$datosReferencia = $conexion->obtenerDatos($sqlDatos_referencia);
+	//print_r($sqlDatos_referencia);
+
+	print_r(json_encode($datosReferencia));
+	//print_r(json_encode($datos));
+}
+
+
 function busquedaAvanzada($caso,$valor){
 $conexion = new conexion();
 $tipo_dte_flag = false;
@@ -652,14 +722,56 @@ switch ($caso) {
 	}	
 
 }
-		
-	
-	
-
 	$array_data = array_merge($datos_factura,$datos_factura_exenta,$datos_nota_credito,$datos_nota_debito,$datos_guia_despacho,$datos_boleta,$datos_boleta_exenta);
 	$datos_str = json_encode($array_data);
 	print_r($datos_str);
 
 }
+
+function buscarXml($tipo_dte_referencia,$folio_referencia){
+	$campo_tabla = ""; 
+	$campo_fecha= ""; 
+	$campo_folio_ref= "";
+	$campo_tipo_dteref= "";
+	$campo_folio= "";
+	
+	if($tipo_dte_referencia == "33"){
+		$campo_tabla = "factura";
+		$campo_ubicacion = "ubicacion_factura";
+		$campo_folio= "folio_factura";
+	}
+	if($tipo_dte_referencia == "34"){
+		$campo_tabla = "factura_exenta";
+		$campo_ubicacion = "ubicacion_factura_exenta";
+		$campo_folio= "folio_factura_exenta";
+	}
+	if($tipo_dte_referencia == "39"){
+		$campo_tabla = "boleta";
+		$campo_ubicacion = "ubicacion_boleta";
+		$campo_folio= "folio_boleta";
+	}
+	if($tipo_dte_referencia == "41"){
+		$campo_tabla = "boleta_exenta";
+		$campo_ubicacion = "ubicacion_boleta_exenta";
+		$campo_folio= "folio_boleta_exenta";
+	}	
+	if($tipo_dte_referencia == "56"){
+		$campo_tabla = "nota_debito";
+		$campo_ubicacion = "ubicacion_nota_debito";
+		$campo_folio= "folio_nota_debito";
+	}
+	if($tipo_dte_referencia == "61"){
+		$campo_tabla = "nota_credito";
+		$campo_ubicacion = "ubicacion_nota_credito";
+		$campo_folio= "folio_nota_credito";
+	}
+
+	$conexion = new conexion();
+	$sqlDatos_referencia = "SELECT ".$campo_ubicacion." FROM ".$campo_tabla." WHERE ".$campo_folio."='".$folio_referencia."'";
+
+	$datosReferencia = $conexion->obtenerDatos($sqlDatos_referencia);
+	print_r(json_encode($datosReferencia));
+}
+
 
 ?>

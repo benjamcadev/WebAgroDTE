@@ -142,6 +142,7 @@ function EnviarDatos(){
     var fecha_ref;
     var observacion_ref;
     var razon_ref;
+    var codigo_ref;
 
     if(document.getElementById("div_fila_referencia") != null){
 
@@ -154,6 +155,14 @@ function EnviarDatos(){
             observacion_ref = $("#observacion_ref").val();
         }else{
             observacion_ref = $("#razon_ref").val();
+        }
+
+        if(observacion_ref == "1"){
+            razon_ref = "Anula Documento de Referencia";
+        }else if(observacion_ref == "2"){
+            razon_ref = "Corrige Texto Documento de Referencia";
+        }else if(observacion_ref == "3"){
+            razon_ref = "Corrige montos";
         }
         
     }
@@ -385,7 +394,7 @@ function EnviarDatos(){
     '                "FchRef": "'+ fecha_ref +'",';
             if(tipo_dte == "61" || tipo_dte == "56"){ 
                 parametros = parametros + '"CodRef": '+ observacion_ref +',';
-                parametros = parametros +'"RazonRef": "Trazabilidad"},';
+                parametros = parametros +'"RazonRef": "'+ razon_ref +'"},';
             }else{
                 parametros = parametros +'"RazonRef": "'+ observacion_ref +'"},';
             }
@@ -416,7 +425,7 @@ function EnviarDatos(){
         parametros = parametros.slice(0,-1);
         parametros = parametros +'}}';
 
-
+        console.log(parametros);
         parametros = JSON.parse(parametros);
 
         console.log(parametros);

@@ -273,7 +273,7 @@
                             <h2>DATOS RECEPTOR</h2>
                             <small>(*) Campo obligatorio</small> 
                             <div class="switch">
-                                <label>OTROS<input type="checkbox"><span class="lever"></span>BOLETA</label>
+                                <label>OTROS<input id="switch_boleta" type="checkbox" onclick="cargarDatosBoleta()"><span class="lever"></span>BOLETA</label>
                             </div>                          
                         </div>
                         <div class="body">

@@ -47,7 +47,8 @@ switch ($funcion) {
 
 function cargarSobresTabla(){
 	$conexion = new conexion();
-	$sql2 = "SELECT * FROM envio_dte ORDER BY id_envio_dte DESC LIMIT 1000";
+	$sql2 = "SELECT * FROM envio_dte ORDER BY id_envio_dte DESC LIMIT 5000";
+	//$sql2 = "SELECT * FROM envio_dte WHERE estado_envio_dte='No Enviado'"; 
 	$datos = $conexion->obtenerDatos($sql2);
 	$datos_str = json_encode($datos);
 	
@@ -224,6 +225,7 @@ function is_connected()
     return $is_conn;
 
 }
+
 
 
 ?>
