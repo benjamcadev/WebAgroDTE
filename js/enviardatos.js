@@ -478,29 +478,41 @@ function EnviarDatos(){
 
             success: function(data) {  
 
-                swal({
-                    title:"¡Documento Emitido!", 
-                    text:"Se ha generado "+documento+" con folio : "+data['FOLIO'], 
-                    type:"success",
-                    showConfirmButton: true,
-                    showCancelButton: true,
-                    confirmButtonText: 'Ver',
-                    cancelButtonText: 'Cerrar',
-                    closeOnConfirm: true,
-                    closeOnCancel: true
-                    },
-                    function(flag){
-                        if(flag){
-                            crearPDF(data['FOLIO'],tipo_dte);
-                            //location.reload();
-                        }else{
-                            location.reload();
+                console.log($.parseJSON(data));
+                var dataJson = $.parseJSON(data);
+               
+
+
+                if(dataJson.FOLIO != null) {
+                    swal({
+                        title:"¡Documento Emitido!", 
+                        text:"Se ha generado "+documento+" con folio : "+dataJson.FOLIO, 
+                        type:"success",
+                        showConfirmButton: true,
+                        showCancelButton: true,
+                        confirmButtonText: 'Ver',
+                        cancelButtonText: 'Cerrar',
+                        closeOnConfirm: true,
+                        closeOnCancel: true
+                        },
+                        function(flag){
+                            if(flag){
+                                crearPDF(dataJson.FOLIO,tipo_dte);
+                                //location.reload();
+                            }else{
+                                location.reload();
+                            }
+    
                         }
-
-                    }
-                );
-
-                console.log(data['FOLIO']);   
+                    );
+    
+                    //console.log(data['FOLIO']); 
+                }else{
+                    swal("Error", "Detalle del error: "+JSON.stringify(dataJson), "error");
+                     // habilita el boton enviar 
+                    $('#btn_enviar').attr('disabled', false);  
+                }
+                  
             }
         });
 

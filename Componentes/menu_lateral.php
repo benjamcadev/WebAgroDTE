@@ -102,7 +102,7 @@
                             
                         </ul>
                     </li>
-                     <li id="lista_configuracion_menu">
+                     <!-- <li id="lista_configuracion_menu">
                         <a href="javascript:void(0);" class="menu-toggle">
                             <i class="material-icons">settings</i>
                             <span>CONFIGURACIÓN</span>
@@ -125,7 +125,7 @@
                                 <a href="../../pages/ui/breadcrumbs.html">TI</a>
                             </li>                           
                         </ul>
-                    </li>
+                    </li> -->
                     <!--
                     <li>
                         <a href="javascript:void(0);" class="menu-toggle">

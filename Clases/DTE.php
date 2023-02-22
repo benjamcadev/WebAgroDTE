@@ -218,7 +218,7 @@ if ($apikey == "928e15a2d14d4a6292345f04960f4cc3") {
 		$response = curl_exec($curl);
 		$err = curl_error($curl);
 		
-		//$decoded_response_object = json_decode($response);
+		$decoded_response_object = json_encode($response);
 
 
 		//REGISTRAR EN EL LOG
@@ -229,7 +229,8 @@ if ($apikey == "928e15a2d14d4a6292345f04960f4cc3") {
 		$sql_log = "INSERT INTO log_event (mensaje_log_event,fecha_log_event,referencia_log_event,query_request_log_event) VALUES ('Emision DTE Web AgroDTE', NOW(),'Usuario: $rut ip: $ip_client','$json_request')";
 		$conexion->ejecutarQuery($sql_log);
 
-		print_r($response);
+		print_r($decoded_response_object);
+		//print_r($response);
 	}
 
 
