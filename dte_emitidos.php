@@ -350,7 +350,7 @@
                             <button onclick="descargarXML();" type="button" class="btn btn-default btn-circle-lg waves-effect waves-circle waves-float" data-toggle="tooltip" data-placement="bottom" title="Descargar XML">
                                     <i class="material-icons">settings_ethernet</i>
                             </button>
-                            <button id="btn_anular" type="button" class="btn btn-default btn-circle-lg waves-effect waves-circle waves-float" data-toggle="tooltip" data-placement="bottom" title="Anular">
+                            <button id="btn_anular" disabled="disabled" type="button" class="btn btn-default btn-circle-lg waves-effect waves-circle waves-float" data-toggle="tooltip" data-placement="bottom" title="Anular">
                                     <i class="material-icons">do_not_disturb</i>
                             </button>
 
@@ -901,14 +901,13 @@
                             //NO TIENE REFERENCIA
                             //swal("Sin Registros", "No hay datos de DTE", "error");
                             $('#referencia_dte').empty();
-                            $("#btn_anular").attr('disabled',false);
+                            
                         }
                         if (data.length > 0) {
                             //TIENE REFERENCIA
                             
                             $('#referencia_dte').empty();
                             $("#referencia_dte").append("<h4><span class=\"label label-danger\">Anulada Con "+nombre_dte_ref+" Folio "+data[0].folio+"</span></h4>");
-                            $("#btn_anular").attr('disabled',true);
                             //swal("Sin Registros", "No hay datos de DTE", "error");
                             
                         }

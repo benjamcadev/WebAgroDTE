@@ -775,4 +775,9 @@ function buscarXml($tipo_dte_referencia,$folio_referencia){
 }
 
 
+function leerXML($path){
+
+print_r($path);	
+
+}
 ?>

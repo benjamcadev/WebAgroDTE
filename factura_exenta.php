@@ -712,6 +712,7 @@
 
     <!-- Bootstrap Material Datetime Picker Plugin Js -->
     <script src="plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js"></script>
+    <script src="plugins/bootstrap-datepicker/locales/bootstrap-datepicker.es.min.js"></script>
 
     <!-- Bootstrap Datepicker Plugin Js -->
     <script src="plugins/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
@@ -744,7 +745,7 @@
         format: 'yyyy-mm-dd',
         language: 'es'
         
-    }); 
+    }).datepicker("setDate",'now');  
     
 
     let mayusculas_busqueda_prod = true;
