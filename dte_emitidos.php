@@ -350,7 +350,7 @@
                             <button onclick="descargarXML();" type="button" class="btn btn-default btn-circle-lg waves-effect waves-circle waves-float" data-toggle="tooltip" data-placement="bottom" title="Descargar XML">
                                     <i class="material-icons">settings_ethernet</i>
                             </button>
-                            <button id="btn_anular" disabled="disabled" type="button" class="btn btn-default btn-circle-lg waves-effect waves-circle waves-float" data-toggle="tooltip" data-placement="bottom" title="Anular">
+                            <button onclick="anularDTE();" id="btn_anular" type="button" class="btn btn-default btn-circle-lg waves-effect waves-circle waves-float" data-toggle="tooltip" data-placement="bottom" title="Anular">
                                     <i class="material-icons">do_not_disturb</i>
                             </button>
 
@@ -526,7 +526,8 @@
  var pdf_base64 = ""; 
  var xml_base64 = "";
  var folio_global = "";
- var tipo_dte_global = "";      
+ var tipo_dte_global = "";
+ var monto_global = "";       
 
     function checkRut(rut) {
             //capturar rut
@@ -648,7 +649,7 @@
                                                                                  
                                     { title: "Fecha",data: 'fecha' },
                                     { title: "Detalle",data: 'folio', render: function(data,type, row, meta){
-                                                                                return '<a role="button" onclick="crearPDF('+data+','+row['tipo_dte']+')"><i style="color: brown;"  class="material-icons">content_paste</i></a>'
+                                                                                return '<a role="button" onclick="crearPDF('+data+','+row['tipo_dte']+','+row['monto_total']+')"><i style="color: brown;"  class="material-icons">content_paste</i></a>'
                                     } }
 
 
@@ -854,9 +855,10 @@
 
             }
 
-            function crearPDF(folio,tipo_dte){
+            function crearPDF(folio,tipo_dte,monto_total){
                 folio_global = folio;
                 tipo_dte_global = tipo_dte;
+                monto_global = monto_total;
                 $("#pdf_nombre").text("");
                 $("#xml_nombre").text("");
                 $("#pdf_nombre").text("DTE_"+tipo_dte+"_"+folio+".pdf");
@@ -905,11 +907,18 @@
                         }
                         if (data.length > 0) {
                             //TIENE REFERENCIA
-                            
-                            $('#referencia_dte').empty();
-                            $("#referencia_dte").append("<h4><span class=\"label label-danger\">Anulada Con "+nombre_dte_ref+" Folio "+data[0].folio+"</span></h4>");
-                            //swal("Sin Registros", "No hay datos de DTE", "error");
-                            
+                            if(data[0].monto < monto_global){
+
+                                $('#referencia_dte').empty();
+                                $("#referencia_dte").append("<h4><span class=\"label label-warning\">Anulada PARCIALMENTE con "+nombre_dte_ref+" Folio "+data[0].folio+"</span></h4>");
+                                //swal("Sin Registros", "No hay datos de DTE", "error");
+                            }
+                            if(data[0].monto == monto_global){
+
+                                $('#referencia_dte').empty();
+                                $("#referencia_dte").append("<h4><span class=\"label label-danger\">Anulada COMPLETAMENTE Con "+nombre_dte_ref+" Folio "+data[0].folio+"</span></h4>");
+                                //swal("Sin Registros", "No hay datos de DTE", "error");
+                            }
                         }
                         
                     }
@@ -1169,12 +1178,12 @@
 
 
             function anularDTE(){
+                
+                var parametros = {"tipo_dte_ref": tipo_dte_global,"folio_ref": folio_global}; 
                 var tipo_doc_ref = $("#tipo_doc_ref").val();
-                var folio_ref = $('#folio_ref').val();
-                var parametros = {"tipo_dte_referencia": tipo_doc_ref,"folio_referencia": folio_ref}; 
 
                 // SI ES ORDEN DE COMPRA NO LA BUSCA, YA QUE NO SE REGISTRAN
-                if(tipo_doc_ref != "801"){
+                if(tipo_doc_ref != "801"){                    
 
                      $.ajax({
                         type: "POST",
@@ -1183,8 +1192,8 @@
                             'apikey':'928e15a2d14d4a6292345f04960f4cc3' 
                         },
                         dataType: "json",
-                        url: "Clases/DTE.php?funcion=cargarDatosReferencia",
-                        beforeSend: function() {
+                        url: "Clases/DTE.php?funcion=buscarXml",
+                        /*beforeSend: function() {
 
                             //mensaje temporal de busqueda de datos
                             swal({
@@ -1199,30 +1208,42 @@
                                           '     </div>'+
                                           ' </div>', 
                                 text: "Cargando datos ...",
-                                showConfirmButton: false,
+                                showConfirmButton: true,
                                 //timer: 1800,
                                 html: true           
                             });
-                        },
-                        success: function(data) {        
-                            
-                            console.log(data.length);
-                            if (data.length == 0) {
+                        },*/
 
-                                swal("Error", "No se encuentra el folio de referencia", "error");
+                        success: function(path) {                           
+                            
+                            let json_path = path[0].ubicacion;
+                            let parametros = {"ubicacion_xml": json_path};
+                            //console.log(json_path);
+
+                            if (path.length == 0) {
+
+                                swal("Error", "No se encuentra el archivo referenciado", "error");
 
                             }else{
 
-                                swal.close();
-                                //console.log(data.fchemis_factura);
-                                $('#fecha_ref').val(data[0].fecha);
+                                $.ajax({
+                                    type: "POST",
+                                    data:  parametros,
+                                    headers: {
+                                        'apikey':'928e15a2d14d4a6292345f04960f4cc3' 
+                                    },
+                                    dataType: "json",
+                                    url: "Clases/DTE.php?funcion=leerXML",
+                                    success: function(respuesta) { 
 
-                                if(data[0].tipo == "34" || data[0].tipo == "41"){
-                                    dte_referencia_exento = true;
-                                }
-                                if(document.getElementById("subtotal_1") != null){
-                                    calcularSubTotalGlobal();   
-                                }
+                                        let json_respuesta = respuesta;
+                                        console.log(json_respuesta);
+                                       
+                                    }
+                                });
+
+                                //swal.close();
+                                //console.log(path);                                
                                                                   
                                 
                             }

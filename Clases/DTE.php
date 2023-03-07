@@ -47,7 +47,8 @@ if ($apikey == "928e15a2d14d4a6292345f04960f4cc3") {
 		case 'cargarDatosReferenciaEmitidos':
 			$tipo_dte_referencia = $_POST['tipo_dte_referencia'];
 			$folio_referencia = $_POST['folio_referencia'];
-			cargarDatosReferenciaEmitidos($tipo_dte_referencia,$folio_referencia);
+			$monto_referencia = $_POST['folio_referencia'];
+			cargarDatosReferenciaEmitidos($tipo_dte_referencia,$folio_referencia,$monto_referencia);
 			break;
 
 		case 'enviarSobre':
@@ -90,10 +91,22 @@ if ($apikey == "928e15a2d14d4a6292345f04960f4cc3") {
 			$codigo = $_POST['codigo'];
 			consultarProductoCodigoPSQL($codigo);
 		break;
+
 		case 'consultarProductoDescripcionPSQL':
 			$descripcion = $_POST['descripcion'];
 			consultarProductoDescripcionPSQL($descripcion);
-		break;		
+		break;	
+
+		case 'buscarXml':
+			$tipo_dte_referencia = $_POST['tipo_dte_ref'];
+			$folio_referencia = $_POST['folio_ref'];
+			buscarXml($tipo_dte_referencia,$folio_referencia);
+			break;
+
+		case 'leerXML':
+			$ubicacion_xml = $_POST['ubicacion_xml'];			
+			leerXML($ubicacion_xml);
+			break;
 		
 		default:
 			// code...
@@ -123,6 +136,11 @@ if ($apikey == "928e15a2d14d4a6292345f04960f4cc3") {
 
 	function enviarCorreo($xml_Base64,$pdf_Base64,$folio,$tipo_dte,$email,$email_cc){
 
+	//TRAER CORREO DESDE LA BD
+	$conexion = new conexion();
+	$sqlMail = "SELECT mail_intercambio_empresa,pass_intercambio_empresa FROM empresa WHERE id_empresa = 1";
+	$datosMail = $conexion->obtenerDatos($sqlMail);
+
 	//Preparamos la imagen logo que ira en el correo
 	$image = '../images/logo_sin_piramides_AgroDTE.png';
 	$imageData = base64_encode(file_get_contents($image));
@@ -143,13 +161,13 @@ if ($apikey == "928e15a2d14d4a6292345f04960f4cc3") {
     $mail->isSMTP();                                            //Send using SMTP
     $mail->Host       = 'mail.agroplastic.cl';                     //Set the SMTP server to send through
     $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
-    $mail->Username   = 'intercambiodte@agroplastic.cl';                     //SMTP username
-    $mail->Password   = 'agr0835$1069';                               //SMTP password
+    $mail->Username   = $datosMail[0]['mail_intercambio_empresa'];                     //SMTP username
+    $mail->Password   = $datosMail[0]['pass_intercambio_empresa'];                               //SMTP password
     $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;            //Enable implicit TLS encryption
     $mail->Port       = 465;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
 
     //Recipients
-    $mail->setFrom('intercambiodte@agroplastic.cl', 'AgroDTE');
+    $mail->setFrom($datosMail[0]['mail_intercambio_empresa'], 'AgroDTE');
     $mail->addAddress($email);     //Add a recipient
     //$mail->addAddress('benjamca@hotmail.com');               //Name is optional
     //$mail->addReplyTo('mriquelme@agroplastic.cl', 'Information');
@@ -471,13 +489,14 @@ function cargarDatosReferencia($tipo_dte_referencia,$folio_referencia){
 	//print_r(json_encode($datos));
 }
 
-function cargarDatosReferenciaEmitidos($tipo_dte_referencia,$folio_referencia){
+function cargarDatosReferenciaEmitidos($tipo_dte_referencia,$folio_referencia,$monto_referencia){
 
 	$campo_tabla = ""; 
 	$campo_fecha= ""; 
 	$campo_folio_ref= "";
 	$campo_tipo_dteref= "";
 	$campo_folio= "";
+	$campo_monto= "";
 	
 	if($tipo_dte_referencia == "33"){
 		$campo_tabla = "factura";
@@ -485,6 +504,7 @@ function cargarDatosReferenciaEmitidos($tipo_dte_referencia,$folio_referencia){
 		$campo_folio_ref ="folioref_factura";
 		$campo_tipo_dteref ="tipo_dteref_factura";
 		$campo_folio= "folio_factura";
+		$campo_monto= "mnttotal_factura";
 	}
 	if($tipo_dte_referencia == "34"){
 		$campo_tabla = "factura_exenta";
@@ -492,6 +512,7 @@ function cargarDatosReferenciaEmitidos($tipo_dte_referencia,$folio_referencia){
 		$campo_folio_ref ="folioref_factura_exenta";
 		$campo_tipo_dteref ="tipo_dteref_factura_exenta";
 		$campo_folio= "folio_factura_exenta";
+		$campo_monto= "mnttotal_factura_exenta";
 	}
 	if($tipo_dte_referencia == "39"){
 		$campo_tabla = "boleta";
@@ -499,6 +520,7 @@ function cargarDatosReferenciaEmitidos($tipo_dte_referencia,$folio_referencia){
 		$campo_folio_ref ="folioref_boleta";
 		$campo_tipo_dteref ="tipo_dteref_boleta";
 		$campo_folio= "folio_boleta";
+		$campo_monto= "mnttotal_boleta";
 	}
 	if($tipo_dte_referencia == "41"){
 		$campo_tabla = "boleta_exenta";
@@ -506,6 +528,7 @@ function cargarDatosReferenciaEmitidos($tipo_dte_referencia,$folio_referencia){
 		$campo_folio_ref ="folioref_boleta_exenta";
 		$campo_tipo_dteref ="tipo_dteref_boleta_exenta";
 		$campo_folio= "folio_boleta_exenta";
+		$campo_monto= "mnttotal_boleta_exenta";
 	}	
 	if($tipo_dte_referencia == "56"){
 		$campo_tabla = "nota_debito";
@@ -513,6 +536,7 @@ function cargarDatosReferenciaEmitidos($tipo_dte_referencia,$folio_referencia){
 		$campo_folio_ref ="folioref_nota_debito";
 		$campo_tipo_dteref ="tipo_dteref_nota_debito";
 		$campo_folio= "folio_nota_debito";
+		$campo_monto= "mnttotal_nota_debito";
 	}
 	if($tipo_dte_referencia == "61"){
 		$campo_tabla = "nota_credito";
@@ -520,10 +544,11 @@ function cargarDatosReferenciaEmitidos($tipo_dte_referencia,$folio_referencia){
 		$campo_folio_ref ="folioref_nota_credito";
 		$campo_tipo_dteref ="tipo_dteref_nota_credito";
 		$campo_folio= "folio_nota_credito";
+		$campo_monto= "mnttotal_nota_credito";
 	}
 
 	$conexion = new conexion();
-	$sqlDatos_referencia = "SELECT ".$campo_fecha." AS fecha,".$campo_folio." AS folio FROM ".$campo_tabla." WHERE ".$campo_folio_ref."='".$folio_referencia."'";
+	$sqlDatos_referencia = "SELECT ".$campo_fecha." AS fecha,".$campo_folio." AS folio,".$campo_monto." AS monto FROM ".$campo_tabla." WHERE ".$campo_folio_ref."='".$folio_referencia."'";
 		
 	//print_r($sqlDatos_referencia);
 	$datosReferencia = $conexion->obtenerDatos($sqlDatos_referencia);
@@ -736,6 +761,7 @@ function buscarXml($tipo_dte_referencia,$folio_referencia){
 	$campo_tipo_dteref= "";
 	$campo_folio= "";
 	
+	
 	if($tipo_dte_referencia == "33"){
 		$campo_tabla = "factura";
 		$campo_ubicacion = "ubicacion_factura";
@@ -768,16 +794,405 @@ function buscarXml($tipo_dte_referencia,$folio_referencia){
 	}
 
 	$conexion = new conexion();
-	$sqlDatos_referencia = "SELECT ".$campo_ubicacion." FROM ".$campo_tabla." WHERE ".$campo_folio."='".$folio_referencia."'";
+	$sqlDatos_referencia = "SELECT ".$campo_ubicacion." AS ubicacion FROM ".$campo_tabla." WHERE ".$campo_folio."='".$folio_referencia."'";
 
 	$datosReferencia = $conexion->obtenerDatos($sqlDatos_referencia);
 	print_r(json_encode($datosReferencia));
 }
 
 
-function leerXML($path){
+/*function leerXML($ubicacion_xml){
 
-print_r($path);	
+	if (file_exists($ubicacion_xml)) {
+		
 
-}
+		//abrimos el archivo como solo permisos de lectura "r"
+		$fp = fopen($ubicacion_xml,"r");
+
+		// leemos el archivo hasta un tamaño maximo de 8192 bytes
+	    $data = fread($fp,8192);
+
+	    $xml = new SimpleXMLElement($data);
+
+	    //CHECHEAMOS LAS VARIABLES OPCIONALES
+
+	    $count_tpotranventa = count($xml->Documento->Encabezado->IdDoc->TpoTranVenta);
+	    $count_tpotrancompra = count($xml->Documento->Encabezado->IdDoc->TpoTranCompra);
+	    $count_fmapago = count($xml->Documento->Encabezado->IdDoc->FmaPago);
+
+	    $count_ciudadorigen = count($xml->Documento->Encabezado->Emisor->CiudadOrigen);
+	    $count_telefono = count($xml->Documento->Encabezado->Emisor->Telefono);
+	    $count_cdgsiisucur = count($xml->Documento->Encabezado->Emisor->CdgSIISucur);
+	    $count_correoemisor = count($xml->Documento->Encabezado->Emisor->CorreoEmisor);
+
+	    $count_ciudadrecep = count($xml->Documento->Encabezado->Receptor->CiudadRecep);
+
+	    $count_montoperiodo = count($xml->Documento->Encabezado->Totales->MontoPeriodo);
+	    $count_vlrpagar = count($xml->Documento->Encabezado->Totales->VlrPagar);
+	    $count_mntneto = count($xml->Documento->Encabezado->Totales->MntNeto);
+	    $count_mntexe = count($xml->Documento->Encabezado->Totales->MntExe);
+	    $count_tasaiva = count($xml->Documento->Encabezado->Totales->TasaIVA);
+
+	    $count_nrolindr = count($xml->Documento->DscRcgGlobal->NroLinDR);
+	    $count_tpomov = count($xml->Documento->DscRcgGlobal->TpoMov);
+	    $count_tpovalor = count($xml->Documento->DscRcgGlobal->TpoValor);
+	    $count_valordr = count($xml->Documento->DscRcgGlobal->ValorDR);
+
+	    //creamos y rellenamos las variables
+
+	    $tpotranventa_anular = "";
+	    $tpotrancompra_anular = "";
+	    $fmapago_anular = "";
+	    $ciudadorigen_anular = "";
+	    $telefono_anular = "";
+	    $cdgsiisucur_anular = "";
+	    $correoemisor_anular = "";
+	    $ciudadrecep_anular = "";
+	    $montoperiodo_anular = "";
+	    $vlrpagar_anular = "";
+	    $nrolindr_anular = "";
+	    $tpomov_anular = "";
+	    $tpovalor_anular = "";
+	    $valordr_anular = "";
+	    $mntneto_anular = "";
+	    $mntexe_anular = "";
+	    $tasaiva_anular = "";
+
+	    $folio_anular = $xml->Documento->Encabezado->IdDoc->Folio;
+	    $tipodte_anular = $xml->Documento->Encabezado->IdDoc->TipoDTE;
+	    $fchemis_anular = $xml->Documento->Encabezado->IdDoc->FchEmis;
+
+	    if($count_tpotranventa != 0){$tpotranventa_anular = $xml->Documento->Encabezado->IdDoc->TpoTranVenta;}
+	    if($count_tpotrancompra != 0){$tpotrancompra_anular = $xml->Documento->Encabezado->IdDoc->TpoTranCompra;}
+	    if($count_fmapago != 0){$fmapago_anular = $xml->Documento->Encabezado->IdDoc->FmaPago;}
+
+	    $rutemisor_anular = $xml->Documento->Encabezado->Emisor->RUTEmisor;
+	    $rznsoc_anular = $xml->Documento->Encabezado->Emisor->RznSoc;
+	    $giroemis_anular = $xml->Documento->Encabezado->Emisor->GiroEmis;
+	    $acteco_anular = $xml->Documento->Encabezado->Emisor->Acteco;
+	    $dirorigen_anular = $xml->Documento->Encabezado->Emisor->DirOrigen;
+	    $cmnaorigen_anular = $xml->Documento->Encabezado->Emisor->CmnaOrigen;
+
+	    if($count_ciudadorigen != 0){$ciudadorigen_anular = $xml->Documento->Encabezado->Emisor->CiudadOrigen;}
+	    if($count_telefono != 0){$telefono_anular = $xml->Documento->Encabezado->Emisor->Telefono;}
+	    if($count_cdgsiisucur != 0){$cdgsiisucur_anular = $xml->Documento->Encabezado->Emisor->CdgSIISucur;}
+	    if($count_correoemisor != 0){$correoemisor_anular = $xml->Documento->Encabezado->Emisor->CorreoEmisor;}
+
+	    $rutrecep_anular = $xml->Documento->Encabezado->Receptor->RUTRecep;
+	    $rznsocrecep_anular = $xml->Documento->Encabezado->Receptor->RznSocRecep;
+	    $girorecep_anular = $xml->Documento->Encabezado->Receptor->GiroRecep;
+	    $dirrecep_anular = $xml->Documento->Encabezado->Receptor->DirRecep;
+	    $cmnarecep_anular = $xml->Documento->Encabezado->Receptor->CmnaRecep;
+
+	    if($count_mntexe != 0){$mntexe_anular = $xml->Documento->Encabezado->Totales->MntExe;}
+	    if($count_mntneto != 0){$mntneto_anular = $xml->Documento->Encabezado->Totales->MntNeto;}
+	    if($count_tasaiva != 0){$tasaiva_anular = $xml->Documento->Encabezado->Totales->TasaIVA;}    
+
+	    $iva_anular = $xml->Documento->Encabezado->Totales->IVA;
+	    $mnttotal_anular = $xml->Documento->Encabezado->Totales->MntTotal;
+
+	    if($count_nrolindr != 0){$nrolindr_anular = $xml->Documento->DscRcgGlobal->NroLinDR;}
+		if($count_tpomov != 0){$tpomov_anular = $xml->Documento->DscRcgGlobal->TpoMov;}
+		if($count_tpovalor != 0){$tpovalor_anular = $xml->Documento->DscRcgGlobal->TpoValor;}
+		if($count_valordr != 0){$valordr_anular = $xml->Documento->DscRcgGlobal->ValorDR;}
+	  
+
+	    $detalles_anular = count($xml->Documento->Detalle);
+
+	    $array_nrolindet = array();
+	    $array_cdgitem = array();
+	    $array_tpocodigo = array();
+	    $array_vlrcodigo = array();
+	    $array_nmbitem = array();
+	    $array_qtyitem = array();
+	    $array_prcitem = array();
+	    $array_montoitem = array();
+	    $array_descuentopct = array();
+	    $array_descuentomonto = array();
+	    $array_recargopct = array();
+	    $array_recargomonto = array();
+
+	    for ($i=0; $i < $detalles_anular; $i++) { 
+
+	    	$count_cdgitem = count($xml->Documento->Detalle[$i]->CdgItem);
+		    $count_tpocodigo = count($xml->Documento->Detalle[$i]->CdgItem->TpoCodigo);
+		    $count_vlrcodigo = count($xml->Documento->Detalle[$i]->CdgItem->VlrCodigo);
+		    $count_descuentopct = count($xml->Documento->Detalle[$i]->DescuentoPct);
+		    $count_descuentomonto = count($xml->Documento->Detalle[$i]->DescuentoMonto);
+		    $count_recargopct = count($xml->Documento->Detalle[$i]->RecargoPct);
+		    $count_recargomonto = count($xml->Documento->Detalle[$i]->RecargoMonto);
+
+	    	if($count_cdgitem != 0){array_push($array_cdgitem, $xml->Documento->Detalle[$i]->CdgItem);}else{array_push($array_cdgitem,0);}			
+			if($count_tpocodigo != 0){array_push($array_tpocodigo, $xml->Documento->Detalle[$i]->CdgItem->TpoCodigo);}else{array_push($array_cdgitem,0);}
+			if($count_vlrcodigo != 0){array_push($array_vlrcodigo, $xml->Documento->Detalle[$i]->CdgItem->VlrCodigo);}else{array_push($array_cdgitem,0);}
+			if($count_descuentopct != 0){array_push($array_descuentopct, $xml->Documento->Detalle[$i]->DescuentoPct);}else{array_push($array_cdgitem,0);}
+			if($count_descuentomonto != 0){array_push($array_descuentomonto, $xml->Documento->Detalle[$i]->DescuentoMonto);}else{array_push($array_cdgitem,0);}
+			if($count_recargopct != 0){array_push($array_recargopct, $xml->Documento->Detalle[$i]->RecargoPct);}else{array_push($array_cdgitem,0);}
+			if($count_recargomonto != 0){array_push($array_recargomonto, $xml->Documento->Detalle[$i]->RecargoMonto);}else{array_push($array_cdgitem,0);}
+			
+			array_push($array_nrolindet, $xml->Documento->Detalle[$i]->NroLinDet);
+			array_push($array_nmbitem, $xml->Documento->Detalle[$i]->NmbItem);
+			array_push($array_qtyitem, $xml->Documento->Detalle[$i]->QtyItem);
+			array_push($array_prcitem, $xml->Documento->Detalle[$i]->PrcItem);
+			array_push($array_montoitem, $xml->Documento->Detalle[$i]->MontoItem);
+		}
+
+		//-------------------------------------------------------------------------------------------------------------------------
+		//--------------------------------------------------ARMAR REQUEST----------------------------------------------------------
+		//-------------------------------------------------------------------------------------------------------------------------
+
+		$parametros ='{'.
+     '        "response":["FOLIO"],'.
+     '        "dte":{'.
+     '            "Encabezado": {'.
+     '                "IdDoc": {'.
+     '                    "TipoDTE": '.$tipodte_anular.','.
+     '                    "Folio": 0,'.
+     '                    "FchEmis": "'.$fchemis_anular.'",';
+
+        if($tipodte_anular == "52"){
+            if(tipo_despacho != "0"){ $parametros = $parametros . '"TipoDespacho": ' . tipo_despacho . ',';}
+            if(indicador_traslado != "0"){$parametros = $parametros . '"IndTraslado": ' . indicador_traslado . ',';}           
+        }
+
+        if($count_tpotrancompra != 0){$parametros = $parametros .'"TpoTranCompra": '.$tpotrancompra_anular.',';}
+        if($count_tpotranventa != 0){$parametros = $parametros .'"TpoTranVenta": '.$tpotranventa_anular.',';}
+
+        $parametros = $parametros . 
+     '                    "FmaPago": '.$fmapago_anular.','.
+     '                    "Comentario": null'.
+     '                },'.
+     '                "Emisor": {'.
+     '                    "RUTEmisor": "76958430-7",'.
+     '                    "RznSoc": "IMP COMERCIALIZADORA Y DIST AGROPLASTIC",'.
+     '                    "GiroEmis": "VENTA AL POR MAYOR NO ESPECIALIZADA",'.
+     '                    "Acteco": 469000,'.
+     '                    "DirOrigen": "VICENTE ZORRILLA 835",'.
+     '                    "CmnaOrigen": "La Serena",'.
+     '                    "CdgSIISucur": "74236823"'.
+     '                },'.
+     '                "Receptor": {'.
+     '                    "RUTRecep": "'.$rutrecep_anular.'",'.
+     '                    "RznSocRecep": "'.$rznsocrecep_anular.'",'.
+     '                    "GiroRecep": "'.$girorecep_anular.'",'.
+     '                    "DirRecep": "'.$dirrecep_anular.'",'.
+     '                    "CmnaRecep": "'.$cmnarecep_anular.'"'.
+     '                },';
+                       
+        if($tipodte_anular == "52"){
+            $parametros = $parametros . '"Transporte": {'.
+            '"DirDest": "'. direccion_destino .'",'.
+            '"CmnaDest": "'. comuna_destino .'",'.
+            '"CiudadDest": "'. ciudad_destino .'"},';
+        }              
+
+        $parametros = $parametros . ' "Totales": {';
+
+        //SI IVA SE ENCUENTRA CON MONTO 0, ENTONCES ES UN DTE EXENTO
+        // SE CAMBIA MONTO NETO POR MONTO EXENTO
+        $tipo_monto = "";
+
+        if($iva_anular == 0){$tipo_monto = "MntExe";}else{ $tipo_monto = "MntNeto"; }       
+
+        if($mntneto_anular != ""){ $parametros = $parametros . '"'. $tipo_monto .'": '. $mntneto_anular.',';}
+        if($iva_anular == 0){}else{
+            if($iva_anular != ""){ $parametros = $parametros . '"TasaIVA": 19,';}
+        }
+        $parametros = $parametros . '"IVA": '. $iva_anular.',';
+        if($mnttotal_anular != ""){ $parametros = $parametros . '"MntTotal": '. $mnttotal_anular.'';}
+
+        $parametros = $parametros . '}},';
+
+        //detalle
+
+        if($count_detalle != 0){
+
+            $parametros = $parametros . '"Detalle": [';
+
+            //CICLO PARA RELLENAR EL DETALLE 
+            for ($i = 0; $i < $count_detalle; $i++) {
+
+                $parametros = $parametros . '{'.
+     '                    "NroLinDet": ' . ($i+1) . ',';
+
+                if(document.getElementById("codigo_".(i+1)) != null){
+                    $parametros = $parametros . '"CdgItem":{'. 
+      '                    "TpoCodigo":"INT1",'.
+      '                    "VlrCodigo": "'. array_codigo[i] .'"},' ;
+                }
+
+                $parametros = $parametros .
+     '                    "NmbItem": "' . array_item[i] . '",'.
+     '                    "QtyItem": "' . array_cantidad[i] . '",'.
+     '                    "PrcItem": "' . array_precio[i] . '",';
+
+               if(array_radio_dscrcg[i] != ""){
+
+                if(array_signo_dscrcg[i] == "-"){                    
+                    if(array_radio_dscrcg[i] == "%"){
+                        var descuento = array_dscrcg_pct[i];
+                        descuento = descuento.slice(1);
+                        $parametros = $parametros . '"DescuentoPct": "' . descuento . '",';
+                    }
+                    if(array_radio_dscrcg[i] == "$"){
+                        var descuento = array_dscrcg_monto[i];
+                        descuento = descuento.slice(1);
+                        $parametros = $parametros . '"DescuentoMonto": "' . descuento . '",';
+                    }
+                }else{
+                    if(array_radio_dscrcg[i] == "%"){
+                        $parametros = $parametros . '"RecargoPct": "' . array_dscrcg_pct[i] . '",';
+                    }
+                    if(array_radio_dscrcg[i] == "$"){
+                        $parametros = $parametros . '"RecargoMonto": "' . array_dscrcg_monto[i] . '",';
+                    }
+                }
+            }
+                       
+                $parametros = $parametros .'"MontoItem": ' . array_subtotal[i] . '},';            
+            }
+            // quitamos la coma del ultimo agregado
+            $parametros = $parametros.slice(0,-1);
+            $parametros = $parametros .'],';
+        }
+
+      // si hay referencia agregamos la seccion completa
+        if(document.getElementById("div_fila_referencia") != null){
+
+            $parametros = $parametros .'"Referencia": {'.
+     '                "NroLinRef": 1,'.
+     '                "TpoDocRef": '. tipo_doc_ref .','.
+     '                "FolioRef": "'. folio_ref .'",'.
+     '                "FchRef": "'. fecha_ref .'",';
+            if(tipo_dte == "61" || tipo_dte == "56"){ 
+                $parametros = $parametros . '"CodRef": '. observacion_ref .',';
+                $parametros = $parametros .'"RazonRef": "'. razon_ref .'"},';
+            }else{
+                $parametros = $parametros .'"RazonRef": "'. observacion_ref .'"},';
+            }
+    
+
+        }
+
+     // si hay descuentos o recarggos globales
+        if(radio_dscrcg_global != undefined){
+
+            var tipo_mov = "";
+            if(signo_dscrcg_global == "-"){
+                // si el numero es negativo, quitamos el primer caracter
+                descuento_global = descuento_global.slice(1);  
+                tipo_mov = "D"; 
+            }
+            else{ 
+                tipo_mov = "R"; 
+            }
+
+            $parametros = $parametros .'"DscRcgGlobal": {'.
+     '                "NroLinDR": 1,'.
+     '                "TpoMov": "'. tipo_mov .'",'.
+     '                "TpoValor": "'. radio_dscrcg_global .'",'.
+     '                "ValorDR": "'. descuento_global .'"},';
+
+        }
+        $parametros = $parametros.slice(0,-1);
+        $parametros = $parametros .'}}';
+
+        console.log($parametros);
+        $parametros = JSON.parse($parametros);
+
+        console.log($parametros);
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< REALIZAR ENVIO >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+        var documento;
+// nombres para mostrar en el recuadro de exito
+        if(tipo_dte == "33"){ documento = "FACTURA ELECTRÓNICA" }
+        if(tipo_dte == "34"){ documento = "FACTURA EXENTA ELECTRÓNICA" }
+        if(tipo_dte == "39"){ documento = "BOLETA ELECTRÓNICA" }
+        if(tipo_dte == "41"){ documento = "BOLETA EXENTA ELECTRÓNICA" }
+        if(tipo_dte == "52"){ documento = "GUIA DE DESPACHO ELECTRÓNICA" }
+        if(tipo_dte == "56"){ documento = "NOTA DE DÉBITO ELECTRÓNICA" }
+        if(tipo_dte == "61"){ documento = "NOTA DE CRÉDITO ELECTRÓNICA" }
+
+        $.ajax({
+            type: "POST",
+            data:  $parametros,
+            headers: {
+                'apikey':'928e15a2d14d4a6292345f04960f4cc3' 
+            },
+            dataType: "json",
+            url: "Clases/DTE.php?funcion=emitirDTE",
+
+            beforeSend: function(){
+                //DIALOGO DE CARGA MIENTRAS SE ENVIA
+                swal({
+                    title: '<div class="preloader pl-size-xl">'.
+                          '     <div class="spinner-layer pl-light-blue">'.
+                          '         <div class="circle-clipper left">'.
+                          '             <div class="circle"></div>'.
+                          '         </div>'.
+                          '         <div class="circle-clipper right">'.
+                          '             <div class="circle"></div>'.
+                          '         </div>'.
+                          '     </div>'.
+                          ' </div>', 
+                    text: "EMITIENDO DOCUMENTO...",
+                    showConfirmButton: false,
+                    html: true,
+                    showCancelButton: false,
+                    closeOnConfirm: false,
+                    showLoaderOnConfirm: true
+                    //timer: 1800,           
+                });
+            },
+
+            success: function(data) {  
+
+                console.log($.parseJSON(data));
+                var dataJson = $.parseJSON(data);
+               
+
+
+                if(dataJson.FOLIO != null) {
+                    swal({
+                        title:"¡Documento Emitido!", 
+                        text:"Se ha generado ".documento." con folio : ".dataJson.FOLIO, 
+                        type:"success",
+                        showConfirmButton: true,
+                        showCancelButton: true,
+                        confirmButtonText: 'Ver',
+                        cancelButtonText: 'Cerrar',
+                        closeOnConfirm: true,
+                        closeOnCancel: true
+                        },
+                        function(flag){
+                            if(flag){
+                                crearPDF(dataJson.FOLIO,tipo_dte);
+                                //location.reload();
+                            }else{
+                                location.reload();
+                            }
+    
+                        }
+                    );
+    
+                    //console.log(data['FOLIO']); 
+                }else{
+                    swal("Error", "Detalle del error: ".JSON.stringify(dataJson), "error");
+                     // habilita el boton enviar 
+                    $('#btn_enviar').attr('disabled', false);  
+                }
+                  
+            }
+        });
+
+	    //print_r($array_NmbItem);
+		
+	}else{
+		print_r(json_encode("Problemas para encontrar archivo"));
+	}
+
+}*/
 ?>

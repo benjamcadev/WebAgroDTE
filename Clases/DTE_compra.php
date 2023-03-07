@@ -211,9 +211,12 @@ function crearPDF($folio,$tipo_dte,$rut){
 		
 		$url = 'http://192.168.1.9:90/api_agrodte/api/dte/document/crearPDF';  
 
-		$curl = curl_init();
-		$data = json_encode("{\"path\": \"".$ruta_sobre."\",\"tipo_dte\": \"".$tipo_dte."\"}");
+		 
 
+		$curl = curl_init();
+		$data = json_encode("{\"path\": \"".$ruta_sobre."\",\"tipo_dte\": \"".$tipo_dte."\",\"compra_dte\": \"compra\",\"folio\": \"".$folio."\" }");
+
+		
 		
 
 		curl_setopt_array($curl, array(
