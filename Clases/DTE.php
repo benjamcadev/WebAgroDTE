@@ -16,6 +16,9 @@ require '../plugins/PHPMailer/src/SMTP.php';
 //INSTANCIAMOS CONEXION CON LA BASE DE DATOS
 require_once "Conexion.php";
 
+//INSTANCIAMOS CONEXION CON LA BASE DE DATOS DE CLIENTES
+require_once "Conexion_2.php";
+
 //INSTANCIAMOS CONEXION CON LA BASE DE DATOS
 require_once "ConexionPSQL.php";
 
@@ -413,7 +416,7 @@ function cargarEmitidosTabla(){
 }
 function cargarDatosReceptor($rutReceptor){
 	
-	$conexion = new conexion();
+	$conexion = new conexion2();
 	$sqlActeco = "SELECT razon_social,des_actividad_economica FROM contribuyentes_acteco WHERE rut='$rutReceptor'";
 	$sqlDireccion = "SELECT calle,numero,ciudad,comuna FROM contribuyentes_direccion WHERE rut='$rutReceptor' AND vigencia='S'";
 	$datosActeco = $conexion->obtenerDatos($sqlActeco);
