@@ -804,165 +804,239 @@ function buscarXml($tipo_dte_referencia,$folio_referencia){
 }
 
 
-/*function leerXML($ubicacion_xml){
+function leerXML($ubicacion_xml){
 
 	if (file_exists($ubicacion_xml)) {
 		
 
-		//abrimos el archivo como solo permisos de lectura "r"
-		$fp = fopen($ubicacion_xml,"r");
+		 //abrimos el archivo como solo permisos de lectura "r"
+       //abrimos el archivo como solo permisos de lectura "r"
+        $fp = fopen($ubicacion_xml,"r");
 
-		// leemos el archivo hasta un tamaño maximo de 8192 bytes
-	    $data = fread($fp,8192);
+        // leemos el archivo hasta un tamaño maximo de 8192 bytes
+        $data = fread($fp,8192);
 
-	    $xml = new SimpleXMLElement($data);
+        $xml = new SimpleXMLElement($data);
 
-	    //CHECHEAMOS LAS VARIABLES OPCIONALES
+        //CHECHEAMOS LAS VARIABLES OPCIONALES
 
-	    $count_tpotranventa = count($xml->Documento->Encabezado->IdDoc->TpoTranVenta);
-	    $count_tpotrancompra = count($xml->Documento->Encabezado->IdDoc->TpoTranCompra);
-	    $count_fmapago = count($xml->Documento->Encabezado->IdDoc->FmaPago);
+        $count_dirdest = 0;
+        $count_cmnadest = 0;
+        $count_nrolindr = 0;
+        $count_tpomov = 0;
+        $count_tpovalor = 0;
+        $count_valordr = 0;
+        $count_nrolinref = 0;
+        $count_tpodocref = 0;
+        $count_folioref = 0;
+        $count_fchref = 0;
+        $count_codref = 0;
+        $count_razonref = 0;
 
-	    $count_ciudadorigen = count($xml->Documento->Encabezado->Emisor->CiudadOrigen);
-	    $count_telefono = count($xml->Documento->Encabezado->Emisor->Telefono);
-	    $count_cdgsiisucur = count($xml->Documento->Encabezado->Emisor->CdgSIISucur);
-	    $count_correoemisor = count($xml->Documento->Encabezado->Emisor->CorreoEmisor);
+        $count_tpotranventa = count($xml->Documento->Encabezado->IdDoc->TpoTranVenta);
+        $count_tpotrancompra = count($xml->Documento->Encabezado->IdDoc->TpoTranCompra);
+        $count_fmapago = count($xml->Documento->Encabezado->IdDoc->FmaPago);
+        $count_tipodespacho = count($xml->Documento->Encabezado->IdDoc->TipoDespacho);
+        $count_indtraslado = count($xml->Documento->Encabezado->IdDoc->IndTraslado);
 
-	    $count_ciudadrecep = count($xml->Documento->Encabezado->Receptor->CiudadRecep);
+        $count_ciudadorigen = count($xml->Documento->Encabezado->Emisor->CiudadOrigen);
+        $count_telefono = count($xml->Documento->Encabezado->Emisor->Telefono);
+        $count_cdgsiisucur = count($xml->Documento->Encabezado->Emisor->CdgSIISucur);
+        $count_correoemisor = count($xml->Documento->Encabezado->Emisor->CorreoEmisor);
 
-	    $count_montoperiodo = count($xml->Documento->Encabezado->Totales->MontoPeriodo);
-	    $count_vlrpagar = count($xml->Documento->Encabezado->Totales->VlrPagar);
-	    $count_mntneto = count($xml->Documento->Encabezado->Totales->MntNeto);
-	    $count_mntexe = count($xml->Documento->Encabezado->Totales->MntExe);
-	    $count_tasaiva = count($xml->Documento->Encabezado->Totales->TasaIVA);
+        $count_ciudadrecep = count($xml->Documento->Encabezado->Receptor->CiudadRecep);
 
-	    $count_nrolindr = count($xml->Documento->DscRcgGlobal->NroLinDR);
-	    $count_tpomov = count($xml->Documento->DscRcgGlobal->TpoMov);
-	    $count_tpovalor = count($xml->Documento->DscRcgGlobal->TpoValor);
-	    $count_valordr = count($xml->Documento->DscRcgGlobal->ValorDR);
+        $count_transporte = count($xml->Documento->Encabezado->Transporte);
 
-	    //creamos y rellenamos las variables
+        if($count_transporte != 0){
+            $count_dirdest = count($xml->Documento->Encabezado->Transporte->DirDest);
+            $count_cmnadest = count($xml->Documento->Encabezado->Transporte->CmnaDest);
+        }        
 
-	    $tpotranventa_anular = "";
-	    $tpotrancompra_anular = "";
-	    $fmapago_anular = "";
-	    $ciudadorigen_anular = "";
-	    $telefono_anular = "";
-	    $cdgsiisucur_anular = "";
-	    $correoemisor_anular = "";
-	    $ciudadrecep_anular = "";
-	    $montoperiodo_anular = "";
-	    $vlrpagar_anular = "";
-	    $nrolindr_anular = "";
-	    $tpomov_anular = "";
-	    $tpovalor_anular = "";
-	    $valordr_anular = "";
-	    $mntneto_anular = "";
-	    $mntexe_anular = "";
-	    $tasaiva_anular = "";
+        $count_montoperiodo = count($xml->Documento->Encabezado->Totales->MontoPeriodo);
+        $count_vlrpagar = count($xml->Documento->Encabezado->Totales->VlrPagar);
+        $count_mntneto = count($xml->Documento->Encabezado->Totales->MntNeto);
+        $count_mntexe = count($xml->Documento->Encabezado->Totales->MntExe);
+        $count_iva = count($xml->Documento->Encabezado->Totales->IVA);
+        $count_tasaiva = count($xml->Documento->Encabezado->Totales->TasaIVA);
 
-	    $folio_anular = $xml->Documento->Encabezado->IdDoc->Folio;
-	    $tipodte_anular = $xml->Documento->Encabezado->IdDoc->TipoDTE;
-	    $fchemis_anular = $xml->Documento->Encabezado->IdDoc->FchEmis;
+        $count_dscrcgglobal = count($xml->Documento->DscRcgGlobal);
 
-	    if($count_tpotranventa != 0){$tpotranventa_anular = $xml->Documento->Encabezado->IdDoc->TpoTranVenta;}
-	    if($count_tpotrancompra != 0){$tpotrancompra_anular = $xml->Documento->Encabezado->IdDoc->TpoTranCompra;}
-	    if($count_fmapago != 0){$fmapago_anular = $xml->Documento->Encabezado->IdDoc->FmaPago;}
+        if($count_dscrcgglobal != 0){           
+            $count_nrolindr = count($xml->Documento->DscRcgGlobal->NroLinDR);
+            $count_tpomov = count($xml->Documento->DscRcgGlobal->TpoMov);
+            $count_tpovalor = count($xml->Documento->DscRcgGlobal->TpoValor);
+            $count_valordr = count($xml->Documento->DscRcgGlobal->ValorDR); 
+        }
 
-	    $rutemisor_anular = $xml->Documento->Encabezado->Emisor->RUTEmisor;
-	    $rznsoc_anular = $xml->Documento->Encabezado->Emisor->RznSoc;
-	    $giroemis_anular = $xml->Documento->Encabezado->Emisor->GiroEmis;
-	    $acteco_anular = $xml->Documento->Encabezado->Emisor->Acteco;
-	    $dirorigen_anular = $xml->Documento->Encabezado->Emisor->DirOrigen;
-	    $cmnaorigen_anular = $xml->Documento->Encabezado->Emisor->CmnaOrigen;
+        $count_referencia = count($xml->Documento->Referencia);
 
-	    if($count_ciudadorigen != 0){$ciudadorigen_anular = $xml->Documento->Encabezado->Emisor->CiudadOrigen;}
-	    if($count_telefono != 0){$telefono_anular = $xml->Documento->Encabezado->Emisor->Telefono;}
-	    if($count_cdgsiisucur != 0){$cdgsiisucur_anular = $xml->Documento->Encabezado->Emisor->CdgSIISucur;}
-	    if($count_correoemisor != 0){$correoemisor_anular = $xml->Documento->Encabezado->Emisor->CorreoEmisor;}
+        if($count_referencia != 0){            
+            $count_nrolinref = count($xml->Documento->Referencia->NroLinRef);
+            $count_tpodocref = count($xml->Documento->Referencia->TpoDocRef);
+            $count_folioref = count($xml->Documento->Referencia->FolioRef);
+            $count_fchref = count($xml->Documento->Referencia->FchRef);
+            $count_codref = count($xml->Documento->Referencia->CodRef);
+            $count_razonref = count($xml->Documento->Referencia->RazonRef);
+        }        
 
-	    $rutrecep_anular = $xml->Documento->Encabezado->Receptor->RUTRecep;
-	    $rznsocrecep_anular = $xml->Documento->Encabezado->Receptor->RznSocRecep;
-	    $girorecep_anular = $xml->Documento->Encabezado->Receptor->GiroRecep;
-	    $dirrecep_anular = $xml->Documento->Encabezado->Receptor->DirRecep;
-	    $cmnarecep_anular = $xml->Documento->Encabezado->Receptor->CmnaRecep;
+        //creamos y rellenamos las variables
 
-	    if($count_mntexe != 0){$mntexe_anular = $xml->Documento->Encabezado->Totales->MntExe;}
-	    if($count_mntneto != 0){$mntneto_anular = $xml->Documento->Encabezado->Totales->MntNeto;}
-	    if($count_tasaiva != 0){$tasaiva_anular = $xml->Documento->Encabezado->Totales->TasaIVA;}    
+        $tipodespacho_anular = "";
+        $indtraslado_anular = "";
+        $tpotranventa_anular = "";
+        $tpotrancompra_anular = "";
+        $fmapago_anular = "";
+        $ciudadorigen_anular = "";
+        $telefono_anular = "";
+        $cdgsiisucur_anular = "";
+        $correoemisor_anular = "";
+        $ciudadrecep_anular = "";
+        $montoperiodo_anular = "";
+        $vlrpagar_anular = "";
+        $nrolindr_anular = "";
+        $tpomov_anular = "";
+        $tpovalor_anular = "";
+        $valordr_anular = "";
+        $mntneto_anular = "";
+        $mntexe_anular = "";
+        $tasaiva_anular = "";        
+        $nrolinref_anular = "";
+        $tpodocref_anular = "";
+        $folioref_anular = "";
+        $fchref_anular = "";
+        $codref_anular = "";
+        $razonref_anular = "";
+        $dirdest_anular = "";   
+        $cmnadest_anular = "";
+        $iva_anular = 0;    
 
-	    $iva_anular = $xml->Documento->Encabezado->Totales->IVA;
-	    $mnttotal_anular = $xml->Documento->Encabezado->Totales->MntTotal;
+        $folio_anular = $xml->Documento->Encabezado->IdDoc->Folio;
+        $tipodte_anular = $xml->Documento->Encabezado->IdDoc->TipoDTE;
+        $fchemis_anular = $xml->Documento->Encabezado->IdDoc->FchEmis;
 
-	    if($count_nrolindr != 0){$nrolindr_anular = $xml->Documento->DscRcgGlobal->NroLinDR;}
-		if($count_tpomov != 0){$tpomov_anular = $xml->Documento->DscRcgGlobal->TpoMov;}
-		if($count_tpovalor != 0){$tpovalor_anular = $xml->Documento->DscRcgGlobal->TpoValor;}
-		if($count_valordr != 0){$valordr_anular = $xml->Documento->DscRcgGlobal->ValorDR;}
-	  
+        if($count_tpotranventa != 0){$tpotranventa_anular = $xml->Documento->Encabezado->IdDoc->TpoTranVenta;}
+        if($count_tpotrancompra != 0){$tpotrancompra_anular = $xml->Documento->Encabezado->IdDoc->TpoTranCompra;}
+        if($count_fmapago != 0){$fmapago_anular = $xml->Documento->Encabezado->IdDoc->FmaPago;}
+        if($count_tipodespacho != 0){$tipodespacho_anular = $xml->Documento->Encabezado->IdDoc->TipoDespacho;}
+        if($count_indtraslado != 0){$indtraslado_anular = $xml->Documento->Encabezado->IdDoc->IndTraslado;}
 
-	    $detalles_anular = count($xml->Documento->Detalle);
+        $rutemisor_anular = $xml->Documento->Encabezado->Emisor->RUTEmisor;
+        $rznsoc_anular = $xml->Documento->Encabezado->Emisor->RznSoc;
+        $giroemis_anular = $xml->Documento->Encabezado->Emisor->GiroEmis;
+        $acteco_anular = $xml->Documento->Encabezado->Emisor->Acteco;
+        $dirorigen_anular = $xml->Documento->Encabezado->Emisor->DirOrigen;
+        $cmnaorigen_anular = $xml->Documento->Encabezado->Emisor->CmnaOrigen;
 
-	    $array_nrolindet = array();
-	    $array_cdgitem = array();
-	    $array_tpocodigo = array();
-	    $array_vlrcodigo = array();
-	    $array_nmbitem = array();
-	    $array_qtyitem = array();
-	    $array_prcitem = array();
-	    $array_montoitem = array();
-	    $array_descuentopct = array();
-	    $array_descuentomonto = array();
-	    $array_recargopct = array();
-	    $array_recargomonto = array();
+        if($count_ciudadorigen != 0){$ciudadorigen_anular = $xml->Documento->Encabezado->Emisor->CiudadOrigen;}
+        if($count_telefono != 0){$telefono_anular = $xml->Documento->Encabezado->Emisor->Telefono;}
+        if($count_cdgsiisucur != 0){$cdgsiisucur_anular = $xml->Documento->Encabezado->Emisor->CdgSIISucur;}
+        if($count_correoemisor != 0){$correoemisor_anular = $xml->Documento->Encabezado->Emisor->CorreoEmisor;}
 
-	    for ($i=0; $i < $detalles_anular; $i++) { 
+        $rutrecep_anular = $xml->Documento->Encabezado->Receptor->RUTRecep;
+        $rznsocrecep_anular = $xml->Documento->Encabezado->Receptor->RznSocRecep;
+        $girorecep_anular = $xml->Documento->Encabezado->Receptor->GiroRecep;
+        $dirrecep_anular = $xml->Documento->Encabezado->Receptor->DirRecep;
+        $cmnarecep_anular = $xml->Documento->Encabezado->Receptor->CmnaRecep;
 
-	    	$count_cdgitem = count($xml->Documento->Detalle[$i]->CdgItem);
-		    $count_tpocodigo = count($xml->Documento->Detalle[$i]->CdgItem->TpoCodigo);
-		    $count_vlrcodigo = count($xml->Documento->Detalle[$i]->CdgItem->VlrCodigo);
-		    $count_descuentopct = count($xml->Documento->Detalle[$i]->DescuentoPct);
-		    $count_descuentomonto = count($xml->Documento->Detalle[$i]->DescuentoMonto);
-		    $count_recargopct = count($xml->Documento->Detalle[$i]->RecargoPct);
-		    $count_recargomonto = count($xml->Documento->Detalle[$i]->RecargoMonto);
+        if($count_dirdest != 0){$dirdest_anular = $xml->Documento->Encabezado->Transporte->DirDest;}
+        if($count_cmnadest != 0){$cmnadest_anular = $xml->Documento->Encabezado->Transporte->CmnaDest;}
 
-	    	if($count_cdgitem != 0){array_push($array_cdgitem, $xml->Documento->Detalle[$i]->CdgItem);}else{array_push($array_cdgitem,0);}			
-			if($count_tpocodigo != 0){array_push($array_tpocodigo, $xml->Documento->Detalle[$i]->CdgItem->TpoCodigo);}else{array_push($array_cdgitem,0);}
-			if($count_vlrcodigo != 0){array_push($array_vlrcodigo, $xml->Documento->Detalle[$i]->CdgItem->VlrCodigo);}else{array_push($array_cdgitem,0);}
-			if($count_descuentopct != 0){array_push($array_descuentopct, $xml->Documento->Detalle[$i]->DescuentoPct);}else{array_push($array_cdgitem,0);}
-			if($count_descuentomonto != 0){array_push($array_descuentomonto, $xml->Documento->Detalle[$i]->DescuentoMonto);}else{array_push($array_cdgitem,0);}
-			if($count_recargopct != 0){array_push($array_recargopct, $xml->Documento->Detalle[$i]->RecargoPct);}else{array_push($array_cdgitem,0);}
-			if($count_recargomonto != 0){array_push($array_recargomonto, $xml->Documento->Detalle[$i]->RecargoMonto);}else{array_push($array_cdgitem,0);}
-			
-			array_push($array_nrolindet, $xml->Documento->Detalle[$i]->NroLinDet);
-			array_push($array_nmbitem, $xml->Documento->Detalle[$i]->NmbItem);
-			array_push($array_qtyitem, $xml->Documento->Detalle[$i]->QtyItem);
-			array_push($array_prcitem, $xml->Documento->Detalle[$i]->PrcItem);
-			array_push($array_montoitem, $xml->Documento->Detalle[$i]->MontoItem);
-		}
+        if($count_mntexe != 0){$mntexe_anular = $xml->Documento->Encabezado->Totales->MntExe;}
+        if($count_mntneto != 0){$mntneto_anular = $xml->Documento->Encabezado->Totales->MntNeto;}
+        if($count_tasaiva != 0){$tasaiva_anular = $xml->Documento->Encabezado->Totales->TasaIVA;}    
 
-		//-------------------------------------------------------------------------------------------------------------------------
-		//--------------------------------------------------ARMAR REQUEST----------------------------------------------------------
-		//-------------------------------------------------------------------------------------------------------------------------
+        if($count_iva != 0){$iva_anular = $xml->Documento->Encabezado->Totales->IVA;}
+        $mnttotal_anular = $xml->Documento->Encabezado->Totales->MntTotal;
 
-		$parametros ='{'.
+        if($count_nrolindr != 0){$nrolindr_anular = $xml->Documento->DscRcgGlobal->NroLinDR;}
+        if($count_tpomov != 0){$tpomov_anular = $xml->Documento->DscRcgGlobal->TpoMov;}
+        if($count_tpovalor != 0){$tpovalor_anular = $xml->Documento->DscRcgGlobal->TpoValor;}
+        if($count_valordr != 0){$valordr_anular = $xml->Documento->DscRcgGlobal->ValorDR;}
+
+        if($count_nrolinref != 0){$nrolinref_anular = $xml->Documento->Referencia->NroLinRef;}
+        if($count_tpodocref != 0){$tpodocref_anular = $xml->Documento->Referencia->TpoDocRef;}
+        if($count_folioref != 0){$folioref_anular = $xml->Documento->Referencia->FolioRef;}
+        if($count_fchref != 0){$fchref_anular = $xml->Documento->Referencia->FchRef;}
+        if($count_codref != 0){$codref_anular = $xml->Documento->Referencia->CodRef;}
+        if($count_razonref != 0){$razonref_anular = $xml->Documento->Referencia->RazonRef;}
+      
+
+        $count_detalle = count($xml->Documento->Detalle);
+
+        $array_nrolindet = array();
+        $array_cdgitem = array();
+        $array_tpocodigo = array();
+        $array_vlrcodigo = array();
+        $array_nmbitem = array();
+        $array_qtyitem = array();
+        $array_prcitem = array();
+        $array_montoitem = array();
+        $array_descuentopct = array();
+        $array_descuentomonto = array();
+        $array_recargopct = array();
+        $array_recargomonto = array();
+
+        for ($i=0; $i < $count_detalle; $i++) { 
+
+            $count_tpocodigo = 0;
+            $count_vlrcodigo = 0;
+
+            $count_cdgitem = count($xml->Documento->Detalle[$i]->CdgItem);
+
+            if($count_cdgitem != 0){
+                $count_tpocodigo = count($xml->Documento->Detalle[$i]->CdgItem->TpoCodigo);
+                $count_vlrcodigo = count($xml->Documento->Detalle[$i]->CdgItem->VlrCodigo); 
+            }
+
+            $count_descuentopct = count($xml->Documento->Detalle[$i]->DescuentoPct);
+            $count_descuentomonto = count($xml->Documento->Detalle[$i]->DescuentoMonto);
+            $count_recargopct = count($xml->Documento->Detalle[$i]->RecargoPct);
+            $count_recargomonto = count($xml->Documento->Detalle[$i]->RecargoMonto);
+
+            if($count_cdgitem != 0){array_push($array_cdgitem, $xml->Documento->Detalle[$i]->CdgItem);}else{array_push($array_cdgitem,0);}          
+            if($count_tpocodigo != 0){array_push($array_tpocodigo, $xml->Documento->Detalle[$i]->CdgItem->TpoCodigo);}else{array_push($array_tpocodigo,0);}
+            if($count_vlrcodigo != 0){array_push($array_vlrcodigo, $xml->Documento->Detalle[$i]->CdgItem->VlrCodigo);}else{array_push($array_vlrcodigo,0);}
+            if($count_descuentopct != 0){array_push($array_descuentopct, $xml->Documento->Detalle[$i]->DescuentoPct);}else{array_push($array_descuentopct,0);}
+            if($count_descuentomonto != 0){array_push($array_descuentomonto, $xml->Documento->Detalle[$i]->DescuentoMonto);}else{array_push($array_descuentomonto,0);}
+            if($count_recargopct != 0){array_push($array_recargopct, $xml->Documento->Detalle[$i]->RecargoPct);}else{array_push($array_recargopct,0);}
+            if($count_recargomonto != 0){array_push($array_recargomonto, $xml->Documento->Detalle[$i]->RecargoMonto);}else{array_push($array_recargomonto,0);}
+            
+            array_push($array_nrolindet, $xml->Documento->Detalle[$i]->NroLinDet);
+            array_push($array_nmbitem, $xml->Documento->Detalle[$i]->NmbItem);
+            array_push($array_qtyitem, $xml->Documento->Detalle[$i]->QtyItem);
+            array_push($array_prcitem, $xml->Documento->Detalle[$i]->PrcItem);
+            array_push($array_montoitem, $xml->Documento->Detalle[$i]->MontoItem);
+        }
+
+        //-------------------------------------------------------------------------------------------------------------------------
+        //--------------------------------------------------ARMAR REQUEST----------------------------------------------------------
+        //-------------------------------------------------------------------------------------------------------------------------
+
+        $tipoanulacion = "";
+        $fechaActual = date('Y-m-d');
+
+        if($tipodte_anular == "61"){$tipoanulacion = "56";}else{$tipoanulacion = "61";}
+
+        $parametros ='{'.
      '        "response":["FOLIO"],'.
      '        "dte":{'.
      '            "Encabezado": {'.
      '                "IdDoc": {'.
-     '                    "TipoDTE": '.$tipodte_anular.','.
+     '                    "TipoDTE": '.$tipoanulacion.','.
      '                    "Folio": 0,'.
-     '                    "FchEmis": "'.$fchemis_anular.'",';
+     '                    "FchEmis": "'.$fechaActual.'",';// poner fecha actual
 
         if($tipodte_anular == "52"){
-            if(tipo_despacho != "0"){ $parametros = $parametros . '"TipoDespacho": ' . tipo_despacho . ',';}
-            if(indicador_traslado != "0"){$parametros = $parametros . '"IndTraslado": ' . indicador_traslado . ',';}           
+            if($count_tipodespacho != 0){ $parametros = $parametros . '"TipoDespacho": ' . $tipodespacho_anular . ',';}
+            if($count_indtraslado != 0){ $parametros = $parametros . '"IndTraslado": ' . $indtraslado_anular . ',';}           
         }
 
         if($count_tpotrancompra != 0){$parametros = $parametros .'"TpoTranCompra": '.$tpotrancompra_anular.',';}
         if($count_tpotranventa != 0){$parametros = $parametros .'"TpoTranVenta": '.$tpotranventa_anular.',';}
+        if($count_fmapago != 0){$parametros = $parametros .'"FmaPago": '.$fmapago_anular.',';}
 
-        $parametros = $parametros . 
-     '                    "FmaPago": '.$fmapago_anular.','.
+        $parametros = $parametros .      
      '                    "Comentario": null'.
      '                },'.
      '                "Emisor": {'.
@@ -984,9 +1058,9 @@ function buscarXml($tipo_dte_referencia,$folio_referencia){
                        
         if($tipodte_anular == "52"){
             $parametros = $parametros . '"Transporte": {'.
-            '"DirDest": "'. direccion_destino .'",'.
-            '"CmnaDest": "'. comuna_destino .'",'.
-            '"CiudadDest": "'. ciudad_destino .'"},';
+            '"DirDest": "'. $dirdest_anular .'",'.
+            '"CmnaDest": "'. $cmnadest_anular .'",'.
+            '"CiudadDest": "'. $cmnadest_anular .'"},'; //posiblemente haya que cambiarlo a la ciudad correspondiente
         }              
 
         $parametros = $parametros . ' "Totales": {';
@@ -995,15 +1069,19 @@ function buscarXml($tipo_dte_referencia,$folio_referencia){
         // SE CAMBIA MONTO NETO POR MONTO EXENTO
         $tipo_monto = "";
 
-        if($iva_anular == 0){$tipo_monto = "MntExe";}else{ $tipo_monto = "MntNeto"; }       
+        if($count_iva != 0){        	
+        	$tipo_monto = "MntNeto";
+        }else{ 
+        	$tipo_monto = "MntExe";
+        	$iva_anular = 0;
+        }       
 
-        if($mntneto_anular != ""){ $parametros = $parametros . '"'. $tipo_monto .'": '. $mntneto_anular.',';}
-        if($iva_anular == 0){}else{
-            if($iva_anular != ""){ $parametros = $parametros . '"TasaIVA": 19,';}
+        if($count_mntneto != 0){ $parametros = $parametros . '"'. $tipo_monto .'": '. $mntneto_anular.',';}
+        if($count_iva == 0){}else{
+            if($count_iva != 0){ $parametros = $parametros . '"TasaIVA": 19,';}
         }
         $parametros = $parametros . '"IVA": '. $iva_anular.',';
-        if($mnttotal_anular != ""){ $parametros = $parametros . '"MntTotal": '. $mnttotal_anular.'';}
-
+        $parametros = $parametros . '"MntTotal": '. $mnttotal_anular.'';
         $parametros = $parametros . '}},';
 
         //detalle
@@ -1018,97 +1096,76 @@ function buscarXml($tipo_dte_referencia,$folio_referencia){
                 $parametros = $parametros . '{'.
      '                    "NroLinDet": ' . ($i+1) . ',';
 
-                if(document.getElementById("codigo_".(i+1)) != null){
+                if($array_cdgitem[$i] != 0){
                     $parametros = $parametros . '"CdgItem":{'. 
       '                    "TpoCodigo":"INT1",'.
-      '                    "VlrCodigo": "'. array_codigo[i] .'"},' ;
+      '                    "VlrCodigo": "'. $array_vlrcodigo[$i] .'"},' ;
                 }
 
                 $parametros = $parametros .
-     '                    "NmbItem": "' . array_item[i] . '",'.
-     '                    "QtyItem": "' . array_cantidad[i] . '",'.
-     '                    "PrcItem": "' . array_precio[i] . '",';
+     '                    "NmbItem": "' . $array_nmbitem[$i] . '",'.
+     '                    "QtyItem": "' . $array_qtyitem[$i] . '",'.
+     '                    "PrcItem": "' . $array_prcitem[$i] . '",';
+               
 
-               if(array_radio_dscrcg[i] != ""){
-
-                if(array_signo_dscrcg[i] == "-"){                    
-                    if(array_radio_dscrcg[i] == "%"){
-                        var descuento = array_dscrcg_pct[i];
-                        descuento = descuento.slice(1);
-                        $parametros = $parametros . '"DescuentoPct": "' . descuento . '",';
+                if($array_descuentomonto[$i] != 0){                    
+                    if($array_descuentopct[$i] != 0){                        
+                        $parametros = $parametros . '"DescuentoPct": "' . $array_descuentopct[$i] . '",';
                     }
-                    if(array_radio_dscrcg[i] == "$"){
-                        var descuento = array_dscrcg_monto[i];
-                        descuento = descuento.slice(1);
-                        $parametros = $parametros . '"DescuentoMonto": "' . descuento . '",';
-                    }
-                }else{
-                    if(array_radio_dscrcg[i] == "%"){
-                        $parametros = $parametros . '"RecargoPct": "' . array_dscrcg_pct[i] . '",';
-                    }
-                    if(array_radio_dscrcg[i] == "$"){
-                        $parametros = $parametros . '"RecargoMonto": "' . array_dscrcg_monto[i] . '",';
+                    if($array_descuentomonto[$i] != 0){
+                        $parametros = $parametros . '"DescuentoMonto": "' . $array_descuentomonto[$i] . '",';
                     }
                 }
-            }
+                if($array_recargomonto != 0){
+                    if($array_recargopct[$i] != 0){
+                        $parametros = $parametros . '"RecargoPct": "' . $array_recargopct[$i] . '",';
+                    }
+                    if($array_recargomonto[$i] != 0){
+                        $parametros = $parametros . '"RecargoMonto": "' . $array_recargomonto[$i] . '",';
+                    }
+                }
+                
                        
-                $parametros = $parametros .'"MontoItem": ' . array_subtotal[i] . '},';            
+                $parametros = $parametros .'"MontoItem": ' . $array_montoitem[$i] . '},';            
             }
             // quitamos la coma del ultimo agregado
-            $parametros = $parametros.slice(0,-1);
+            $parametros = substr($parametros, 0,-1);
             $parametros = $parametros .'],';
         }
 
       // si hay referencia agregamos la seccion completa
-        if(document.getElementById("div_fila_referencia") != null){
 
-            $parametros = $parametros .'"Referencia": {'.
-     '                "NroLinRef": 1,'.
-     '                "TpoDocRef": '. tipo_doc_ref .','.
-     '                "FolioRef": "'. folio_ref .'",'.
-     '                "FchRef": "'. fecha_ref .'",';
-            if(tipo_dte == "61" || tipo_dte == "56"){ 
-                $parametros = $parametros . '"CodRef": '. observacion_ref .',';
-                $parametros = $parametros .'"RazonRef": "'. razon_ref .'"},';
-            }else{
-                $parametros = $parametros .'"RazonRef": "'. observacion_ref .'"},';
-            }
-    
-
-        }
+        $parametros = $parametros .'"Referencia": {'.
+                 '"NroLinRef": 1,'.
+                 '"TpoDocRef": '. $tipodte_anular .','.
+                 '"FolioRef": "'. $folio_anular .'",'.
+                 '"FchRef": "'. $fchemis_anular .'",'.        
+                 '"CodRef": 1,'.
+                 '"RazonRef": "Anula documento de referencia"},';        
+        
 
      // si hay descuentos o recarggos globales
-        if(radio_dscrcg_global != undefined){
-
-            var tipo_mov = "";
-            if(signo_dscrcg_global == "-"){
-                // si el numero es negativo, quitamos el primer caracter
-                descuento_global = descuento_global.slice(1);  
-                tipo_mov = "D"; 
-            }
-            else{ 
-                tipo_mov = "R"; 
-            }
+        if($count_dscrcgglobal != 0){          
 
             $parametros = $parametros .'"DscRcgGlobal": {'.
-     '                "NroLinDR": 1,'.
-     '                "TpoMov": "'. tipo_mov .'",'.
-     '                "TpoValor": "'. radio_dscrcg_global .'",'.
-     '                "ValorDR": "'. descuento_global .'"},';
+     '                "NroLinDR": '.$nrolindr_anular.','.
+     '                "TpoMov": "'. $tpomov_anular .'",'.
+     '                "TpoValor": "'. $tpovalor_anular .'",'.
+     '                "ValorDR": "'. $valordr_anular .'"},';
 
         }
-        $parametros = $parametros.slice(0,-1);
+        $parametros = substr($parametros, 0,-1);
         $parametros = $parametros .'}}';
 
-        console.log($parametros);
-        $parametros = JSON.parse($parametros);
+        //console.log($parametros);
+        //$parametros = json_encode($parametros);
 
-        console.log($parametros);
+        print_r($parametros);
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< REALIZAR ENVIO >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
+/*
         var documento;
 // nombres para mostrar en el recuadro de exito
         if(tipo_dte == "33"){ documento = "FACTURA ELECTRÓNICA" }
@@ -1192,10 +1249,10 @@ function buscarXml($tipo_dte_referencia,$folio_referencia){
         });
 
 	    //print_r($array_NmbItem);
-		
+*/		
 	}else{
 		print_r(json_encode("Problemas para encontrar archivo"));
 	}
 
-}*/
+}
 ?>

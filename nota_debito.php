@@ -455,7 +455,7 @@
                                          <small> Fecha de emisión (*)</small>
                                         <div class="form-group">
                                             <div class="form-line" id="container_fecha_ref">
-                                                <input id="fecha_ref" type="text" class="form-control" placeholder=" AAAA-MM-DD " disabled />
+                                                <input id="fecha_ref" type="text" class="form-control" placeholder=" AAAA-MM-DD "  />
                                             </div>
                                         </div>
                                     </div>

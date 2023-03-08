@@ -872,6 +872,10 @@
                     tipo_dte_ref = "61";
                     nombre_dte_ref = "Nota de Credito";
                 }
+                if (tipo_dte == "34") {
+                    tipo_dte_ref = "61";
+                    nombre_dte_ref = "Nota de Credito";
+                }
                 if (tipo_dte == "61") {
                     tipo_dte_ref = "56";
                     nombre_dte_ref = "Nota de Debito";
@@ -881,6 +885,10 @@
                     nombre_dte_ref = "Nota de Credito";
                 }
                 if (tipo_dte == "52") {
+                    tipo_dte_ref = "61";
+                    nombre_dte_ref = "Nota de Credito";
+                }
+                if (tipo_dte == "56") {
                     tipo_dte_ref = "61";
                     nombre_dte_ref = "Nota de Credito";
                 }

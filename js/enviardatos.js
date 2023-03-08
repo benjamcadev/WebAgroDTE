@@ -444,6 +444,7 @@ function EnviarDatos(){
         if(tipo_dte == "56"){ documento = "NOTA DE DÉBITO ELECTRÓNICA" }
         if(tipo_dte == "61"){ documento = "NOTA DE CRÉDITO ELECTRÓNICA" }
 
+       
         $.ajax({
             type: "POST",
             data:  parametros,

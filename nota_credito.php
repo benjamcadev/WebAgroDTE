@@ -454,7 +454,7 @@
                                                     <option value="34"> Factura Exenta Electrónica </option>
                                                     <option value="39"> Boleta Electrónica </option>
                                                     <option value="41"> Boleta Exenta Electrónica </option>               
-                                                  <!--  <option value="56"> Nota de Débito Electrónica </option>  no está desarrollado en la api, pero no creemos que se use -->
+                                                   <option value="56"> Nota de Débito Electrónica </option> 
                                                 </select>                                   
                                             </div>
                                         </div>
