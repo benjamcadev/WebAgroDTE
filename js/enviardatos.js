@@ -294,13 +294,25 @@ function EnviarDatos(){
     '                    "CmnaOrigen": "La Serena",'+
     '                    "CdgSIISucur": "74236823"'+
     '                },'+
-    '                "Receptor": {'+
+    '                "Receptor": {';
+
+        if(tipo_dte == "39"){
+            parametros = parametros +
+    '                    "RUTRecep": "66666666-6",'+
+    '                    "RznSocRecep": "Contacto Anonimo",'+
+    '                    "GiroRecep": "Sin datos",'+
+    '                    "DirRecep": "Sin datos",'+
+    '                    "CmnaRecep": "Sin datos"';
+        }else{
+            parametros = parametros +
     '                    "RUTRecep": "'+rut_receptor+'",'+
     '                    "RznSocRecep": "'+razon_social_receptor+'",'+
     '                    "GiroRecep": "'+giro_receptor+'",'+
     '                    "DirRecep": "'+direccion_receptor+'",'+
-    '                    "CmnaRecep": "'+comuna_receptor+'"'+
-    '                },';
+    '                    "CmnaRecep": "'+comuna_receptor+'"';
+        }
+
+        parametros = parametros + '},';
                       
         if(tipo_dte == "52"){
             parametros = parametros + '"Transporte": {'+
@@ -342,6 +354,11 @@ function EnviarDatos(){
 
                 parametros = parametros + '{'+
     '                    "NroLinDet": ' + (i+1) + ',';
+
+                if($('#iva_global').val() == "$0"){
+                    parametros = parametros + '"IndExe": "' + (i+1) + '",';
+
+                }
 
                 if(document.getElementById("codigo_"+(i+1)) != null){
                     parametros = parametros + '"CdgItem":{'+ 

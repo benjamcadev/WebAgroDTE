@@ -1023,38 +1023,50 @@ function leerXML($ubicacion_xml){
      '        "dte":{'.
      '            "Encabezado": {'.
      '                "IdDoc": {'.
-     '                    "TipoDTE": '.$tipoanulacion.','.
-     '                    "Folio": 0,'.
+     '                    "TipoDTE": "'.$tipoanulacion.'",'.
+     '                    "Folio": "0",'.
      '                    "FchEmis": "'.$fechaActual.'",';// poner fecha actual
 
         if($tipodte_anular == "52"){
-            if($count_tipodespacho != 0){ $parametros = $parametros . '"TipoDespacho": ' . $tipodespacho_anular . ',';}
-            if($count_indtraslado != 0){ $parametros = $parametros . '"IndTraslado": ' . $indtraslado_anular . ',';}           
+            if($count_tipodespacho != 0){ $parametros = $parametros . '"TipoDespacho": "' . $tipodespacho_anular . '",';}
+            if($count_indtraslado != 0){ $parametros = $parametros . '"IndTraslado": "' . $indtraslado_anular . '",';}           
         }
 
-        if($count_tpotrancompra != 0){$parametros = $parametros .'"TpoTranCompra": '.$tpotrancompra_anular.',';}
-        if($count_tpotranventa != 0){$parametros = $parametros .'"TpoTranVenta": '.$tpotranventa_anular.',';}
-        if($count_fmapago != 0){$parametros = $parametros .'"FmaPago": '.$fmapago_anular.',';}
+        if($count_tpotrancompra != 0){$parametros = $parametros .'"TpoTranCompra": "'.$tpotrancompra_anular.'",';}
+        if($count_tpotranventa != 0){$parametros = $parametros .'"TpoTranVenta": "'.$tpotranventa_anular.'",';}
+        if($count_fmapago != 0){$parametros = $parametros .'"FmaPago": "'.$fmapago_anular.'",';}
 
-        $parametros = $parametros .      
-     '                    "Comentario": null'.
-     '                },'.
+        $parametros = substr($parametros, 0,-1);
+
+        $parametros = $parametros .'},'.
      '                "Emisor": {'.
      '                    "RUTEmisor": "76958430-7",'.
      '                    "RznSoc": "IMP COMERCIALIZADORA Y DIST AGROPLASTIC",'.
      '                    "GiroEmis": "VENTA AL POR MAYOR NO ESPECIALIZADA",'.
-     '                    "Acteco": 469000,'.
+     '                    "Acteco": "469000",'.
      '                    "DirOrigen": "VICENTE ZORRILLA 835",'.
      '                    "CmnaOrigen": "La Serena",'.
      '                    "CdgSIISucur": "74236823"'.
      '                },'.
-     '                "Receptor": {'.
+     '                "Receptor": {';
+
+     	if($tipodte_anular == "39"){
+			$parametros = $parametros . 
+     '                    "RUTRecep": "66666666-6",'.
+     '                    "RznSocRecep": "Contacto Anonimo",'.
+     '                    "GiroRecep": "Sin datos",'.
+     '                    "DirRecep": "Sin datos",'.
+     '                    "CmnaRecep": "Sin datos"';
+     	}else{
+     		$parametros = $parametros . 
      '                    "RUTRecep": "'.$rutrecep_anular.'",'.
      '                    "RznSocRecep": "'.$rznsocrecep_anular.'",'.
      '                    "GiroRecep": "'.$girorecep_anular.'",'.
      '                    "DirRecep": "'.$dirrecep_anular.'",'.
-     '                    "CmnaRecep": "'.$cmnarecep_anular.'"'.
-     '                },';
+     '                    "CmnaRecep": "'.$cmnarecep_anular.'"';
+		}
+
+     	$parametros = $parametros.'},';
                        
         if($tipodte_anular == "52"){
             $parametros = $parametros . '"Transporte": {'.
@@ -1068,20 +1080,22 @@ function leerXML($ubicacion_xml){
         //SI IVA SE ENCUENTRA CON MONTO 0, ENTONCES ES UN DTE EXENTO
         // SE CAMBIA MONTO NETO POR MONTO EXENTO
         $tipo_monto = "";
+        $monto = "";
 
-        if($count_iva != 0){        	
+        if($count_mntneto != 0){        	
         	$tipo_monto = "MntNeto";
+        	$monto = $mntneto_anular;
         }else{ 
         	$tipo_monto = "MntExe";
+        	$monto = $mntexe_anular;
         	$iva_anular = 0;
         }       
 
-        if($count_mntneto != 0){ $parametros = $parametros . '"'. $tipo_monto .'": '. $mntneto_anular.',';}
-        if($count_iva == 0){}else{
-            if($count_iva != 0){ $parametros = $parametros . '"TasaIVA": 19,';}
-        }
-        $parametros = $parametros . '"IVA": '. $iva_anular.',';
-        $parametros = $parametros . '"MntTotal": '. $mnttotal_anular.'';
+        $parametros = $parametros . '"'. $tipo_monto .'": "'. $monto.'",';
+        if($iva_anular != 0){ $parametros = $parametros . '"TasaIVA": 19,';}
+        
+        $parametros = $parametros . '"IVA": "'. $iva_anular.'",';
+        $parametros = $parametros . '"MntTotal": "'. $mnttotal_anular.'"';
         $parametros = $parametros . '}},';
 
         //detalle
@@ -1093,8 +1107,12 @@ function leerXML($ubicacion_xml){
             //CICLO PARA RELLENAR EL DETALLE 
             for ($i = 0; $i < $count_detalle; $i++) {
 
-                $parametros = $parametros . '{'.
-     '                    "NroLinDet": ' . ($i+1) . ',';
+                $parametros = $parametros.'{'.
+     '                    "NroLinDet": "'.($i+1).'",';
+     			if($tipodte_anular == "34"){
+     				$parametros = $parametros.'"IndExe": "'.($i+1).'",';
+
+     			}
 
                 if($array_cdgitem[$i] != 0){
                     $parametros = $parametros . '"CdgItem":{'. 
@@ -1126,7 +1144,7 @@ function leerXML($ubicacion_xml){
                 }
                 
                        
-                $parametros = $parametros .'"MontoItem": ' . $array_montoitem[$i] . '},';            
+                $parametros = $parametros .'"MontoItem": "' . $array_montoitem[$i] . '"},';            
             }
             // quitamos la coma del ultimo agregado
             $parametros = substr($parametros, 0,-1);
@@ -1136,19 +1154,19 @@ function leerXML($ubicacion_xml){
       // si hay referencia agregamos la seccion completa
 
         $parametros = $parametros .'"Referencia": {'.
-                 '"NroLinRef": 1,'.
-                 '"TpoDocRef": '. $tipodte_anular .','.
+                 '"NroLinRef": "1",'.
+                 '"TpoDocRef": "'. $tipodte_anular .'",'.
                  '"FolioRef": "'. $folio_anular .'",'.
                  '"FchRef": "'. $fchemis_anular .'",'.        
                  '"CodRef": 1,'.
-                 '"RazonRef": "Anula documento de referencia"},';        
+                 '"RazonRef": "Anula Documento de Referencia"},';        
         
 
      // si hay descuentos o recarggos globales
         if($count_dscrcgglobal != 0){          
 
             $parametros = $parametros .'"DscRcgGlobal": {'.
-     '                "NroLinDR": '.$nrolindr_anular.','.
+     '                "NroLinDR": "'.$nrolindr_anular.'",'.
      '                "TpoMov": "'. $tpomov_anular .'",'.
      '                "TpoValor": "'. $tpovalor_anular .'",'.
      '                "ValorDR": "'. $valordr_anular .'"},';
@@ -1158,98 +1176,12 @@ function leerXML($ubicacion_xml){
         $parametros = $parametros .'}}';
 
         //console.log($parametros);
-        //$parametros = json_encode($parametros);
+        //$parametros = json_encode($parametros);       
 
-        print_r($parametros);
+        $apikey = "928e15a2d14d4a6292345f04960f4cc3";
+        crearDTE($parametros,$apikey);
+        //print_r($parametros);
 
-//------------------------------------------------------------------------------------------------------------------------------------------------------------------
-//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< REALIZAR ENVIO >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-//------------------------------------------------------------------------------------------------------------------------------------------------------------------
-/*
-        var documento;
-// nombres para mostrar en el recuadro de exito
-        if(tipo_dte == "33"){ documento = "FACTURA ELECTRÓNICA" }
-        if(tipo_dte == "34"){ documento = "FACTURA EXENTA ELECTRÓNICA" }
-        if(tipo_dte == "39"){ documento = "BOLETA ELECTRÓNICA" }
-        if(tipo_dte == "41"){ documento = "BOLETA EXENTA ELECTRÓNICA" }
-        if(tipo_dte == "52"){ documento = "GUIA DE DESPACHO ELECTRÓNICA" }
-        if(tipo_dte == "56"){ documento = "NOTA DE DÉBITO ELECTRÓNICA" }
-        if(tipo_dte == "61"){ documento = "NOTA DE CRÉDITO ELECTRÓNICA" }
-
-        $.ajax({
-            type: "POST",
-            data:  $parametros,
-            headers: {
-                'apikey':'928e15a2d14d4a6292345f04960f4cc3' 
-            },
-            dataType: "json",
-            url: "Clases/DTE.php?funcion=emitirDTE",
-
-            beforeSend: function(){
-                //DIALOGO DE CARGA MIENTRAS SE ENVIA
-                swal({
-                    title: '<div class="preloader pl-size-xl">'.
-                          '     <div class="spinner-layer pl-light-blue">'.
-                          '         <div class="circle-clipper left">'.
-                          '             <div class="circle"></div>'.
-                          '         </div>'.
-                          '         <div class="circle-clipper right">'.
-                          '             <div class="circle"></div>'.
-                          '         </div>'.
-                          '     </div>'.
-                          ' </div>', 
-                    text: "EMITIENDO DOCUMENTO...",
-                    showConfirmButton: false,
-                    html: true,
-                    showCancelButton: false,
-                    closeOnConfirm: false,
-                    showLoaderOnConfirm: true
-                    //timer: 1800,           
-                });
-            },
-
-            success: function(data) {  
-
-                console.log($.parseJSON(data));
-                var dataJson = $.parseJSON(data);
-               
-
-
-                if(dataJson.FOLIO != null) {
-                    swal({
-                        title:"¡Documento Emitido!", 
-                        text:"Se ha generado ".documento." con folio : ".dataJson.FOLIO, 
-                        type:"success",
-                        showConfirmButton: true,
-                        showCancelButton: true,
-                        confirmButtonText: 'Ver',
-                        cancelButtonText: 'Cerrar',
-                        closeOnConfirm: true,
-                        closeOnCancel: true
-                        },
-                        function(flag){
-                            if(flag){
-                                crearPDF(dataJson.FOLIO,tipo_dte);
-                                //location.reload();
-                            }else{
-                                location.reload();
-                            }
-    
-                        }
-                    );
-    
-                    //console.log(data['FOLIO']); 
-                }else{
-                    swal("Error", "Detalle del error: ".JSON.stringify(dataJson), "error");
-                     // habilita el boton enviar 
-                    $('#btn_enviar').attr('disabled', false);  
-                }
-                  
-            }
-        });
-
-	    //print_r($array_NmbItem);
-*/		
 	}else{
 		print_r(json_encode("Problemas para encontrar archivo"));
 	}

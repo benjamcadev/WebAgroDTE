@@ -1186,6 +1186,10 @@
 
 
             function anularDTE(){
+
+                var documento;
+                // nombres para mostrar en el recuadro de exito      
+                
                 
                 var parametros = {"tipo_dte_ref": tipo_dte_global,"folio_ref": folio_global}; 
                 var tipo_doc_ref = $("#tipo_doc_ref").val();
@@ -1201,7 +1205,7 @@
                         },
                         dataType: "json",
                         url: "Clases/DTE.php?funcion=buscarXml",
-                        /*beforeSend: function() {
+                        beforeSend: function() {
 
                             //mensaje temporal de busqueda de datos
                             swal({
@@ -1220,7 +1224,7 @@
                                 //timer: 1800,
                                 html: true           
                             });
-                        },*/
+                        },
 
                         success: function(path) {                           
                             
@@ -1234,21 +1238,100 @@
 
                             }else{
 
-                                $.ajax({
-                                    type: "POST",
-                                    data:  parametros,
-                                    headers: {
-                                        'apikey':'928e15a2d14d4a6292345f04960f4cc3' 
-                                    },
-                                    dataType: "json",
-                                    url: "Clases/DTE.php?funcion=leerXML",
-                                    success: function(respuesta) { 
 
-                                        let json_respuesta = respuesta;
-                                        console.log(json_respuesta);
-                                       
+                                swal({
+                                    title:"¿Está seguro(a) de anular el Documento?", 
+                                    text:"Se anulará el Documento con folio : "+folio_global, 
+                                    type:"success",
+                                    showConfirmButton: true,
+                                    showCancelButton: true,
+                                    confirmButtonText: 'Anular',
+                                    cancelButtonText: 'Cerrar',
+                                    closeOnConfirm: true,
+                                    closeOnCancel: true
+                                    },
+                                    function(flag){
+
+                                        if(flag){
+                                            $.ajax({
+                                                type: "POST",
+                                                data:  parametros,
+                                                headers: {
+                                                    'apikey':'928e15a2d14d4a6292345f04960f4cc3' 
+                                                },
+                                                dataType: "json",
+                                                url: "Clases/DTE.php?funcion=leerXML", // la funcion lee el xml y ahi mismo emite el dte
+
+                                                beforeSend: function(){
+                                                    //DIALOGO DE CARGA MIENTRAS SE ENVIA
+                                                    swal({
+                                                        title: '<div class="preloader pl-size-xl">'+
+                                                              '     <div class="spinner-layer pl-light-blue">'+
+                                                              '         <div class="circle-clipper left">'+
+                                                              '             <div class="circle"></div>'+
+                                                              '         </div>'+
+                                                              '         <div class="circle-clipper right">'+
+                                                              '             <div class="circle"></div>'+
+                                                              '         </div>'+
+                                                              '     </div>'+
+                                                              ' </div>', 
+                                                        text: "EMITIENDO DOCUMENTO...",
+                                                        showConfirmButton: false,
+                                                        html: true,
+                                                        showCancelButton: false,
+                                                        closeOnConfirm: false,
+                                                        showLoaderOnConfirm: true
+                                                        //timer: 1800,           
+                                                    });
+                                                },
+
+
+                                                success: function(data) { 
+
+                                                    console.log(data);
+                                                    var dataJson = $.parseJSON(data);
+                                                   
+                                                    if(dataJson.FOLIO != null) {
+                                                        swal({
+                                                            title:"¡Documento Anulado!", 
+                                                            text:"Se ha generado DTE con folio : "+dataJson.FOLIO, 
+                                                            type:"success",
+                                                            showConfirmButton: false,
+                                                            showCancelButton: true,
+                                                            //confirmButtonText: 'Aceptar',
+                                                            cancelButtonText: 'Cerrar',
+                                                            //closeOnConfirm: true,
+                                                            closeOnCancel: true
+                                                            },
+                                                            /*function(flag){
+                                                                if(flag){
+                                                                    crearPDF(dataJson.FOLIO,tipo_dte);
+                                                                    //location.reload();
+                                                                }else{
+                                                                    location.reload();
+                                                                }
+                                        
+                                                            }*/
+                                                        );
+                                        
+                                                        //console.log(data['FOLIO']); 
+                                                    }else{
+                                                        swal("Error", "Detalle del error: "+JSON.stringify(dataJson), "error");
+                                                         // habilita el boton enviar 
+                                                        $('#btn_enviar').attr('disabled', false);  
+                                                    }
+                                                }
+                                            });
+                                            //location.reload();
+                                        }else{
+                                            location.reload();
+                                        }
+                
                                     }
-                                });
+                                );
+
+
+                                
 
                                 //swal.close();
                                 //console.log(path);                                
