@@ -226,11 +226,13 @@
                         <div class="header">
                             <h2>
                                 DTE EMITIDOS
+
+                                
                             </h2>
                             <ul class="header-dropdown m-r--5">
                                 <li class="dropdown">
                                     <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                                        <i class="material-icons">more_vert</i>
+                                        <i  class="material-icons">more_vert</i>
                                     </a>
                                     <ul class="dropdown-menu pull-right">
                                         <li><a href="javascript:void(0);">Action</a></li>
@@ -333,7 +335,7 @@
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            
+                       
 
                             <button onclick="imprimirPDF();" type="button" style="margin-left: 3%;" class="btn btn-default btn-circle-lg waves-effect waves-circle waves-float" data-toggle="tooltip" data-placement="bottom" title="Imprimir">
                                     <i class="material-icons">print</i>
@@ -363,8 +365,15 @@
                         <div class="modal-header" id="referencia_dte">
 
                         </div>
-                        <div class="modal-body" id="pdfModal_body">
                         
+                        <div class="modal-header" id="acuses_dte">
+
+                     
+                        
+                        </div>
+                        
+                        <div class="modal-body" id="pdfModal_body">
+                       
                             <canvas style="width: 100%; height: 100%;"  id="canvas-pdf"></canvas>
                            
                         </div>
@@ -521,6 +530,8 @@
     $('[data-toggle="tooltip"]').tooltip({
         container: 'body'
     });
+
+    
 
  //VARIABLES GLOBALES
  var pdf_base64 = ""; 
@@ -864,7 +875,9 @@
                 $("#pdf_nombre").text("DTE_"+tipo_dte+"_"+folio+".pdf");
                 $("#xml_nombre").text("DTE_"+tipo_dte+"_"+folio+".xml");
 
-                //buscar si tiene dte relacionado
+
+
+                //BUSCAR SI TIENE DTE RELACIONADO
                 let tipo_dte_ref = "";
                 let nombre_dte_ref = "";
 
@@ -931,9 +944,142 @@
                         
                     }
                 });
-                
+              // FIN DE BUSQUEDA DTE RELACIONADO
+              
+              
+              //BUSCAMOS LOS ACUSES DE RECIBO
+                //LAS BOLETAS NO TIENEN ACUSES
+             
+              if (tipo_dte == 33 || tipo_dte == 61 || tipo_dte == 56 || tipo_dte == 52 ) {
 
+                    var parametros3 = {"folio": folio, 
+                                        "tipo_dte": tipo_dte
+                    };
+                    
 
+                    $.ajax({
+                    type: 'POST',
+                    data:  parametros3,
+                    headers: {
+                                    'apikey':'928e15a2d14d4a6292345f04960f4cc3' 
+                                },
+                    dataType: "json",
+                    url: "Clases/DTE.php?funcion=cargarDatosAcuses",
+                    success:function(data){
+                        console.log(data);
+                        //ARMAMOS LA BASE DEL POPOVER
+                        $('#acuses_dte').empty();
+                        let popover_acuses = '<a href="#/" tabindex="0" role="button"  data-trigger="focus" data-container="body" data-toggle="popover"'+
+                        'data-placement="bottom" title="Acuses DTE" data-content="';
+                        
+                        //PREGUNTAR SI VIENEN DATOS DE ACUSE RECIBO
+                        if (data[0].length > 0) {
+                          //hay data
+                          let estado_recibo = data[0][0]['estado_recep_acuse_recibo_cliente'];
+                          let glosa_recibo = data[0][0]['glosa_estado_acuse_recibo_cliente'];
+                          let fecha_recibo = data[0][0]['fecha_acuse_recibo_cliente'];
+                          let hora_recibo = data[0][0]['hora_acuse_recibo_cliente'];
+                          
+                          var icono = "";
+                          if (estado_recibo == 0 && glosa_recibo.includes("OK")) {
+                            //ESTADO CORRECTO
+                            icono = "<i style='color: green;' class='material-icons'>check</i>"
+                          }else if(estado_recibo == 0 && glosa_recibo.includes("Sin Reparos")){
+                            //ESTADO CORRECTO
+                            icono = "<i style='color: green;' class='material-icons'>check</i>"
+
+                          }else if(estado_recibo == 0 && glosa_recibo.includes("Recibido Conforme")){
+                            //ESTADO CORRECTO
+                            icono = "<i style='color: green;' class='material-icons'>check</i>"
+                        }else{
+                            icono = "<i style='color: orange;' class='material-icons'>warning</i>"
+                        }
+                        if (estado_recibo == 4 || estado_recibo == 99) {
+                            icono = "<i style='color: red;' class='material-icons'>error</i>"
+                        }
+
+                            //AGREGAMOS EL POPOVER AL MODAL
+                          popover_acuses = popover_acuses + 'Acuse Recepción DTE: '+icono+' '+glosa_recibo+' <br> ';
+                          
+                         
+                        }else{
+                           //no hay data
+                           let glosa_recibo = "";
+                           icono = "<i style='color: blue;' class='material-icons'>remove</i>"
+                           popover_acuses = popover_acuses + 'Acuse Recepción DTE: '+icono+' '+glosa_recibo+' <br> ';
+
+                        }
+                         //PREGUNTAR SI VIENEN DATOS DE ACUSE COMERCIAL
+                         if (data[1].length > 0) {
+                          //hay data
+                            let estado_comercial = data[1][0]['estado_dte_acuse_recibo_comercial_dte_cliente'];
+                            let glosa_comercial = data[1][0]['glosa_dte_acuse_recibo_comercial_dte_cliente'];
+                            let fecha_comercial = data[1][0]['fecha_acuse_recibo_comercial_cliente'];
+                            let hora_comercial = data[1][0]['hora_acuse_recibo_comercial_cliente'];
+
+                            var icono = "";
+                          if (estado_comercial == 0 ||  estado_comercial == 1) {
+                            //ESTADO CORRECTO
+                            icono = "<i style='color: green;' class='material-icons'>check</i>"
+                          }else if(estado_comercial == 2){
+                            icono = "<i style='color: red;' class='material-icons'>error</i>"
+                          }else{
+                            icono = "<i style='color: yellow;' class='material-icons'>warning</i>"
+                        }
+
+                           //AGREGAMOS EL POPOVER AL MODAL
+                           popover_acuses = popover_acuses + 'Acuse Comercial: '+icono+' '+glosa_comercial+' <br> ';
+
+                        }else{
+                           //no hay data
+                            let glosa_comercial = "";
+                           icono = "<i style='color: blue;' class='material-icons'>remove</i>"
+                           popover_acuses = popover_acuses + 'Acuse Comercial: '+icono+' '+glosa_comercial+' <br> ';
+                        }
+                         //PREGUNTAR SI VIENEN DATOS DE ACUSE MERCADERIA
+                         if (data[2].length > 0) {
+                          //hay data
+                          let declaracion_mercaderia = data[2][0]['declaracion_acuse_recibo_dte_mercaderia_cliente'];
+                          let rutfirma_mercaderia = data[2][0]['rutfirma_acuse_recibo_dte_mercaderia_cliente'];
+                          let fecha_mercaderia = data[2][0]['fecha_acuse_recibo_cliente'];
+                          let hora_mercaderia = data[2][0]['hora_acuse_recibo_cliente'];
+
+                          var icono = "";
+                          
+                          if (declaracion_mercaderia.includes("sido recibido(s)")) {
+                            //ESTADO CORRECTO
+                            icono = "<i style='color: green;' class='material-icons'>check</i>";
+                          }else{
+                            icono = "<i style='color: red;' class='material-icons'>error</i>";
+                            }
+
+                           //AGREGAMOS EL POPOVER AL MODAL
+                           popover_acuses = popover_acuses + 'Acuse Mercaderias: '+icono+' Rut Recibe: '+rutfirma_mercaderia;
+
+                          
+                           
+                        }else{
+                            //no hay data
+                            let glosa_mercaderia = "";
+                           icono = "<i style='color: blue;' class='material-icons'>remove</i>"
+                           popover_acuses = popover_acuses + 'Acuse Mercaderias: '+icono+' '+glosa_mercaderia+' <br> ';
+                        }
+
+                        //INSERTAMOS EL POPOVER
+                        popover_acuses = popover_acuses + '" <i style="color: brown;" class="material-icons">info_outline</i></a>';
+                        $("#acuses_dte").append(popover_acuses);
+
+                        
+                       
+                        
+                    }
+                });
+              }else{
+                //NO ES FACTURA, ES UNA BOLETA Y NO TIENEN ACUSES
+                $('#acuses_dte').empty();
+              }
+
+             
              var parametros = {"folio": folio, 
              "tipo_dte": tipo_dte
             }; 
@@ -1000,6 +1146,8 @@
                                         var renderTask = page.render(renderContext);
                                         renderTask.promise.then(function () {
                                           console.log('Page rendered');
+                                          //Popover
+                                         $('[data-toggle="popover"]').popover({html:true});
                                         });
 
                                     });
@@ -1014,6 +1162,7 @@
                         }                
                     }
                  });
+                   
             }
 
             function selectBusquedaAvanzada(select){
@@ -1242,7 +1391,7 @@
                                 swal({
                                     title:"¿Está seguro(a) de anular el Documento?", 
                                     text:"Se anulará el Documento con folio : "+folio_global, 
-                                    type:"success",
+                                    type:"warning",
                                     showConfirmButton: true,
                                     showCancelButton: true,
                                     confirmButtonText: 'Anular',

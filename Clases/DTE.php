@@ -46,6 +46,12 @@ if ($apikey == "928e15a2d14d4a6292345f04960f4cc3") {
 			$folio_referencia = $_POST['folio_referencia'];
 			cargarDatosReferencia($tipo_dte_referencia,$folio_referencia);
 			break;
+		
+		case 'cargarDatosAcuses':
+			$tipo_dte_acuses = $_POST['tipo_dte'];
+			$folio_acuses = $_POST['folio'];
+			cargarDatosAcuses($tipo_dte_acuses,$folio_acuses);
+			break;
 
 		case 'cargarDatosReferenciaEmitidos':
 			$tipo_dte_referencia = $_POST['tipo_dte_referencia'];
@@ -335,6 +341,8 @@ function crearPDF($folio,$tipo_dte){
 		//agregamos el sobre en base64
 		$response = $response.', "xml_base64": "'.$base64_xml.'"}';
 
+		
+
 		//$decoded_response_object = json_decode($response);
 
 		print_r($response);
@@ -428,6 +436,109 @@ function cargarDatosReceptor($rutReceptor){
 
 	print_r(json_encode($array_datos));
 	//print_r(json_encode($datos));
+}
+
+function cargarDatosAcuses($tipo_dte_acuses,$folio_acuses){
+	
+	$conexion = new conexion();
+	$tabla = "";
+	
+	switch ($tipo_dte_acuses) {
+		case '33':
+			$tabla = "factura";
+			break;
+		case '61':
+			$tabla = "nota_credito";
+			break;
+		case '56':
+			$tabla = "nota_debito";
+			break;
+		case '52':
+			$tabla = "guia_despacho";
+			break;
+		
+		default:
+			# code...
+			break;
+	}
+
+
+	$sqlAcuses = "SELECT id_acuse_recibo_cliente_fk,id_acuse_recibo_comercial_cliente_fk,id_acuse_recibo_mercaderia_cliente_fk FROM $tabla WHERE folio_$tabla='$folio_acuses'";
+	$datosAcuses = $conexion->obtenerDatos($sqlAcuses);
+
+	//ARRAY DE RESPONSE
+	$response = array();
+
+	//ACUSE DE RECIBO DTE
+	if (!$datosAcuses[0]['id_acuse_recibo_cliente_fk'] == "") {
+		//HAY DATOS
+		$id_acuse_recibo = $datosAcuses[0]['id_acuse_recibo_cliente_fk'];
+		//INNER JOIN PARA TRAER LA DATA
+		$sqlDataAcuses ="SELECT acuso_recibo_dte_cliente.estado_recep_acuse_recibo_cliente,
+		acuso_recibo_dte_cliente.glosa_estado_acuse_recibo_cliente,
+		 acuse_recibo_cliente.fecha_acuse_recibo_cliente,
+		 acuse_recibo_cliente.hora_acuse_recibo_cliente
+		 FROM acuse_recibo_cliente
+		 INNER JOIN acuso_recibo_dte_cliente
+		 ON acuse_recibo_cliente.id_acuse_recibo_cliente = acuso_recibo_dte_cliente.id_acuse_recibo_cliente_fk
+		 WHERE acuse_recibo_cliente.id_acuse_recibo_cliente = $id_acuse_recibo";
+		$datosAcusesRecibo = $conexion->obtenerDatos($sqlDataAcuses);
+		$response[0] =  $datosAcusesRecibo;
+
+	
+	}else{
+		$datosAcusesRecibo = array();
+		$response[0] = $datosAcusesRecibo;
+		
+	}
+
+	//ACUSE COMERCIAL
+	if (!$datosAcuses[0]['id_acuse_recibo_comercial_cliente_fk'] == "") {
+		//HAY DATOS
+		$id_acuse_comercial = $datosAcuses[0]['id_acuse_recibo_comercial_cliente_fk'];
+		//INNER JOIN PARA TRAER LA DATA
+		$sqlDataAcuses ="SELECT acuse_recibo_comercial_dte_cliente.estado_dte_acuse_recibo_comercial_dte_cliente,
+		acuse_recibo_comercial_dte_cliente.glosa_dte_acuse_recibo_comercial_dte_cliente,
+		acuse_recibo_comercial_cliente.fecha_acuse_recibo_comercial_cliente,
+		acuse_recibo_comercial_cliente.hora_acuse_recibo_comercial_cliente
+		FROM acuse_recibo_comercial_cliente
+		INNER JOIN acuse_recibo_comercial_dte_cliente
+		ON acuse_recibo_comercial_cliente.id_acuse_recibo_comercial_cliente = acuse_recibo_comercial_dte_cliente.id_acuse_recibo_comercial_cliente_fk
+		WHERE acuse_recibo_comercial_cliente.id_acuse_recibo_comercial_cliente = $id_acuse_comercial";
+		$datosAcusesComercial = $conexion->obtenerDatos($sqlDataAcuses);
+		$response[1] =  $datosAcusesComercial;
+
+		
+	}else{
+		$datosAcusesComercial = array();
+		$response[1] = $datosAcusesComercial;
+		
+	}
+	
+	//ACUSE MERCADERIAS
+	if (!$datosAcuses[0]['id_acuse_recibo_mercaderia_cliente_fk'] == "") {
+		//HAY DATOS
+		$id_acuse_mercaderia = $datosAcuses[0]['id_acuse_recibo_mercaderia_cliente_fk'];
+		//INNER JOIN PARA TRAER LA DATA
+		$sqlDataAcuses ="SELECT acuso_recibo_dte_mercaderia_cliente.rutfirma_acuse_recibo_dte_mercaderia_cliente,
+		acuso_recibo_dte_mercaderia_cliente.declaracion_acuse_recibo_dte_mercaderia_cliente,
+		acuse_recibo_mercaderia_cliente.fecha_acuse_recibo_mercaderia_cliente,
+		acuse_recibo_mercaderia_cliente.hora_acuse_recibo_mercaderia_cliente
+		FROM acuse_recibo_mercaderia_cliente
+		INNER JOIN acuso_recibo_dte_mercaderia_cliente
+		ON acuse_recibo_mercaderia_cliente.id_acuse_recibo_mercaderia_cliente = acuso_recibo_dte_mercaderia_cliente.id_acuse_recibo_mercaderia_cliente_fk
+		WHERE acuso_recibo_dte_mercaderia_cliente.id_acuse_recibo_mercaderia_cliente_fk = $id_acuse_mercaderia";
+		$datosAcusesMercaderia = $conexion->obtenerDatos($sqlDataAcuses);
+		$response[2] =  $datosAcusesMercaderia;
+
+		
+	}else{
+		$datosAcusesMercaderia = array();
+		$response[2] = $datosAcusesMercaderia;
+		
+	}
+	print_r(json_encode($response));
+	
 }
 
 function cargarDatosReferencia($tipo_dte_referencia,$folio_referencia){
