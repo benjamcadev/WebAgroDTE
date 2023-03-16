@@ -253,12 +253,7 @@
                                     <div class="form-line">
                                     <select id="select_year" class="form-control ">
                                         <option value="">-- Selecciona Año --</option>
-                                        <option  value="2017">2017</option>
-                                        <option value="2018">2018</option>
-                                        <option value="2019">2019</option>
-                                        <option value="2020">2020</option>
-                                        <option value="2021">2021</option>
-                                        <option value="2022">2022</option>
+                                        
                                         
                                     </select>
                                         </div>
@@ -474,6 +469,7 @@
     <script type="text/javascript">
         window.onload = function() {
              $("#lista_registro_compras_menu").addClass("active");
+             cargarFechasRegistro();
             //cargarRegistroVentasTabla();
         }
 
@@ -486,6 +482,37 @@
 
    
 
+    function cargarFechasRegistro(){
+        $.ajax({
+            type: 'POST',
+            data: {"tipo": "compra"},
+            headers: {
+                            'apikey':'928e15a2d14d4a6292345f04960f4cc3' 
+                        },
+            dataType: "json",
+            url: "Clases/Registros.php?funcion=cargarFechasRegistro",
+            success:function(data){
+              
+                var d = new Date(data[Object.keys(data)[0]]); //obtiene el numero del primer key del array si es 0 o 1
+                let min_year = d.getFullYear();
+                let max_year = new Date().getFullYear();
+
+                for (let index = min_year; index <= max_year; index++) {
+                    $('#select_year').append($('<option>', {
+                    value: index,
+                    text: index
+                    }));
+                    
+                }
+                $('#select_year').selectpicker('refresh');
+               
+               
+            }
+
+
+        }); 
+
+    }
           
             function busquedaCompra(estadoContab){
 

@@ -51,13 +51,11 @@ if ($apikey == "928e15a2d14d4a6292345f04960f4cc3") {
 			busquedaRegistroBoletas($dvEmisor,$rutEmisor,$month,$year);
 			break;
 
-		
+		case 'cargarFechasRegistro':
+			$tipo = $_POST['tipo'];
+			cargarFechasRegistro($tipo);
+			break;
 
-			
-
-		
-		
-		
 		default:
 			// code...
 			break;
@@ -68,6 +66,69 @@ if ($apikey == "928e15a2d14d4a6292345f04960f4cc3") {
 	$mensaje = "apikey incorrecta";
 	print_r($mensaje);
 }
+
+function cargarFechasRegistro($tipo){
+	$conexion = new conexion();
+	$fechas=array();
+
+	if ($tipo == "venta") {
+			$sql_factura = "SELECT MIN(fchemis_factura) as fecha_factura FROM factura";
+			$sql_boleta = "SELECT MIN(fechaemis_boleta) as fecha_boleta FROM boleta";
+			$sql_boleta_exenta = "SELECT MIN(fechaemis_boleta_exenta) as fecha_boleta_exenta FROM boleta_exenta";
+			$sql_factura_exenta = "SELECT MIN(fchemis_factura_exenta) as fecha_factura_exenta FROM factura_exenta";
+			$sql_guia_despacho = "SELECT MIN(fchemis_guia_despacho) as fecha_guia_despacho FROM  guia_despacho";
+			$sql_nota_credito = "SELECT MIN(fchemis_nota_credito) as fecha_nota_credito FROM nota_credito";
+			$sql_nota_debito = "SELECT MIN(fchemis_nota_debito) as fecha_nota_debito FROM nota_debito";
+
+			$datos_factura = $conexion->obtenerDatos($sql_factura);
+			$datos_boleta = $conexion->obtenerDatos($sql_boleta);
+			$datos_boleta_exenta = $conexion->obtenerDatos($sql_boleta_exenta);
+			$datos_factura_exenta = $conexion->obtenerDatos($sql_factura_exenta);
+			$datos_guia_despacho = $conexion->obtenerDatos($sql_guia_despacho);
+			$datos_nota_credito = $conexion->obtenerDatos($sql_nota_credito);
+			$datos_nota_debito = $conexion->obtenerDatos($sql_nota_debito);
+
+			
+			array_push($fechas,$datos_factura[0]["fecha_factura"],$datos_boleta[0]["fecha_boleta"],$datos_boleta_exenta[0]["fecha_boleta_exenta"],
+			$datos_factura_exenta[0]["fecha_factura_exenta"],$datos_guia_despacho[0]["fecha_guia_despacho"],$datos_nota_credito[0]["fecha_nota_credito"],
+			$datos_nota_debito[0]["fecha_nota_debito"]);
+
+	}elseif ($tipo == "compra") {
+		$sql_factura_compra = "SELECT MIN(fchemis_factura_compra) as fecha_factura FROM factura_compra";
+		$sql_guia_despacho_compra = "SELECT MIN(fchemis_guia_despacho_compra) as fecha_guia_despacho FROM guia_despacho_compra";
+		$sql_factura_exenta_compra = "SELECT MIN(fchemis_factura_exenta_compra) as fecha_factura_exenta FROM factura_exenta_compra";
+		$sql_nota_credito_compra = "SELECT MIN(fchemis_nota_credito_compra) as fecha_nota_credito FROM nota_credito_compra";
+		$sql_nota_debito_compra = "SELECT MIN(fchemis_nota_debito_compra) as fecha_nota_debito FROM nota_debito_compra";
+
+		$datos_factura_compra = $conexion->obtenerDatos($sql_factura_compra);
+		$datos_guia_despacho_compra = $conexion->obtenerDatos($sql_guia_despacho_compra);
+		$datos_factura_exenta_compra = $conexion->obtenerDatos($sql_factura_exenta_compra);
+		$datos_nota_credito_compra = $conexion->obtenerDatos($sql_nota_credito_compra);
+		$datos_nota_debito_compra = $conexion->obtenerDatos($sql_nota_debito_compra);
+
+		array_push($fechas,$datos_factura_compra[0]["fecha_factura"],
+			$datos_factura_exenta_compra[0]["fecha_factura_exenta"],$datos_guia_despacho_compra[0]["fecha_guia_despacho"],$datos_nota_credito_compra[0]["fecha_nota_credito"],
+			$datos_nota_debito_compra[0]["fecha_nota_debito"]);
+
+	}
+	
+	array_multisort(array_map('strtotime', $fechas), $fechas);
+
+	$fechas = remove_empty($fechas);
+
+	print_r(json_encode($fechas));
+	
+}
+
+
+
+function remove_empty($array) {
+  return array_filter($array, '_remove_empty_internal');
+}
+
+function _remove_empty_internal($value) {
+	return !empty($value) || $value === 0;
+  }
 
 function busquedaRegistroBoletas($dvEmisor,$rutEmisor,$month,$year){
 
