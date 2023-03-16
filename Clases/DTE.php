@@ -46,6 +46,10 @@ if ($apikey == "928e15a2d14d4a6292345f04960f4cc3") {
 			$folio_referencia = $_POST['folio_referencia'];
 			cargarDatosReferencia($tipo_dte_referencia,$folio_referencia);
 			break;
+		case 'cargarDatosNC':
+				$folio_referencia = $_POST['folio_referencia'];
+				cargarDatosNC($folio_referencia);
+				break;
 		
 		case 'cargarDatosAcuses':
 			$tipo_dte_acuses = $_POST['tipo_dte'];
@@ -601,6 +605,14 @@ function cargarDatosReferencia($tipo_dte_referencia,$folio_referencia){
 
 	print_r(json_encode($datosReferencia));
 	//print_r(json_encode($datos));
+}
+
+function cargarDatosNC($folio_referencia){
+	$conexion = new conexion();
+	$sqlDatos_referencia = "SELECT folio_nota_credito as folio,mnttotal_nota_credito as monto FROM nota_credito WHERE folioref_nota_credito = '$folio_referencia'";
+	$datosReferencia = $conexion->obtenerDatos($sqlDatos_referencia);
+	
+	print_r(json_encode($datosReferencia));
 }
 
 function cargarDatosReferenciaEmitidos($tipo_dte_referencia,$folio_referencia,$monto_referencia){

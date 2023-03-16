@@ -247,6 +247,30 @@ function cargarReferencia(){
                     if(document.getElementById("subtotal_1") != null){
                         calcularSubTotalGlobal();   
                     }
+
+                    //buscar nc a la factura
+                    var parametros2 = {"folio_referencia": $('#folio_ref').val()};
+                    $.ajax({
+                        type: "POST",
+                        data:  parametros2,
+                        headers: {
+                            'apikey':'928e15a2d14d4a6292345f04960f4cc3' 
+                        },
+                        dataType: "json",
+                        url: "Clases/DTE.php?funcion=cargarDatosNC",
+
+                        success: function(data2) { 
+                            if (data2.length > 0) {
+                                //tiene refe
+                                console.log("tiene rref");
+                                $('#div_referencia').append('<span id="span_referencia" class="label bg-deep-orange">Tiene Nota Credito Folio: '+data2[0].folio+' Monto: '+data2[0].monto+'</span>');
+                                //swal("Advertencia", "Factura tiene una nota de credito Folio: "+data2[0].folio+" Monto: "+data2[0].monto, "warning");
+                                
+                            }else{
+                                $('#div_referencia').find('span').remove();
+                            }
+                        }
+                    });
                                                       
                     
                 }

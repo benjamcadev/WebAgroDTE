@@ -460,7 +460,7 @@
                                         </div>
                                     <div class="col-sm-2">
                                         <div class="form-group">
-                                            <div class="form-line">
+                                            <div class="form-line" id="div_referencia">
                                                 <small> Folio (*)</small>
                                                 <input id="folio_ref" type="text" class="form-control" placeholder="00000" onchange="cargarReferencia()" />
                                             </div>
