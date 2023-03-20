@@ -23,6 +23,7 @@
 
     <!-- JQuery DataTable Css -->
     <link href="plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css" rel="stylesheet">
+    <link href="plugins/jquery-datatable/skin/bootstrap/css/buttons.dataTables.min.css" rel="stylesheet">
 
     <!-- Custom Css -->
     <link href="css/style.css" rel="stylesheet">
@@ -638,7 +639,29 @@
                                 "oLanguage": {
                                      "sSearch": "Busqueda Rapida",
                                      "sLengthMenu": "Mostrar _MENU_ Registros",
-                                 }
+                                 },
+                                 dom: 'Blfrtip',
+                                 buttons: [
+                                    {
+                                        extend: 'excel',
+                                        title: 'Dte Recibidos - AgroDTE',
+                                        text: 'Excel',
+                                        className: 'btn bg-green btn-sm waves-effect'
+                                    },
+                                    {
+                                        extend: 'csv',
+                                        title: 'Dte Recibidos - AgroDTE',
+                                        text: 'CSV',
+                                        className: 'btn bg-teal btn-sm waves-effect'
+                                    },
+                                    {
+                                        extend: 'print',
+                                        title: 'Dte Recibidos - AgroDTE',
+                                        text: 'Imprimir',
+                                        className: 'btn bg-blue-grey btn-sm waves-effect'
+                                    }
+                                    
+                                    ]
                             } );
 
             }

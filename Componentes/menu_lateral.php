@@ -102,6 +102,28 @@
                             
                         </ul>
                     </li>
+                    <li id="lista_configuracion_menu">
+                        <a href="javascript:void(0);" class="menu-toggle">
+                            <i class="material-icons">settings</i>
+                            <span>CONFIGURACIÓN</span>
+                        </a>
+                        <ul class="ml-menu">
+                             <!--<li id="cargar_xml" >
+                                <a href="cargar_xml.php">Cargar XML</a>
+                            </li>-->
+                            <li>
+                                <a href="certificados.php">Certificado</a>
+                            </li>
+                            <li>
+                                <a href="caf.php">Caf</a>
+                            </li>
+                            <li>
+                                <a href="usuarios.php">Usuarios</a>
+                            </li>
+
+                                                     
+                        </ul>
+                    </li> 
                      <!-- <li id="lista_configuracion_menu">
                         <a href="javascript:void(0);" class="menu-toggle">
                             <i class="material-icons">settings</i>

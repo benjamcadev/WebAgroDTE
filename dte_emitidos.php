@@ -23,6 +23,8 @@
 
     <!-- JQuery DataTable Css -->
     <link href="plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css" rel="stylesheet">
+    <link href="plugins/jquery-datatable/skin/bootstrap/css/buttons.dataTables.min.css" rel="stylesheet">
+
 
     <!-- Custom Css -->
     <link href="css/style.css" rel="stylesheet">
@@ -352,7 +354,7 @@
                             <button onclick="descargarXML();" type="button" class="btn btn-default btn-circle-lg waves-effect waves-circle waves-float" data-toggle="tooltip" data-placement="bottom" title="Descargar XML">
                                     <i class="material-icons">settings_ethernet</i>
                             </button>
-                            <button onclick="anularDTE();" id="btn_anular" type="button" class="btn btn-default btn-circle-lg waves-effect waves-circle waves-float" data-toggle="tooltip" data-placement="bottom" title="Anular">
+                            <button onclick="anularDTE();" id="btn_anular" disabled="false" type="button" class="btn btn-default btn-circle-lg waves-effect waves-circle waves-float" data-toggle="tooltip" data-placement="bottom" title="Anular">
                                     <i class="material-icons">do_not_disturb</i>
                             </button>
 
@@ -471,12 +473,14 @@
     <script src="plugins/jquery-datatable/jquery.dataTables.js"></script>
     <script src="plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js"></script>
     <script src="plugins/jquery-datatable/extensions/export/dataTables.buttons.min.js"></script>
-    <script src="plugins/jquery-datatable/extensions/export/buttons.flash.min.js"></script>
+    <script src="plugins/jquery-datatable/extensions/export/dataTables.fixedHeader.min.js"></script>
     <script src="plugins/jquery-datatable/extensions/export/jszip.min.js"></script>
     <script src="plugins/jquery-datatable/extensions/export/pdfmake.min.js"></script>
     <script src="plugins/jquery-datatable/extensions/export/vfs_fonts.js"></script>
     <script src="plugins/jquery-datatable/extensions/export/buttons.html5.min.js"></script>
     <script src="plugins/jquery-datatable/extensions/export/buttons.print.min.js"></script>
+    <script src="plugins/jquery-datatable/extensions/export/buttons.flash.min.js"></script>
+    
 
     <!-- Custom Js -->
     <script src="js/admin.js"></script>
@@ -669,7 +673,29 @@
                                 "oLanguage": {
                                      "sSearch": "Busqueda Rapida",
                                      "sLengthMenu": "Mostrar _MENU_ Registros",
-                                 }
+                                 },
+                                 dom: 'Blfrtip',
+                                 buttons: [
+                                    {
+                                        extend: 'excel',
+                                        title: 'Dte Emitidos - AgroDTE',
+                                        text: 'Excel',
+                                        className: 'btn bg-green btn-sm waves-effect'
+                                    },
+                                    {
+                                        extend: 'csv',
+                                        title: 'Dte Emitidos - AgroDTE',
+                                        text: 'CSV',
+                                        className: 'btn bg-teal btn-sm waves-effect'
+                                    },
+                                    {
+                                        extend: 'print',
+                                        title: 'Dte Emitidos - AgroDTE',
+                                        text: 'Imprimir',
+                                        className: 'btn bg-blue-grey btn-sm waves-effect'
+                                    }
+                                    
+                                    ]
                             } );
 
             }
@@ -932,14 +958,18 @@
 
                                 $('#referencia_dte').empty();
                                 $("#referencia_dte").append("<h4><span class=\"label label-warning\">Anulada PARCIALMENTE con "+nombre_dte_ref+" Folio "+data[0].folio+"</span></h4>");
+                                $("#btn_anular").attr('disabled',true);
                                 //swal("Sin Registros", "No hay datos de DTE", "error");
                             }
                             if(data[0].monto == monto_global){
 
                                 $('#referencia_dte').empty();
                                 $("#referencia_dte").append("<h4><span class=\"label label-danger\">Anulada COMPLETAMENTE Con "+nombre_dte_ref+" Folio "+data[0].folio+"</span></h4>");
+                                $("#btn_anular").attr('disabled',true);
                                 //swal("Sin Registros", "No hay datos de DTE", "error");
                             }
+                        }else{
+                            $("#btn_anular").attr('disabled',false);
                         }
                         
                     }
@@ -1122,10 +1152,12 @@
                                             $("#canvas-pdf").css("width","40%");
                                             $("#canvas-pdf").css("height","40%");
                                             $("#canvas-pdf").css("margin-left","30%");
+                                            $("#canvas-pdf").css("box-shadow","0px 0px 12px 1px black");
                                          }else{
                                              $("#canvas-pdf").css("width","100%");
                                             $("#canvas-pdf").css("height","100%");
                                             $("#canvas-pdf").css("margin-left","0%");
+                                            $("#canvas-pdf").css("box-shadow","0px 0px 12px 1px black");
                                          }
                                        var canvas = document.getElementById('canvas-pdf');
                                        var unscaledViewport = page.getViewport({scale: scale});
@@ -1402,6 +1434,28 @@
                                     function(flag){
 
                                         if(flag){
+
+                                            //DIALOGO DE CARGA MIENTRAS SE ENVIA
+                                            swal({
+                                                title: '<div class="preloader pl-size-xl">'+
+                                                      '     <div class="spinner-layer pl-light-blue">'+
+                                                      '         <div class="circle-clipper left">'+
+                                                      '             <div class="circle"></div>'+
+                                                      '         </div>'+
+                                                      '         <div class="circle-clipper right">'+
+                                                      '             <div class="circle"></div>'+
+                                                      '         </div>'+
+                                                      '     </div>'+
+                                                      ' </div>', 
+                                                text: "EMITIENDO DOCUMENTO...",
+                                                showConfirmButton: false,
+                                                html: true,
+                                                showCancelButton: false,
+                                                closeOnConfirm: false,
+                                                showLoaderOnConfirm: true
+                                                //timer: 1800,           
+                                            });
+
                                             $.ajax({
                                                 type: "POST",
                                                 data:  parametros,
@@ -1409,31 +1463,7 @@
                                                     'apikey':'928e15a2d14d4a6292345f04960f4cc3' 
                                                 },
                                                 dataType: "json",
-                                                url: "Clases/DTE.php?funcion=leerXML", // la funcion lee el xml y ahi mismo emite el dte
-
-                                                beforeSend: function(){
-                                                    //DIALOGO DE CARGA MIENTRAS SE ENVIA
-                                                    swal({
-                                                        title: '<div class="preloader pl-size-xl">'+
-                                                              '     <div class="spinner-layer pl-light-blue">'+
-                                                              '         <div class="circle-clipper left">'+
-                                                              '             <div class="circle"></div>'+
-                                                              '         </div>'+
-                                                              '         <div class="circle-clipper right">'+
-                                                              '             <div class="circle"></div>'+
-                                                              '         </div>'+
-                                                              '     </div>'+
-                                                              ' </div>', 
-                                                        text: "EMITIENDO DOCUMENTO...",
-                                                        showConfirmButton: false,
-                                                        html: true,
-                                                        showCancelButton: false,
-                                                        closeOnConfirm: false,
-                                                        showLoaderOnConfirm: true
-                                                        //timer: 1800,           
-                                                    });
-                                                },
-
+                                                url: "Clases/DTE.php?funcion=leerXML", // la funcion lee el xml y ahi mismo emite el dte                                               
 
                                                 success: function(data) { 
 
@@ -1462,12 +1492,13 @@
                                         
                                                             }*/
                                                         );
+                                                        $("#btn_anular").attr('disabled',true);
                                         
                                                         //console.log(data['FOLIO']); 
                                                     }else{
                                                         swal("Error", "Detalle del error: "+JSON.stringify(dataJson), "error");
-                                                         // habilita el boton enviar 
-                                                        $('#btn_enviar').attr('disabled', false);  
+                                                        // habilita el boton enviar 
+                                                        //$('#btn_enviar').attr('disabled', false);  
                                                     }
                                                 }
                                             });

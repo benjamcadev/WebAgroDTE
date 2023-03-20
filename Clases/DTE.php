@@ -40,6 +40,16 @@ if ($apikey == "928e15a2d14d4a6292345f04960f4cc3") {
 
 			cargarDatosReceptor($rut_receptor);
 			break;
+		case 'cargarCaf':
+		
+				$estado_caf = $_POST['estado_caf'];
+				$rango_minimo_caf = $_POST['rango_minimo_caf'];
+				$rango_maximo_caf = $_POST['rango_maximo_caf'];
+				$tipo_documento_caf = $_POST['tipo_documento_caf'];
+				$fecha_caf = $_POST['fecha_caf'];
+				$ruta_caf = $_POST['ruta_caf'];
+				cargarCaf($estado_caf,$rango_minimo_caf,$rango_maximo_caf,$fecha_caf,$ruta_caf,$tipo_documento_caf);
+				break;
 
 		case 'cargarDatosReferencia':
 			$tipo_dte_referencia = $_POST['tipo_dte_referencia'];
@@ -74,6 +84,11 @@ if ($apikey == "928e15a2d14d4a6292345f04960f4cc3") {
 		case 'cargarEmitidosTabla':
 			
 			cargarEmitidosTabla();
+			break;
+		
+		case 'cargarCAFTabla':
+		
+			cargarCAFTabla();
 			break;
 
 		case 'busquedaAvanzada':
@@ -131,6 +146,39 @@ if ($apikey == "928e15a2d14d4a6292345f04960f4cc3") {
 	$mensaje = "apikey incorrecta";
 	print_r($mensaje);
 }
+
+	function cargarCAFTabla(){
+		$conexion = new conexion();
+		$sqlCaf = "SELECT * FROM xml_caf ";
+		$datosCaf = $conexion->obtenerDatos($sqlCaf);
+		print_r(json_encode($datosCaf));
+
+	}
+
+	function cargarCaf($estado_caf,$rango_minimo_caf,$rango_maximo_caf,$fecha_caf,$ruta_caf,$tipo_documento_caf){
+		
+
+		$target_dir = "../../AgroDTE_Archivos/CAF_PRUEBA/";
+		$target_file = $target_dir . basename($_FILES["file-0"]["name"]);
+
+		if (move_uploaded_file($_FILES["file-0"]["tmp_name"], $target_file)) {
+			//echo "The file ". htmlspecialchars( basename( $_FILES["file-0"]["name"])). " has been uploaded.";
+			$conexion = new conexion();
+			$sql_caf = "INSERT INTO xml_caf (estado_caf,rango_minimo_caf,rango_maximo_caf,tipo_documento_caf,fecha_caf,ruta_caf) VALUES ($estado_caf, $rango_minimo_caf,$rango_maximo_caf,$tipo_documento_caf,\"$fecha_caf\",\"$ruta_caf\")";
+			$conexion->ejecutarQuery($sql_caf);
+			print_r("ok");
+
+		  } else {
+			echo "Sorry, there was an error uploading your file.";
+		  }
+
+
+		
+
+		
+
+
+	}
 
 	function consultarProductoCodigoPSQL($codigo){
 	$conexion = new conexionPSQL();

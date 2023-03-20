@@ -270,65 +270,11 @@
 
                              <div id="contenedor_tabla" class="row clearfix">
 
-                                <!-- <div class="col-md-12">
-                                    <div class="btn-group btn-group-justified" role="group" aria-label="Justified button group">
-                                <a href="javascript:void(0);" class="btn bg-pink waves-effect" role="button">REGISTRO</a>
-                                <a href="javascript:void(0);" class="btn bg-pink waves-effect" role="button">PENDIENTES</a>
-                                <a href="javascript:void(0);" class="btn bg-pink waves-effect" role="button">NO INCLUIDOS</a>
-                                <a href="javascript:void(0);" class="btn bg-pink waves-effect" role="button">RECLAMADOS</a>
-                                    </div>
-                                </div> -->
+                               
+                            </div>
+                            <div id="contenedor_tabla_sii" class="row clearfix">
 
-                            <!--  <div class="col-md-12">
-                                <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Tipo Documentos</th>
-                                        <th>Total Documentos</th>
-                                        <th>Exento</th>
-                                        <th>Neto</th>
-                                        <th>IVA</th>
-                                        <th>IVA Uso Común</th>
-                                        <th>IVA No Recuperable</th>
-                                        <th>Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <th>Factura Electrónica (33)</th>
-                                        <td>413</td>
-                                        <td>1.332.263</td>
-                                        <td>454.854.223</td>
-                                        <td>86.422.322</td>
-                                        <td>0</td>
-                                        <td>0</td>
-                                        <td>542.386.287</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Factura no Afecta o Exenta Electrónica (34)</th>
-                                        <td>413</td>
-                                        <td>1.332.263</td>
-                                        <td>454.854.223</td>
-                                        <td>86.422.322</td>
-                                        <td>0</td>
-                                        <td>0</td>
-                                        <td>542.386.287</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Nota de Crédito Electrónica (61)</th>
-                                        <td>413</td>
-                                        <td>1.332.263</td>
-                                        <td>454.854.223</td>
-                                        <td>86.422.322</td>
-                                        <td>0</td>
-                                        <td>0</td>
-                                        <td>542.386.287</td>
-                                    </tr>
-                                    
-                                    
-                                </tbody>
-                            </table>
-                             </div>   --> 
+                               
                             </div>
 
                         </div>
@@ -513,8 +459,118 @@
         }); 
 
     }
+
+    
+    function busquedaCompra(){
+
+                var mes = $('#select_month option:selected').val();
+                if (mes.length == 0) {
+                    alert("No has seleccionado un mes");
+                    return;
+                }
+
+                    var year = $('#select_year option:selected').val();
+                if (year.length == 0) {
+                    alert("No has seleccionado un año");
+                    return;
+                }
+
+                
+
+                var parametros = {
+                "rutEmisor": "76958430",
+                "dvEmisor": "7",
+                "month": mes,
+                "year": year
+                        
+                };
+
+
+
+                //TRAER DATOS DESDE EL SII
+                $.ajax({
+                type: 'POST',
+                data:  parametros,
+                headers: {
+                        'apikey':'928e15a2d14d4a6292345f04960f4cc3' 
+                    },
+                dataType: "json",
+                url: "Clases/Registros.php?funcion=consultarComprasRegistro",
+                success:function(data){
+                console.log(JSON.parse(data));
+
+                data = JSON.parse(data);
+
+
+
+                $("#contenedor_tabla").empty();
+                $("#contenedor_tabla_sii").empty();
+
+                /*var table_card_head = '<div class="col-md-12">'+
+                '                                    <div class="btn-group btn-group-justified" role="group" aria-label="Justified button group">'+
+                '                                <a onclick="busquedaCompra(\'REGISTRO\')" class="btn bg-pink waves-effect" role="button">REGISTRO</a>'+
+                '                                <a onclick="busquedaCompra(\'PENDIENTE\')" class="btn bg-pink waves-effect" role="button">PENDIENTES</a>'+
+                '                                <a onclick="busquedaCompra(\'NO_INCLUIR\')" class="btn bg-pink waves-effect" role="button">NO INCLUIDOS</a>'+
+                '                                <a onclick="busquedaCompra(\'RECLAMADO\')" class="btn bg-pink waves-effect" role="button">RECLAMADOS</a>'+
+                '                                    </div>'+
+                            '</div>';
+                $("#contenedor_tabla").append(table_card_head);*/
+
+                var table_body = '<div class="col-md-12"><h3>Registro de AgroDTE</h3>  <button type="button" onclick="fnExcelReport(\'tabla_compras\')" class="btn bg-green waves-effect">EXPORTAR EXCEL</button>'+
+                            '<button type="button" onclick="busquedaCompraSII(\'REGISTRO\')" class="btn bg-blue waves-effect">VER DATOS DEL SII</button>'+
+                            '<table id="tabla_compras" class="table table-striped">'+
+                            '<thead>'+
+                                '<tr>'+
+                                '<th>Tipo Documentos</th>'+
+                                '<th>Total Documentos</th>'+
+                                '<th>Exento</th>'+
+                                '<th>Neto</th>'+
+                                '<th>IVA</th>'+
+                                '<th>Total</th>'+
+                                '</tr>'+
+                            '</thead>'+
+                            '<tbody id="body_table">'+
+                            '</tbody>'+
+                            '</table>'+
+                            '</div>';
+                $("#contenedor_tabla").append(table_body);  
+
+                var formatter = new Intl.NumberFormat('es-CL', {style: 'currency',currency: 'CLP'});
+
+                if (data["data"].length == 0) {
+                    swal("Sin Registros", "No hay datos de DTE", "warning");
+                    return;
+                }
+                                                
+
+
+                for (var i = 0; i < data["data"].length; i++) {
+                                
+                    
+                                //IMPRIMIR EL MES Y CANTIDAD EN LA CARD DEL AÑO
+                            var fila = '<tr>'+
+                                '<td>'+data["data"][i]["dcvNombreTipoDoc"]+'</td>'+
+                                '<td>'+data["data"][i]["rsmnTotDoc"]+'</td>'+
+                                '<td>'+formatter.format(data["data"][i]["rsmnMntExe"])+'</td>'+
+                                '<td>'+formatter.format(data["data"][i]["rsmnMntNeto"])+'</td>'+
+                                '<td>'+formatter.format(data["data"][i]["rsmnMntIVA"])+'</td>'+
+                                '<td>'+formatter.format(data["data"][i]["rsmnMntTotal"])+'</td>'+
+                                '</tr>';
+
+                                $("#body_table").append(fila);
+
+                                
+                            }            
+
+
+                }
+                });   
+
+}
           
-            function busquedaCompra(estadoContab){
+            function busquedaCompraSII(estadoContab){
+
+                //estadoContab = REGISTRO
 
                  var mes = $('#select_month option:selected').val();
                     if (mes.length == 0) {
@@ -553,20 +609,20 @@
             success:function(data){
                 console.log(data);
 
-                  $("#contenedor_tabla").empty();
+                  $("#contenedor_tabla_sii").empty();
 
-                var table_card_head = '<div class="col-md-12">'+
+                var table_card_head = '<div class="col-md-12"><h3>Registro de SII</h3> '+
 '                                    <div class="btn-group btn-group-justified" role="group" aria-label="Justified button group">'+
-'                                <a onclick="busquedaCompra(\'REGISTRO\')" class="btn bg-pink waves-effect" role="button">REGISTRO</a>'+
-'                                <a onclick="busquedaCompra(\'PENDIENTE\')" class="btn bg-pink waves-effect" role="button">PENDIENTES</a>'+
-'                                <a onclick="busquedaCompra(\'NO_INCLUIR\')" class="btn bg-pink waves-effect" role="button">NO INCLUIDOS</a>'+
-'                                <a onclick="busquedaCompra(\'RECLAMADO\')" class="btn bg-pink waves-effect" role="button">RECLAMADOS</a>'+
+'                                <a onclick="busquedaCompraSII(\'REGISTRO\')" class="btn bg-pink waves-effect" role="button">REGISTRO</a>'+
+'                                <a onclick="busquedaCompraSII(\'PENDIENTE\')" class="btn bg-pink waves-effect" role="button">PENDIENTES</a>'+
+'                                <a onclick="busquedaCompraSII(\'NO_INCLUIR\')" class="btn bg-pink waves-effect" role="button">NO INCLUIDOS</a>'+
+'                                <a onclick="busquedaCompraSII(\'RECLAMADO\')" class="btn bg-pink waves-effect" role="button">RECLAMADOS</a>'+
 '                                    </div>'+
                                 '</div>';
-                $("#contenedor_tabla").append(table_card_head);
+                $("#contenedor_tabla_sii").append(table_card_head);
 
-                var table_body = ' <div class="col-md-12"><button type="button" onclick="fnExcelReport()" class="btn bg-green waves-effect">EXPORTAR EXCEL</button>'+
-                                '<table id="tabla_compras" class="table table-striped">'+
+                var table_body = ' <div class="col-md-12"><button type="button" onclick="fnExcelReport(\'tabla_sii\')" class="btn bg-green waves-effect">EXPORTAR EXCEL</button>'+
+                                '<table id="tabla_compras_sii" class="table table-striped">'+
                                 '<thead>'+
                                  '<tr>'+
                                     '<th>Tipo Documentos</th>'+
@@ -579,11 +635,11 @@
                                     '<th>Total</th>'+
                                     '</tr>'+
                                 '</thead>'+
-                                '<tbody id="body_table">'+
+                                '<tbody id="body_table_sii">'+
                                 '</tbody>'+
                                 '</table>'+
                                 '</div>';
-                $("#contenedor_tabla").append(table_body);  
+                $("#contenedor_tabla_sii").append(table_body);  
 
                 var formatter = new Intl.NumberFormat('es-CL', {style: 'currency',currency: 'CLP'});
 
@@ -609,7 +665,7 @@
                                     '<td>'+formatter.format(data["data"][i]["rsmnMntTotal"])+'</td>'+
                                     '</tr>';
 
-                                    $("#body_table").append(fila);
+                                    $("#body_table_sii").append(fila);
 
                                     
                                 }              
@@ -620,10 +676,18 @@
 
         }
 
-            function fnExcelReport(){
+    function fnExcelReport(tabla){
     var tab_text="<table border='2px'><tr bgcolor='#87AFC6'>";
     var textRange; var j=0;
-    tab = document.getElementById('tabla_compras'); // id of table
+    var tab = "";
+    if (tabla == "tabla_sii") {
+        tab = document.getElementById('tabla_compras_sii'); // id of table
+    }else if(tabla == "tabla_compras"){
+        tab = document.getElementById('tabla_compras'); // id of table
+    }
+        
+    
+   
 
     for(j = 0 ; j < tab.rows.length ; j++) 
     {     

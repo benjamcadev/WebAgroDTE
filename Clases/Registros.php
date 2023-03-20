@@ -41,7 +41,14 @@ if ($apikey == "928e15a2d14d4a6292345f04960f4cc3") {
 			$year = $_POST['year'];
 			consultarVentasRegistro($dvEmisor,$rutEmisor,$month,$year);
 			break;
-
+		case 'consultarComprasRegistro':
+			
+				$dvEmisor = $_POST['dvEmisor'];
+				$rutEmisor = $_POST['rutEmisor'];
+				$month = $_POST['month'];
+				$year = $_POST['year'];
+				consultarComprasRegistro($dvEmisor,$rutEmisor,$month,$year);
+				break;
 		case 'busquedaRegistroBoletas':
 			
 			$dvEmisor = $_POST['dvEmisor'];
@@ -162,7 +169,6 @@ function busquedaRegistroBoletas($dvEmisor,$rutEmisor,$month,$year){
 
 }
 
-
 function consultarVentasRegistro($dvEmisor,$rutEmisor,$month,$year){
 
 	$month_ingles = "";
@@ -202,6 +208,101 @@ function consultarVentasRegistro($dvEmisor,$rutEmisor,$month,$year){
         if ($tipos_dte[$i] == "61") {$tabla_dte = "nota_credito"; $fecha_dte = "fchemis_";$nombre_dte = "Nota Credito Electronica";};
         if ($tipos_dte[$i] == "56") {$tabla_dte = "nota_debito"; $fecha_dte = "fchemis_";$nombre_dte = "Nota Debito Electronica";};
         if ($tipos_dte[$i] == "52") {$tabla_dte = "guia_despacho"; $fecha_dte = "fchemis_";$nombre_dte = "Guia Despacho Electronica";};
+
+
+		$sql = "SELECT COUNT(*) AS cantidad, SUM(mnttotal_".$tabla_dte.") AS monto_total FROM ".$tabla_dte." WHERE ".$fecha_dte.$tabla_dte." BETWEEN '".$year."-".$month."-".$first_day."' AND '".$year."-".$month."-".$last_day."'";
+
+		
+		$datos = $conexion->obtenerDatos($sql);
+
+		
+
+		
+
+		$monto_neto = 0;
+		$monto_exento = 0;
+		$iva = 0;
+
+		if ($datos[0]["monto_total"] == null) {
+			$datos[0]["monto_total"] = 0;
+		}
+
+
+		//Calcular IVA y Neto
+		if ($tipos_dte[$i] == "34" || $tipos_dte[$i] == "41") {
+		$monto_exento = $datos[0]["monto_total"];
+		$monto_neto = 0;
+		$iva = 0;
+
+		}else{
+		$monto_neto = ($datos[0]["monto_total"] * 100) / 119;
+		$iva = $datos[0]["monto_total"] - $monto_neto;
+		$monto_exento = 0;
+		}
+
+		$respuesta = '{"dcvNombreTipoDoc": "'.$nombre_dte.'","rsmnTotDoc": '.$datos[0]["cantidad"].', "rsmnMntTotal": '.$datos[0]["monto_total"].', "rsmnMntNeto": '.$monto_neto.', "rsmnMntIVA": '.$iva.', "rsmnMntExe": '.$monto_exento.'}';
+
+		array_push($respuestas_dte_array, $respuesta);
+		
+
+	}
+
+	$respuesta_final = '{"data":[';
+
+	for ($i=0; $i < count($respuestas_dte_array); $i++) { 
+
+		/*if (count($respuestas_dte_array) - 1 = $i) {
+			// code...
+		}*/
+		$respuesta_final = $respuesta_final.$respuestas_dte_array[$i].',';
+	}
+
+	$respuesta_final = rtrim($respuesta_final, ", ");
+	$respuesta_final = $respuesta_final.'] }';
+
+
+	print_r(json_encode($respuesta_final));
+
+}
+
+
+function consultarComprasRegistro($dvEmisor,$rutEmisor,$month,$year){
+
+	$month_ingles = "";
+
+	if ($month == "01") {$month_ingles = "January";}
+	if ($month == "02") {$month_ingles = "February";}
+	if ($month == "03") {$month_ingles = "March";}
+	if ($month == "04") {$month_ingles = "April";}
+	if ($month == "05") {$month_ingles = "May";}
+	if ($month == "06") {$month_ingles = "June";}
+	if ($month == "07") {$month_ingles = "July";}
+	if ($month == "08") {$month_ingles = "August";}
+	if ($month == "09") {$month_ingles = "September";}
+	if ($month == "10") {$month_ingles = "October";}
+	if ($month == "11") {$month_ingles = "November";}
+	if ($month == "12") {$month_ingles = "December";}
+
+	$first_day = date('d',strtotime('first day of '.$month_ingles.' '.$year, time()));
+	$last_day = date('d',strtotime('last day of '.$month_ingles.' '.$year, time()));
+
+	$conexion = new conexion();
+
+	$tipos_dte = array("33","34","61","52","56");
+
+	$respuestas_dte_array = array();
+
+	for ($i=0; $i <  count($tipos_dte); $i++) { 
+
+		$tabla_dte = "";
+		$fecha_dte = "";
+		$nombre_dte = "";
+
+		if ($tipos_dte[$i] == "33") {$tabla_dte = "factura_compra"; $fecha_dte = "fchemis_";$nombre_dte = "Factura Electronica";};
+        if ($tipos_dte[$i] == "34") {$tabla_dte = "factura_exenta_compra"; $fecha_dte = "fchemis_";$nombre_dte = "Factura Exenta";};
+        if ($tipos_dte[$i] == "61") {$tabla_dte = "nota_credito_compra"; $fecha_dte = "fchemis_";$nombre_dte = "Nota Credito Electronica";};
+        if ($tipos_dte[$i] == "56") {$tabla_dte = "nota_debito_compra"; $fecha_dte = "fchemis_";$nombre_dte = "Nota Debito Electronica";};
+        if ($tipos_dte[$i] == "52") {$tabla_dte = "guia_despacho_compra"; $fecha_dte = "fchemis_";$nombre_dte = "Guia Despacho Electronica";};
 
 
 		$sql = "SELECT COUNT(*) AS cantidad, SUM(mnttotal_".$tabla_dte.") AS monto_total FROM ".$tabla_dte." WHERE ".$fecha_dte.$tabla_dte." BETWEEN '".$year."-".$month."-".$first_day."' AND '".$year."-".$month."-".$last_day."'";

@@ -261,7 +261,7 @@
 
                                 <div class="col-md-2">
                                     <div class="form-line">
-                                         <button onclick="busquedaVenta('REGISTRO')" type="button" class="btn bg-purple btn-circle-lg waves-effect waves-circle waves-float">
+                                         <button onclick="busquedaVenta()" type="button" class="btn bg-purple btn-circle-lg waves-effect waves-circle waves-float">
                                     <i class="material-icons">search</i>
                                 </button>
                                     </div>

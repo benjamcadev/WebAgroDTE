@@ -360,7 +360,7 @@ function EnviarDatos(){
 
                 }
 
-                if(document.getElementById("codigo_"+(i+1)) != null){
+                if(document.getElementById("codigo_"+(i+1)) != ""){
                     parametros = parametros + '"CdgItem":{'+ 
     '                    "TpoCodigo":"INT1",'+
     '                    "VlrCodigo": "'+ array_codigo[i] +'"},' ;
