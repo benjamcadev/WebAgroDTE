@@ -212,7 +212,7 @@
         </aside>
         <!-- #END# Right Sidebar -->
     </section>
-
+    <!-- AQUI COMIENZA LA VISUAL -->
     <section class="content">
         <div class="container-fluid">
             <div class="block-header">
@@ -228,7 +228,14 @@
                         <div class="header">
                             <h2>
                                 DTE EMITIDOS
+                            
+                            <div class="alert alert-warning">
+                            <strong>IMPORTANTE!</strong> Se estan realizando cambios en esta pagina. Disculpe las molestias
+                            </div>
 
+                            <div class="alert alert-warning" id="warning_detalle" style="display: none;">
+                            <strong>IMPORTANTE!</strong> <p style="font-size: 15px;">La busqueda de detalle por producto solo se realiza en los ultimos 4 meses desde la fecha actual. Debido a la gran carga de datos preguntados al servidor.</p>
+                            </div>
                                 
                             </h2>
                             <ul class="header-dropdown m-r--5">
@@ -246,98 +253,113 @@
 
                         </div>
                         <div class="body">
-                             <div class="row clearfix">
-
-                              <p>
-                                        <b>Busqueda Avanzada</b>
-                                    </p>
-                             <div class="col-md-5">
-                                  
+                            <div class="row clearfix">
+                                <!-- Busqueda por filtro dentro de la tabla cargada, max 5000 registros -->
+                                <p>
+                                    <b>Busqueda Avanzada</b>
+                                </p>
+                                <div class="col-md-5">                                  
+                                    <div class="input-group input-group-lg">                                       
+                                        <div class="form-line">
+                                            <select id="select_busqueda_avanzada" onchange="selectBusquedaAvanzada(this);" class="form-control ">
+                                                <option value="">-- Selecciona Filtro --</option>
+                                                <option  value="select_folio">Folio</option>
+                                                <option value="select_rut">Rut Receptor</option>
+                                                <option value="select_fecha">Fecha Emision</option>
+                                                <option value="select_monto">Monto Total</option>
+                                                <option value="select_tipo">Tipo de Documento</option>
+                                                <option value="select_detalle">Detalle Productos</option>
+                                            </select>
+                                        </div>
+                                    </div>                                   
+                                </div>
+                                <!-- Containers de datos -->
+                                <div class="col-md-6">
                                     <div class="input-group input-group-lg">
-                                        
-                                       
-                                    <div class="form-line">
-                                    <select id="select_busqueda_avanzada" onchange="selectBusquedaAvanzada(this);" class="form-control ">
-                                        <option value="">-- Selecciona Filtro --</option>
-                                        <option  value="select_folio">Folio</option>
-                                        <option value="select_rut">Rut Receptor</option>
-                                        <option value="select_fecha">Fecha Emision</option>
-                                        <option value="select_monto">Monto Total</option>
-                                        <option value="select_tipo">Tipo de Documento</option>
-                                        <option value="select_detalle">Detalle Productos</option>
-                                    </select>
+                                        <div id="container_folio" class="form-line" style="display: none;">
+                                            <input id="input_folio" type="text" class="form-control" placeholder="Ingresa Folio">
+                                        </div>
+                                    <!-- Contenedor con revisión de rut, chequea que sea un rut valido -->
+                                        <div id="container_rut" class="form-line" style="display: none;">
+                                            <input id="input_rut" onchange="checkRut(this)" type="text" class="form-control" placeholder="Ingresa Rut">
+                                        </div>
+                                        <div id="container_fecha" class="form-line" style="display: none;">
+                                            <input id="input_fecha" type="text" class="form-control" placeholder="Ingresa Fecha">
+                                        </div>
+                                        <div id="container_monto_total" class="form-line" style="display: none;">
+                                            <input id="input_monto_total" type="number" class="form-control" placeholder="Ingresa Monto Total">
+                                        </div>
+                                        <div id="container_tipo_dte" class="form-line" style="display: none;">
+                                            <select id="input_tipo_dte" class="form-control ">
+                                                <option value="">-- Selecciona DTE --</option>
+                                                <option value="select_factura">Factura</option>
+                                                <option value="select_factura_exenta">Factura Exenta</option>
+                                                <option value="select_nota_credito">Nota de Credito</option>
+                                                <option value="select_nota_debito">Nota de Debito</option>
+                                                <option value="select_guia_despacho">Guia de Despacho</option>
+                                                <option value="select_boleta">Boleta</option>
+                                                <option value="select_boleta_exenta">Boleta Exenta</option>
+                                            </select>
+                                        </div>
+                                        <div id="container_detalle" class="form-line" style="display: none;">
+                                            <input id="input_detalle" type="text" class="form-control" placeholder="Ingresa un Producto" multiple>
+                                        </div>
+                                        <div id="container_detalle2" class="form-line" style="display: none;">
+                                            <input id="input_detalle2" type="text" class="form-control" placeholder="Ingresa otro Producto Opcional" multiple>
                                         </div>
                                     </div>
-                                   
                                 </div>
-                                <div class="col-md-6">
-                                     <div class="input-group input-group-lg">
-
-                                     <div id="container_folio" class="form-line" style="display: none;">
-                                            <input id="input_folio" type="text" class="form-control" placeholder="Ingresa Folio">
-                                    </div>
-
-                                     <div id="container_rut" class="form-line" style="display: none;">
-                                            <input id="input_rut" onchange="checkRut(this)" type="text" class="form-control" placeholder="Ingresa Rut">
-                                    </div>
-                                     <div id="container_fecha" class="form-line" style="display: none;">
-                                            <input id="input_fecha" type="text" class="form-control" placeholder="Ingresa Fecha">
-                                    </div>
-                                     <div id="container_monto_total" class="form-line" style="display: none;">
-                                            <input id="input_monto_total" type="number" class="form-control" placeholder="Ingresa Monto Total">
-                                    </div>
-                                    <div id="container_tipo_dte" class="form-line" style="display: none;">
-                                    <select id="input_tipo_dte" class="form-control ">
-                                        <option value="">-- Selecciona DTE --</option>
-                                        <option value="select_factura">Factura</option>
-                                        <option value="select_factura_exenta">Factura Exenta</option>
-                                        <option value="select_nota_credito">Nota de Credito</option>
-                                        <option value="select_nota_debito">Nota de Debito</option>
-                                        <option value="select_guia_despacho">Guia de Despacho</option>
-                                        <option value="select_boleta">Boleta</option>
-                                        <option value="select_boleta_exenta">Boleta Exenta</option>
-                                    </select>
-                                    </div>
-
-                                    <div id="container_detalle" class="form-line" style="display: none;">
-                                            <input id="input_detalle" type="text" class="form-control" placeholder="Ingresa un Producto">
-                                    </div>
-                                  
-
-
-                                </div>
-                                </div>
-                                 <div class="col-md-1">
+                                <div class="col-md-1">
                                      <button onclick="busquedaAvanzada()" type="button" class="btn bg-purple btn-circle-lg waves-effect waves-circle waves-float">
                                     <i class="material-icons">search</i>
                                 </button>
-                                 </div>
+                                </div>
 
+                               
+                            </div>
+                            <div class="row clearfix">
+                                    <div class="col-md-2">
+                                            <div class="input-group input-group-lg">   
+                                                <div class="switch">
+                                                    <label><input id="switch_fechas" type="checkbox" onclick="activarFechas()"><span class="lever"></span>FILTRO PERIODOS</label>
+                                                </div>
+                                            </div>   
+                                    </div>
+                            
+                                    <div class="col-md-5">
+                                            <div class="input-group input-group-lg">   
+                                                <div id="container_fecha_inicial" class="form-line" style="display: none;">
+                                                    <input id="input_fecha_inicial" type="text" class="form-control" placeholder="Ingresa Fecha">
+                                                </div>
+                                            </div>   
+                                    </div>
+                           
+                                    <div class="col-md-5">
+                                            <div class="input-group input-group-lg">   
+                                                <div id="container_fecha_final" class="form-line" style="display: none;">
+                                                    <input id="input_fecha_final" type="text" class="form-control" placeholder="Ingresa Fecha">
+                                                </div>
+                                            </div>   
+                                    </div>
                             </div>
                             <div class="table-responsive">
-                                <table id="tabla_dte_emitidos" class="table table-bordered table-striped table-hover js-basic-example dataTable">
-                                   
-                                   
-                                    
+                                <table id="tabla_dte_emitidos" class="table table-bordered table-striped table-hover js-basic-example dataTable">                              
                                 </table>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <!-- #END# Basic Examples -->
-            
+            </div>   
         </div>
     </section>
-
+    <!-- Modal con opciones para PDF se muestra solo al generar un DTE para su visualización -->
      <section class="content">
         <div class="container-fluid">
             <!-- Large Size -->
             <div class="modal fade" id="pdfModal" tabindex="-1" role="dialog">
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
-                        <div class="modal-header">
-                       
+                        <div class="modal-header">                       
 
                             <button onclick="imprimirPDF();" type="button" style="margin-left: 3%;" class="btn btn-default btn-circle-lg waves-effect waves-circle waves-float" data-toggle="tooltip" data-placement="bottom" title="Imprimir">
                                     <i class="material-icons">print</i>
@@ -357,27 +379,14 @@
                             <button onclick="anularDTE();" id="btn_anular" disabled="false" type="button" class="btn btn-default btn-circle-lg waves-effect waves-circle waves-float" data-toggle="tooltip" data-placement="bottom" title="Anular">
                                     <i class="material-icons">do_not_disturb</i>
                             </button>
-
-                             <button type="button" class="close" data-dismiss="modal">&times;</button>
-
-                    
-
-                             
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>                             
                         </div>
                         <div class="modal-header" id="referencia_dte">
-
-                        </div>
-                        
-                        <div class="modal-header" id="acuses_dte">
-
-                     
-                        
-                        </div>
-                        
-                        <div class="modal-body" id="pdfModal_body">
-                       
-                            <canvas style="width: 100%; height: 100%;"  id="canvas-pdf"></canvas>
-                           
+                        </div>                        
+                        <div class="modal-header" id="acuses_dte">                 
+                        </div>                        
+                        <div class="modal-body" id="pdfModal_body">                       
+                            <canvas style="width: 100%; height: 100%;"  id="canvas-pdf"></canvas>                           
                         </div>
                         <div class="modal-footer">                            
                             <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">Cerrar</button>
@@ -386,9 +395,10 @@
                 </div>
             </div>
         </div>
-      </section> 
+    </section> 
 
-     <section class="content">
+    <!-- Modal para enviar PDF y XML por correo -->
+    <section class="content">
         <div class="container-fluid">
              <!-- Default Size -->
             <div class="modal fade" id="correoModal" tabindex="-1" role="dialog">
@@ -513,6 +523,7 @@
     <!-- Print JS Plugin Js -->
     <script src="plugins/print-js/print.min.js"></script>
 
+    <!-- Funciones de la pagina -->
     <script type="text/javascript">
         window.onload = function() {
 
@@ -521,30 +532,66 @@
             cargarEmitidosTabla();
 
                //Bootstrap datepicker plugin
-    $('#container_fecha input').datepicker({
-        autoclose: true,
-        container: '#container_fecha',
-        format: 'yyyy-mm-dd',
-        language: 'es'
-        
-    });
+            $('#container_fecha input').datepicker({
+                autoclose: true,
+                container: '#container_fecha',
+                format: 'yyyy-mm-dd',
+                language: 'es'
+            });
+                //Bootstrap datepicker plugin
+                $('#container_fecha_inicial input').datepicker({
+                autoclose: true,
+                container: '#container_fecha_inicial',
+                format: 'yyyy-mm-dd',
+                language: 'es'
+            });
+                
+                 //Bootstrap datepicker plugin
+                 $('#container_fecha_final input').datepicker({
+                autoclose: true,
+                container: '#container_fecha_final',
+                format: 'yyyy-mm-dd',
+                language: 'es'
+            });
         }
 
          //Tooltip
-    $('[data-toggle="tooltip"]').tooltip({
-        container: 'body'
-    });
+        $('[data-toggle="tooltip"]').tooltip({
+            container: 'body'
+        });
 
     
 
- //VARIABLES GLOBALES
- var pdf_base64 = ""; 
- var xml_base64 = "";
- var folio_global = "";
- var tipo_dte_global = "";
- var monto_global = "";       
+        //VARIABLES GLOBALES
+        var pdf_base64 = ""; 
+        var xml_base64 = "";
+        var folio_global = "";
+        var tipo_dte_global = "";
+        var monto_global = "";   
+        
+        function activarFechas(){
+            
 
-    function checkRut(rut) {
+            if ($('#switch_fechas').prop('checked')) {
+                $('#container_fecha_inicial').show();
+                $('#container_fecha_final').show();
+            }else{
+                $('#container_fecha_final').hide();
+                $('#container_fecha_inicial').hide();
+                $('#input_fecha_inicial').val('');
+                $('#input_fecha_final').val('');
+                
+                
+
+                
+                
+
+            }
+        }
+
+        // Funcion que checkea y valida el RUT
+
+         function checkRut(rut) {
             //capturar rut
             // Despejar Puntos
             var valor = rut.value.replace('.','');
@@ -593,8 +640,7 @@
             rut.setCustomValidity('');
 
 
-            
-    }
+        }
 
             function rutInvalido(){
             swal("Error", "Rut invalido", "error");
@@ -605,9 +651,9 @@
             }
 
             function cargarEmitidosTabla(){
-               var parametros = {
+                var parametros = {
                             
-                    };     
+                };     
             $.ajax({
                         type: "POST",
                         data:  parametros,
@@ -628,14 +674,18 @@
 
           
             function cargarTabla(data){
+               
                 $('#tabla_dte_emitidos').DataTable( {
 
                               data: data,
-                               "order": [[ 4, 'desc' ]],
+                               "order": [[ 7, 'desc' ]],
                                //"ordering": false,
                                 columns: [
                                     { title: "Folio",data: 'folio' },
                                      { title: "DTE",data: 'tipo_dte',render: function(data){
+
+                                                                                       
+
                                                                                         if (data == "33") {return "Factura"};
                                                                                         if (data == "34") {return "Factura Exenta"};
                                                                                         if (data == "39") {return "Boleta"};
@@ -646,12 +696,48 @@
                                                                                         return data;
 
                                                                                     }},
+                                    { title: "Rut",data: 'rut' },
                                     { title: "Razon Social",data: 'razon_social',render: function(data,type, row, meta){
+
                                                                                             if (row['tipo_dte'] == "39" || row['tipo_dte'] == "41") {
                                                                                                 return "Cliente Anonimo";
                                                                                             }
                                                                                             return data;
                                     } },
+                                    { title: "Neto",data: 'monto_total',render: function(data,type, row, meta){
+
+                                                                                            let formatter = new Intl.NumberFormat('es-CL', {
+                                                                                                style: 'currency',
+                                                                                                currency: 'CLP'
+                                                                                            });
+
+                                                                                            let neto = 0;
+
+                                                                                            if(row['tipo_dte'] == "34"){
+                                                                                                neto = data;
+                                                                                            }else{
+                                                                                                neto = Math.round(data/1.19);
+                                                                                            }                                                                                            
+                                                                                            
+                                                                                            return formatter.format(neto);
+                                    }},
+                                    { title: "IVA",data: 'monto_total',render: function(data,type, row, meta){
+
+                                                                                            let formatter = new Intl.NumberFormat('es-CL', {
+                                                                                                style: 'currency',
+                                                                                                currency: 'CLP'
+                                                                                            });
+
+                                                                                            let iva = 0;
+
+                                                                                            if(row['tipo_dte'] == "34"){
+                                                                                                iva = 0;
+                                                                                            }else{
+                                                                                                iva = Math.round(data * (19/119));
+                                                                                            }
+                                                                                            
+                                                                                            return formatter.format(iva);
+                                    }},
 
                                     { title: "Monto Total",data: 'monto_total',render: function(data){
                                                                                         var formatter = new Intl.NumberFormat('es-CL', {
@@ -1206,7 +1292,8 @@
                         $('#container_monto_total').hide();
                         $('#container_tipo_dte').hide();
                         $('#container_detalle').hide();
-
+                        $('#container_detalle2').hide();
+                        $('#warning_detalle').hide();
                         break;
                     case "select_rut":
                         $('#container_folio').hide();
@@ -1215,7 +1302,8 @@
                         $('#container_monto_total').hide();
                         $('#container_tipo_dte').hide();
                         $('#container_detalle').hide();
-                        
+                        $('#container_detalle2').hide();
+                        $('#warning_detalle').hide();
                         break;
                     case "select_fecha":
                         $('#container_folio').hide();
@@ -1224,7 +1312,8 @@
                         $('#container_monto_total').hide();
                         $('#container_tipo_dte').hide();
                         $('#container_detalle').hide();
-                        
+                        $('#container_detalle2').hide();
+                        $('#warning_detalle').hide();
                         break;
                     case "select_monto":
                         $('#container_folio').hide();
@@ -1233,6 +1322,8 @@
                         $('#container_monto_total').show();
                         $('#container_tipo_dte').hide();
                         $('#container_detalle').hide();
+                        $('#container_detalle2').hide();
+                        $('#warning_detalle').hide();
                         break;
                     case "select_tipo":
                         $('#container_folio').hide();
@@ -1241,6 +1332,8 @@
                         $('#container_monto_total').hide();
                         $('#container_tipo_dte').show();
                         $('#container_detalle').hide();
+                        $('#container_detalle2').hide();
+                        $('#warning_detalle').hide();
                         break;
                      case "select_detalle":
                         $('#container_folio').hide();
@@ -1249,6 +1342,8 @@
                         $('#container_monto_total').hide();
                         $('#container_tipo_dte').hide();
                         $('#container_detalle').show();
+                        $('#container_detalle2').show();
+                        $('#warning_detalle').show();
                         break;    
                       default:
                         // code block
@@ -1259,17 +1354,20 @@
             function busquedaAvanzada(){
                 var caso = "";
                 var select_busqueda_avanzada = $('#select_busqueda_avanzada option:selected').val();
+                let input_fecha_inicial = $('#input_fecha_inicial').val();
+                let input_fecha_final = $('#input_fecha_final').val();
                 var parametros = {
                             
                     }; 
 
                 if (select_busqueda_avanzada == "select_folio") {
                     var input_folio = $('#input_folio').val();
+                    
                      if (input_folio.length == 0) {
                         alert("No has escrito nada en Folio");
                     }else{
                         caso = "busqueda_folio";
-                    parametros = {"caso": caso, "valor": input_folio}; 
+                    parametros = {"caso": caso, "valor": input_folio, "fecha_inicial": input_fecha_inicial, "fecha_final": input_fecha_final }; 
                     busquedaAvanzadaAjax(parametros);
                     }
                    
@@ -1281,7 +1379,7 @@
                         alert("No has escrito ingresado un RUT");
                     }else{
                     caso = "busqueda_rut";
-                    parametros = {"caso": caso, "valor": input_rut}; 
+                    parametros = {"caso": caso, "valor": input_rut, "fecha_inicial": input_fecha_inicial, "fecha_final": input_fecha_final}; 
                     busquedaAvanzadaAjax(parametros);
                     }
                     
@@ -1292,7 +1390,7 @@
                         alert("No has escrito seleccionado Fecha");
                     }else{
                         caso = "busqueda_fecha";
-                    parametros = {"caso": caso, "valor": input_fecha}; 
+                    parametros = {"caso": caso, "valor": input_fecha, "fecha_inicial": input_fecha_inicial, "fecha_final": input_fecha_final}; 
                     busquedaAvanzadaAjax(parametros);
                     }
                    
@@ -1303,7 +1401,7 @@
                         alert("No has ingresado un Monto");
                     }else{
                     caso = "busqueda_monto";
-                    parametros = {"caso": caso, "valor": input_monto}; 
+                    parametros = {"caso": caso, "valor": input_monto, "fecha_inicial": input_fecha_inicial, "fecha_final": input_fecha_final}; 
                     busquedaAvanzadaAjax(parametros);
                     }
                    
@@ -1315,7 +1413,7 @@
                         alert("No has seleccionado un DTE");
                     }else{
                        caso = "busqueda_tipo";
-                    parametros = {"caso": caso, "valor": input_tipo}; 
+                    parametros = {"caso": caso, "valor": input_tipo, "fecha_inicial": input_fecha_inicial, "fecha_final": input_fecha_final}; 
                     busquedaAvanzadaAjax(parametros);
                     }
                     
@@ -1323,11 +1421,13 @@
 
                    if (select_busqueda_avanzada == "select_detalle") {
                     var input_detalle = $('#input_detalle').val();
+                    var input_detalle2 = $('#input_detalle2').val();
+                    
                      if (input_detalle.length == 0) {
                         alert("No has escrito ningun Producto");
                     }else{
                         caso = "busqueda_detalle";
-                    parametros = {"caso": caso, "valor": input_detalle}; 
+                    parametros = {"caso": caso, "valor": input_detalle,"valor2": input_detalle2, "fecha_inicial": input_fecha_inicial, "fecha_final": input_fecha_final}; 
                     busquedaAvanzadaAjax(parametros);
                     }
                    
@@ -1353,7 +1453,28 @@
                                 },
                     dataType: "json",
                     url: "Clases/DTE.php?funcion=busquedaAvanzada",
+                    beforeSend: function() {
+
+                            //mensaje temporal de busqueda de datos
+                            swal({
+                                title: '<div class="preloader pl-size-xl">'+
+                                          '     <div class="spinner-layer pl-light-blue">'+
+                                          '         <div class="circle-clipper left">'+
+                                          '             <div class="circle"></div>'+
+                                          '         </div>'+
+                                          '         <div class="circle-clipper right">'+
+                                          '             <div class="circle"></div>'+
+                                          '         </div>'+
+                                          '     </div>'+
+                                          ' </div>', 
+                                text: "Cargando datos ...",
+                                showConfirmButton: false,
+                                //timer: 1800,
+                                html: true           
+                            });
+                        },
                     success:function(data){
+                        swal.close();
                         console.log(data);
 
                         if (data.length == 0) {

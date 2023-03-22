@@ -115,9 +115,10 @@ if ($apikey == "928e15a2d14d4a6292345f04960f4cc3") {
 		case 'busquedaAvanzada':
 			$caso = $_POST['caso'];
 			$valor= $_POST['valor'];
+			$valor2= $_POST['valor2'];
 			$fecha_inicial = $_POST['fecha_inicial'];
 			$fecha_final = $_POST['fecha_final'];
-			busquedaAvanzada($caso,$valor,$fecha_inicial,$fecha_final);
+			busquedaAvanzada($caso,$valor,$fecha_inicial,$fecha_final,$valor2);
 		break;
 
 		case 'crearPDF':
@@ -800,27 +801,27 @@ function cargarDatosReferenciaEmitidos($tipo_dte_referencia,$folio_referencia,$m
 }
 
 
-function busquedaAvanzada($caso,$valor,$fecha_inicial,$fecha_final){
+function busquedaAvanzada($caso,$valor,$fecha_inicial,$fecha_final,$valor2){
 $conexion = new conexion();
 $tipo_dte_flag = false;
 //QURYS GENERALES
-		$sql = "SELECT folio_factura AS folio,rznsocrecep_factura AS razon_social,mnttotal_factura AS monto_total,fchemis_factura AS fecha,ubicacion_factura AS ubicacion FROM factura";
+		$sql = "SELECT folio_factura AS folio,rutrecep_factura as rut,rznsocrecep_factura AS razon_social,mnttotal_factura AS monto_total,fchemis_factura AS fecha,ubicacion_factura AS ubicacion FROM factura";
 		
-		$sql2 = "SELECT folio_factura_exenta AS folio,rznsocrecep_factura_exenta AS razon_social,mnttotal_factura_exenta AS monto_total,fchemis_factura_exenta AS fecha, ubicacion_factura_exenta AS ubicacion FROM factura_exenta";
+		$sql2 = "SELECT folio_factura_exenta AS folio,rutrecep_factura_exenta as rut,rznsocrecep_factura_exenta AS razon_social,mnttotal_factura_exenta AS monto_total,fchemis_factura_exenta AS fecha, ubicacion_factura_exenta AS ubicacion FROM factura_exenta";
 
 
-		$sql3 = "SELECT folio_nota_credito AS folio,rznsocrecep_nota_credito AS razon_social,mnttotal_nota_credito AS monto_total,fchemis_nota_credito AS fecha, ubicacion_nota_credito AS ubicacion FROM nota_credito";
+		$sql3 = "SELECT folio_nota_credito AS folio,rutrecep_nota_credito as rut,rznsocrecep_nota_credito AS razon_social,mnttotal_nota_credito AS monto_total,fchemis_nota_credito AS fecha, ubicacion_nota_credito AS ubicacion FROM nota_credito";
 		
-		$sql4 = "SELECT folio_nota_debito AS folio,rznsocrecep_nota_debito AS razon_social,mnttotal_nota_debito AS monto_total,fchemis_nota_debito AS fecha, ubicacion_nota_debito AS ubicacion FROM nota_debito";
-		
-
-		$sql5 = "SELECT folio_guia_despacho AS folio,rznsocrecep_guia_despacho AS razon_social,mnttotal_guia_despacho AS monto_total,fchemis_guia_despacho AS fecha, ubicacion_guia_despacho AS ubicacion FROM guia_despacho";
+		$sql4 = "SELECT folio_nota_debito AS folio,rutrecep_nota_debito as rut,rznsocrecep_nota_debito AS razon_social,mnttotal_nota_debito AS monto_total,fchemis_nota_debito AS fecha, ubicacion_nota_debito AS ubicacion FROM nota_debito";
 		
 
-		$sql6 = "SELECT folio_boleta AS folio,folio_boleta AS razon_social,mnttotal_boleta AS monto_total,fechaemis_boleta AS fecha, ubicacion_boleta AS ubicacion FROM boleta";
+		$sql5 = "SELECT folio_guia_despacho AS folio,rutrecep_guia_despacho as rut,rznsocrecep_guia_despacho AS razon_social,mnttotal_guia_despacho AS monto_total,fchemis_guia_despacho AS fecha, ubicacion_guia_despacho AS ubicacion FROM guia_despacho";
 		
 
-		$sql7 = "SELECT folio_boleta_exenta AS folio,folio_boleta_exenta AS razon_social,mnttotal_boleta_exenta AS monto_total,fechaemis_boleta_exenta AS fecha, ubicacion_boleta_exenta AS ubicacion FROM boleta_exenta";
+		$sql6 = "SELECT folio_boleta AS folio,'66666666-6' as rut,folio_boleta AS razon_social,mnttotal_boleta AS monto_total,fechaemis_boleta AS fecha, ubicacion_boleta AS ubicacion FROM boleta";
+		
+
+		$sql7 = "SELECT folio_boleta_exenta AS folio,'66666666-6' as rut,folio_boleta_exenta AS razon_social,mnttotal_boleta_exenta AS monto_total,fechaemis_boleta_exenta AS fecha, ubicacion_boleta_exenta AS ubicacion FROM boleta_exenta";
 		
 
 
@@ -828,7 +829,7 @@ switch ($caso) {
 
 	case 'busqueda_folio':
 
-		$sql = $sql." WHERE folio_factura = '$valor'"; if ($fecha_inicial && $fecha_final != "") {$sql = $sql." AND fchemis_factura BETWEEN '$fecha_inicial' AND '$fecha_final'"; } $sql = $sql." ORDER BY folio_factura";
+		$sql = $sql." WHERE folio_factura = '$valor' ORDER BY folio_factura";
 		$sql2 = $sql2. " WHERE folio_factura_exenta = '$valor' ORDER BY folio_factura_exenta";
 		$sql3 = $sql3. " WHERE folio_nota_credito = '$valor'  ORDER BY folio_nota_credito"; 
 		$sql4 = $sql4. " WHERE folio_nota_debito = '$valor' ORDER BY folio_nota_debito";
@@ -841,10 +842,10 @@ switch ($caso) {
 	case 'busqueda_rut':
 
 	$sql = $sql." WHERE rutrecep_factura = '$valor'"; if ($fecha_inicial && $fecha_final != "") {$sql = $sql." AND fchemis_factura BETWEEN '$fecha_inicial' AND '$fecha_final'"; } $sql = $sql." ORDER BY folio_factura";
-	$sql2 = $sql2. " WHERE rutrecep_factura_exenta = '$valor' ORDER BY folio_factura_exenta";
-	$sql3 = $sql3. " WHERE rutrecep_nota_credito = '$valor'  ORDER BY folio_nota_credito"; 
-	$sql4 = $sql4. " WHERE rutrecep_nota_debito = '$valor' ORDER BY folio_nota_debito";
-	$sql5 = $sql5. " WHERE rutrecep_guia_despacho = '$valor' ORDER BY folio_guia_despacho";
+	$sql2 = $sql2. " WHERE rutrecep_factura_exenta = '$valor'"; if ($fecha_inicial && $fecha_final != "") {$sql2 = $sql2." AND fchemis_factura_exenta BETWEEN '$fecha_inicial' AND '$fecha_final'"; } $sql2 = $sql2." ORDER BY folio_factura_exenta";
+	$sql3 = $sql3. " WHERE rutrecep_nota_credito = '$valor'"; if ($fecha_inicial && $fecha_final != "") {$sql3 = $sql3." AND fchemis_nota_credito BETWEEN '$fecha_inicial' AND '$fecha_final'"; } $sql3 = $sql3." ORDER BY folio_nota_credito";
+	$sql4 = $sql4. " WHERE rutrecep_nota_debito = '$valor'"; if ($fecha_inicial && $fecha_final != "") {$sql4 = $sql4." AND fchemis_nota_debito BETWEEN '$fecha_inicial' AND '$fecha_final'"; } $sql4 = $sql4." ORDER BY folio_nota_debito";
+	$sql5 = $sql5. " WHERE rutrecep_guia_despacho = '$valor'"; if ($fecha_inicial && $fecha_final != "") {$sql5 = $sql5." AND fchemis_guia_despacho BETWEEN '$fecha_inicial' AND '$fecha_final'"; } $sql5 = $sql5." ORDER BY folio_guia_despacho";
 	$sql6 = "";
 	$sql7 = "";
 
@@ -865,23 +866,24 @@ switch ($caso) {
 	case 'busqueda_monto':
 
 		$sql = $sql." WHERE mnttotal_factura = '$valor'"; if ($fecha_inicial && $fecha_final != "") {$sql = $sql." AND fchemis_factura BETWEEN '$fecha_inicial' AND '$fecha_final'"; } $sql = $sql." ORDER BY folio_factura";
-		$sql2 = $sql2. " WHERE mnttotal_factura_exenta = '$valor' ORDER BY folio_factura_exenta";
-		$sql3 = $sql3. " WHERE mnttotal_nota_credito = '$valor'  ORDER BY folio_nota_credito"; 
-		$sql4 = $sql4. " WHERE mnttotal_nota_debito = '$valor' ORDER BY folio_nota_debito";
-		$sql5 = $sql5. " WHERE mnttotal_guia_despacho = '$valor' ORDER BY folio_guia_despacho";
-		$sql6 = $sql6. " WHERE mnttotal_boleta = '$valor' ORDER BY folio_boleta";
-		$sql7 = $sql7. " WHERE mnttotal_boleta_exenta = '$valor' ORDER BY folio_boleta_exenta";
+		$sql2 = $sql2. " WHERE mnttotal_factura_exenta = '$valor'"; if ($fecha_inicial && $fecha_final != "") {$sql2 = $sql2." AND fchemis_factura_exenta BETWEEN '$fecha_inicial' AND '$fecha_final'"; } $sql2 = $sql2." ORDER BY folio_factura_exenta";
+		$sql3 = $sql3. " WHERE mnttotal_nota_credito = '$valor'"; if ($fecha_inicial && $fecha_final != "") {$sql3 = $sql3." AND fchemis_nota_credito BETWEEN '$fecha_inicial' AND '$fecha_final'"; } $sql3 = $sql3." ORDER BY folio_nota_credito";
+		$sql4 = $sql4. " WHERE mnttotal_nota_debito = '$valor'"; if ($fecha_inicial && $fecha_final != "") {$sql4 = $sql4." AND fchemis_nota_debito BETWEEN '$fecha_inicial' AND '$fecha_final'"; } $sql4 = $sql4." ORDER BY folio_nota_debito";
+		$sql5 = $sql5. " WHERE mnttotal_guia_despacho = '$valor'"; if ($fecha_inicial && $fecha_final != "") {$sql5 = $sql5." AND fchemis_guia_despacho BETWEEN '$fecha_inicial' AND '$fecha_final'"; } $sql5 = $sql5." ORDER BY folio_guia_despacho";
+		$sql6 = $sql6. " WHERE mnttotal_boleta = '$valor'"; if ($fecha_inicial && $fecha_final != "") {$sql6 = $sql6." AND fechaemis_boleta BETWEEN '$fecha_inicial' AND '$fecha_final'"; } $sql6 = $sql6." ORDER BY folio_boleta";
+		$sql7 = $sql7. " WHERE mnttotal_boleta_exenta = '$valor'"; if ($fecha_inicial && $fecha_final != "") {$sql7 = $sql7." AND fechaemis_boleta_exenta BETWEEN '$fecha_inicial' AND '$fecha_final'"; } $sql7 = $sql7." ORDER BY folio_boleta_exenta";
 
 		break;
 	case 'busqueda_detalle':
 
-		$sql = $sql." WHERE detalle_factura LIKE '%$valor%'"; if ($fecha_inicial && $fecha_final != "") {$sql = $sql." AND fchemis_factura BETWEEN '$fecha_inicial' AND '$fecha_final'"; } $sql = $sql." ORDER BY folio_factura";
-		$sql2 = $sql2. " WHERE detalle_factura_exenta LIKE '%$valor%' ORDER BY folio_factura_exenta";
-		$sql3 = $sql3. " WHERE detalle_nota_credito LIKE '%$valor%'  ORDER BY folio_nota_credito"; 
-		$sql4 = $sql4. " WHERE detalle_nota_debito LIKE '%$valor%' ORDER BY folio_nota_debito";
-		$sql5 = $sql5. " WHERE detalle_guia_despacho LIKE '%$valor%' ORDER BY folio_guia_despacho";
-		$sql6 = $sql6. " WHERE detalle_boleta LIKE '%$valor%' ORDER BY folio_boleta";
-		$sql7 = $sql7. " WHERE detalle_boleta_exenta LIKE '%$valor%' ORDER BY folio_boleta_exenta";
+		$sql = $sql." WHERE detalle_factura LIKE '%$valor%'"; if ($fecha_inicial && $fecha_final != "") {$sql = $sql." AND fchemis_factura BETWEEN '$fecha_inicial' AND '$fecha_final'"; }else if($valor2 != ""){$sql = $sql." AND detalle_factura LIKE '%$valor2%' ";}else{$sql = $sql." AND fchemis_factura >= now()-interval 4 MONTH ORDER BY folio_factura";} 
+		$sql2 = $sql2. " WHERE detalle_factura_exenta LIKE '%$valor%'"; if ($fecha_inicial && $fecha_final != "") {$sql2 = $sql2." AND fchemis_factura_exenta BETWEEN '$fecha_inicial' AND '$fecha_final'"; }else if($valor2 != ""){$sql2 = $sql2." AND detalle_factura_exenta LIKE '%$valor2%' ";}else{$sql2 = $sql2." AND fchemis_factura_exenta >= now()-interval 4 MONTH ORDER BY folio_factura_exenta";}
+		$sql3 = $sql3. " WHERE detalle_nota_credito LIKE '%$valor%'"; if ($fecha_inicial && $fecha_final != "") {$sql3 = $sql3." AND fchemis_nota_credito BETWEEN '$fecha_inicial' AND '$fecha_final'"; }else if($valor2 != ""){$sql3 = $sql3." AND detalle_nota_credito LIKE '%$valor2%' ";}else{$sql3 = $sql3." AND fchemis_nota_credito >= now()-interval 4 MONTH ORDER BY folio_nota_credito";}
+		$sql4 = $sql4. " WHERE detalle_nota_debito LIKE '%$valor%'"; if ($fecha_inicial && $fecha_final != "") {$sql4 = $sql4." AND fchemis_nota_debito BETWEEN '$fecha_inicial' AND '$fecha_final'"; }else if($valor2 != ""){$sql4 = $sql4." AND detalle_nota_debito LIKE '%$valor2%' ";}else{$sql4 = $sql4." AND fchemis_nota_debito >= now()-interval 4 MONTH ORDER BY folio_nota_debito";}
+		$sql5 = $sql5. " WHERE detalle_guia_despacho LIKE '%$valor%'"; if ($fecha_inicial && $fecha_final != "") {$sql5 = $sql5." AND fchemis_guia_despacho BETWEEN '$fecha_inicial' AND '$fecha_final'"; }else if($valor2 != ""){$sql5 = $sql5." AND detalle_guia_despacho LIKE '%$valor2%' ";}else{$sql5 = $sql5." AND fchemis_guia_despacho >= now()-interval 4 MONTH ORDER BY folio_guia_despacho";}
+		$sql6 = $sql6. " WHERE detalle_boleta LIKE '%$valor%'"; if ($fecha_inicial && $fecha_final != "") {$sql6 = $sql6." AND fechaemis_boleta BETWEEN '$fecha_inicial' AND '$fecha_final'"; }else if($valor2 != ""){$sql6 = $sql6." AND detalle_boleta LIKE '%$valor2%' ";}else{$sql6 = $sql6." AND fechaemis_boleta >= now()-interval 4 MONTH ORDER BY folio_boleta";}
+		$sql7 = $sql7. " WHERE detalle_boleta_exenta LIKE '%$valor%'"; if ($fecha_inicial && $fecha_final != "") {$sql7 = $sql7." AND fechaemis_boleta_exenta BETWEEN '$fecha_inicial' AND '$fecha_final'"; }else if($valor2 != ""){$sql7 = $sql7." AND detalle_boleta_exenta LIKE '%$valor2%' ";}else{$sql7 = $sql7." AND fechaemis_boleta_exenta >= now()-interval 4 MONTH ORDER BY folio_boleta_exenta";}
+
 
 		break;
 	case 'busqueda_tipo':
@@ -896,28 +898,34 @@ switch ($caso) {
 		}
 		
 		if ($valor == "select_factura_exenta") {
-			$sql2 = $sql2." ORDER BY folio_factura_exenta DESC LIMIT 100";
-			$sql = $sql2;
+			if ($fecha_inicial && $fecha_final != "") {$sql = $sql2." WHERE fchemis_factura_exenta BETWEEN '$fecha_inicial' AND '$fecha_final' ORDER BY folio_factura_exenta"; }else{
+				$sql = $sql2." ORDER BY folio_factura_exenta DESC LIMIT 100";
+			}
 		}
 		if ($valor == "select_nota_credito") {
-			$sql3 = $sql3." ORDER BY folio_nota_credito DESC LIMIT 100";
-			$sql = $sql3;
+			if ($fecha_inicial && $fecha_final != "") {$sql = $sql3." WHERE fchemis_nota_credito BETWEEN '$fecha_inicial' AND '$fecha_final' ORDER BY folio_nota_credito"; }else{
+				$sql = $sql3." ORDER BY folio_nota_credito DESC LIMIT 100";
+			}
 		}
 		if ($valor == "select_nota_debito") {
-			$sql4 = $sql4." ORDER BY folio_nota_debito DESC LIMIT 100";
-			$sql = $sql4;
+			if ($fecha_inicial && $fecha_final != "") {$sql = $sql4." WHERE fchemis_nota_debito BETWEEN '$fecha_inicial' AND '$fecha_final' ORDER BY folio_nota_debito"; }else{
+				$sql = $sql4." ORDER BY folio_nota_debito DESC LIMIT 100";
+			}
 		}
 		if ($valor == "select_guia_despacho") {
-			$sql5 = $sql5." ORDER BY folio_guia_despacho DESC LIMIT 100";
-			$sql = $sql5;
+			if ($fecha_inicial && $fecha_final != "") {$sql = $sql5." WHERE fchemis_guia_despacho BETWEEN '$fecha_inicial' AND '$fecha_final' ORDER BY folio_guia_despacho"; }else{
+				$sql = $sql5." ORDER BY folio_guia_despacho DESC LIMIT 100";
+			}
 		}
 		if ($valor == "select_boleta") {
-			$sql6 = $sql6." ORDER BY folio_boleta DESC LIMIT 100";
-			$sql = $sql6;
+			if ($fecha_inicial && $fecha_final != "") {$sql = $sql6." WHERE fechaemis_boleta BETWEEN '$fecha_inicial' AND '$fecha_final' ORDER BY fechaemis_boleta"; }else{
+				$sql = $sql6." ORDER BY folio_boleta DESC LIMIT 100";
+			}
 		}
 		if ($valor == "select_boleta_exenta") {
-			$sql7 = $sql7." ORDER BY folio_boleta_exenta DESC LIMIT 100";
-			$sql = $sql7;
+			if ($fecha_inicial && $fecha_final != "") {$sql = $sql7." WHERE fechaemis_boleta_exenta BETWEEN '$fecha_inicial' AND '$fecha_final' ORDER BY fechaemis_boleta_exenta"; }else{
+				$sql = $sql7." ORDER BY folio_boleta_exenta DESC LIMIT 100";
+			}
 		}
 		
 
@@ -929,6 +937,7 @@ switch ($caso) {
 	}
 
 	if ($tipo_dte_flag) {
+	
 	$datos_factura = $conexion->obtenerDatos($sql);
 	//AGREGAR EL TIPO DE DTE AL ARRAY
 		for ($i=0; $i < count($datos_factura); $i++) { 
@@ -950,7 +959,10 @@ switch ($caso) {
 		$datos_boleta_exenta = array();
 	}else{
 
+	
 	$datos_factura = $conexion->obtenerDatos($sql);
+
+	
 		//AGREGAR EL TIPO DE DTE AL ARRAY
 		for ($i=0; $i < count($datos_factura); $i++) { 
 		    $datos_factura[$i]["tipo_dte"] = "33";
