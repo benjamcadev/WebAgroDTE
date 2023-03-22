@@ -285,6 +285,9 @@
                             
                        
                             <div class="col-sm-12">
+                            <div class="alert alert-info">
+                            <strong>IMPORTANTE!</strong> Debes cargar el archivo CAF antes que expire el anterior, ya que el sistema realiza el cambio automaticamente.
+                            </div>
                                 <div class="form-group">
                                     <div class="form-line">
                                         <small> Tipo DTE (*)</small>
@@ -330,6 +333,8 @@
                                     </div>
                                 </div>
                             </div>
+                            
+
 
                             <div class="col-md-12">
                                 <div class="form-group">
