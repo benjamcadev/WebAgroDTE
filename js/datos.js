@@ -901,7 +901,7 @@ function seleccionarBusqueda(input_seleccionado){
 
 function cargarDatosBoleta(){
 
-    var switch_boleta =$('#switch_boleta').val();
+    //var switch_boleta =$('#switch_boleta').val();
 
     if($('#switch_boleta').prop('checked') ){
         

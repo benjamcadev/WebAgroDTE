@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-    <title>Código de Asignación de Folios (CAF) | AgroDTE</title>
+    <title>Certificados | AgroDTE</title>
     <!-- Favicon-->
     <link rel="icon" href="favicon.ico" type="image/x-icon">
 
@@ -219,8 +219,8 @@
         <div class="container-fluid">
             <div class="block-header">
                 <h3>
-                Código de Asignación de Folios (CAF)
-                    <small>En este menu encontraras todos los rangos de folios autorizados por el SII.</small>
+                Certficados
+                    <small>En este menu encontraras todos las firmas electronicas autorizadas para firmar DTE.</small>
                 </h3>
             </div>
             <!-- Basic Examples -->
@@ -229,8 +229,7 @@
                     <div class="card">
                         <div class="header">
                             <h2>
-                                XML CAF
-
+                             Certificados
                                 
                             </h2>
                             <ul class="header-dropdown m-r--5">
@@ -250,7 +249,7 @@
                         <div class="body">
                              
                             <div class="table-responsive">
-                                <table id="tabla_dte_caf" class="table table-bordered table-striped table-hover js-basic-example dataTable">
+                                <table id="tabla_certificados" class="table table-bordered table-striped table-hover js-basic-example dataTable">
                                    
                                    
                                     
@@ -268,68 +267,72 @@
     <section class="content">
         <div class="container-fluid">
             <!-- Large Size -->
-            <div class="modal fade" id="cafModal" tabindex="-1" role="dialog">
+            <div class="modal fade" id="certificadoModal" tabindex="-1" role="dialog">
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                    <h4>CARGAR NUEVO CAF</h4>
+                    <h4>CARGAR NUEVO CERTIFICADO</h4>
 
                         </div>
                      
                         
-                 <div class="modal-body" id="cafModal_body">
+                 <div class="modal-body" id="certificadoModal_body">
 
                     <div class="row clearfix"> 
                    
                         <div class="col-md-12">
                             
-                       
-                            <div class="col-sm-12">
-                                <div class="form-group">
-                                    <div class="form-line">
-                                        <small> Tipo DTE (*)</small>
-                                        <select id="tipo_dte_modal" class="form-control show-tick">                                        
-                                            <option value="33">Factura</option>
-                                            <option value="34">Factura Exenta</option>  
-                                            <option value="61">Nota de Credito</option>
-                                            <option value="56">Nota de Debito</option>
-                                            <option value="52">Guia de Despacho</option> 
-                                            <option value="39">Boleta</option>
-                                            <option value="41">Boleta Exenta</option>
-                                                                                
-                                        </select>
-                                    </div>
-                                </div>
-                             </div>
-                            
-                        
                         
                             <div class="col-sm-12">
                                 <div class="form-group">
                                     <div class="form-line">
-                                        <small>Rango Minimo (*)</small>
-                                        <input id="rango_minimo_modal" type="number" class="form-control" />
+                                        <small>Nombre Certificado (*)</small>
+                                        <input id="nombre_certificado_modal" type="text" class="form-control" />
                                     </div>
                                 </div>
                             </div>
                             <div class="col-sm-12">
                                 <div class="form-group">
                                     <div class="form-line">
-                                        <small>Rango Maximo (*)</small>
-                                        <input id="rango_maximo_modal" type="number" class="form-control" />
+                                        <small>Proveedor (*)</small>
+                                        <input id="proveedor_modal" type="text" class="form-control" />
                                     </div>
                                 </div>
                             </div>
                             <div class="col-sm-12">
                                 <div class="form-group">
                                     <div class="form-line">
-                                        <small>Fecha Solicitado (*)</small>
+                                        <small>Fecha Expiración (*)</small>
                                         <div class="form-line" id="datepicker_container">
-                                            <input id="fecha_solicitado_modal" type="text" class="form-control" placeholder=" - Seleccione una fecha - ">
+                                            <input id="fecha_expiracion_modal" type="text" class="form-control" placeholder=" - Seleccione una fecha - ">
                                         </div>
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    <div class="form-line">
+                                        <small>Contraseña (*)</small>
+                                        <input id="pass_modal" type="password" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-12">
+                            <div class="alert alert-info">
+                                <strong>IMPORTANTE!</strong> Debes cargar el certificado el dia que el anterior certificado expire, <strong>tambien debes desactivarlo.</strong>  y ademas debes cargarlo en el SII, si no sabes como <a href="#" onclick="showModalHelp();" class="alert-link"> Haz Click aqui</a>.
+                            </div>
+                          
+                                <div class="form-group">
+                                    <div class="form-line">
+                                        <small> Estado (*)</small>
+                                        <select id="estado_modal" class="form-control show-tick">                                        
+                                            <option value="1">Activo</option>
+                                            <option value="0">Inactivo</option>                              
+                                        </select>
+                                    </div>
+                                </div>
+                             </div>
 
                             <div class="col-md-12">
                                 <div class="form-group">
@@ -344,7 +347,74 @@
                         <div class="col-md-12">
                             
                                 <div class="form-line">
-                                    <button class="btn btn-info waves-effect" onclick="cargarXML()" name="submit">Cargar archivo XML</button>
+                                    <button class="btn btn-info waves-effect" onclick="cargarCertificado()" name="submit">Cargar archivo XML</button>
+                                </div>
+                           
+                        </div>
+                                
+                        </div>
+                    </div>
+                       
+                       
+                            
+                           
+                </div>
+
+                        <div class="modal-footer">                            
+                            <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">Cerrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </section> 
+
+      <section class="content">
+        <div class="container-fluid">
+            <!-- Large Size -->
+            <div class="modal fade" id="helpModal" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                    <h4>¿Como cargar mi firma electrónica en los servidores del SII?</h4>
+
+                        </div>
+                     
+                        
+                 <div class="modal-body" id="helpModal">
+
+                    <div class="row clearfix"> 
+                   
+                        <div class="col-md-12">
+                        <div class="panel-body">
+                        El certificado digital, o firma electrónica, se requiere guardar inicialmente y por única vez
+                         en los servidores del SII, lo que también se denomina como "centralizar el certificado digital".
+                          Esto, junto con la carga de la misma firma en la plataforma OpenFactura, permitirá que usted pueda
+                           comenzar a operar a través de nuestra aplicación.
+                        </div>
+
+                        <div class="panel-body">
+                            <h3>Procedimiento</h3>
+                        En el video, se indica como registrar la firma en el servicio de impuestos internos, lo primero es ingresar al siguiente enlace
+                        Luego debes seguir los pasos a continuación:<br>
+                        1.El sistema solicitará autenticarse, aqui debes ingresar con tu RUT personal, el cual esta asociado a tu firma.<br>
+                        2.Luego debe buscar la carpeta donde se encuentra su certificado digital o firma.<br>
+                        3.Ingrese la clave del certificado y presione el botón “Enviar”.<br>
+                        4.Se mostrará el mensaje “Se guardó archivo OK”; presione “Cerrar” y “Salir”, y con ello ha guardado su certificado digital en los servidores del SII.<br>
+
+                           <video width="640" height="480" controls>
+                            <source src="video/video_certificado.mp4" type="video/mp4">
+                            </video>
+                        </div>
+
+
+                            </div>
+                        
+
+                        <div class="col-md-12">
+                            
+                                <div class="form-line">
+                                    
                                 </div>
                            
                         </div>
@@ -455,7 +525,7 @@
  var monto_global = "";       
 
 
-            function cargarEmitidosTabla(){
+    function cargarEmitidosTabla(){
                var parametros = {
                             
                     };     
@@ -466,13 +536,13 @@
                             'apikey':'928e15a2d14d4a6292345f04960f4cc3' 
                         },
                         dataType: "json",
-                        url: "Clases/DTE.php?funcion=cargarCAFTabla",
+                        url: "Clases/DTE.php?funcion=cargarCertificadosTabla",
 
                         success: function(data) { 
 
                         console.log(data);
 
-                       cargarTabla(data);    
+                      cargarTabla(data);    
                     }
                     });
             }
@@ -480,33 +550,22 @@
           
             function cargarTabla(data){
                 
-                $('#tabla_dte_caf').DataTable( {
+                $('#tabla_certificados').DataTable( {
 
                               data: data,
-                               "order": [[ 4, 'desc' ]],
+                               "order": [[ 3, 'desc' ]],
                                //"ordering": false,
                                 columns: [
-                                    { title: "Tipo DTE",data: 'tipo_documento_caf',render: function(data){
-                                                                                        if (data == "33") {return "Factura"};
-                                                                                        if (data == "34") {return "Factura Exenta"};
-                                                                                        if (data == "39") {return "Boleta"};
-                                                                                        if (data == "41") {return "Boleta Exenta"};
-                                                                                        if (data == "61") {return "Nota Credito"};
-                                                                                        if (data == "56") {return "Nota Debito"};
-                                                                                        if (data == "52") {return "Guia Despacho"};
+                                    { title: "Nombre Certificado",data: 'nombre_certificado'},
+                                    { title: "Proveedor",data: 'proveedor_certifcado' },
+                                    { title: "Fecha Expiracion",data: 'fecha_expiracion_certificado' },
+                                    { title: "Estado",data: 'estado_certificado',render: function(data,type, row, meta){
+                                                                                        if (data == "1") {return "<p class=\"font-bold col-teal\">En uso</p><a role=\"button\" onclick=\"cambiarEstado("+data+","+row['id_certificado']+")\"><i style=\"color: brown;\"  class=\"material-icons\">sync_disabled</i></a>"};
+                                                                                        if (data == "0") {return "<p class=\"font-bold col-blue-grey\">Deshuso</p><a role=\"button\" onclick=\"cambiarEstado("+data+","+row['id_certificado']+")\"><i style=\"color: brown;\"  class=\"material-icons\">sync_disabled</i></a>"};
                                                                                         return data;
 
                                                                                     }},
-                                    { title: "Rango Minimo",data: 'rango_minimo_caf' },
-                                    { title: "Rango Maximo",data: 'rango_maximo_caf' },
-                                    { title: "Fecha Solicitado",data: 'fecha_caf' },
-                                    { title: "Estado CAF",data: 'estado_caf',render: function(data){
-                                                                                        if (data == "1") {return "<p class=\"font-bold col-teal\">En uso</p>"};
-                                                                                        if (data == "0") {return "<p class=\"font-bold col-blue-grey\">Deshuso</p>"};
-                                                                                        return data;
-
-                                                                                    }},
-                                    { title: "Ruta Del Archivo",data: 'ruta_caf' }
+                                    { title: "Ruta Del Archivo",data: 'archivo_certificado' }
 
 
 
@@ -519,29 +578,29 @@
                                  buttons: [
                                     {
                                         extend: 'excel',
-                                        title: 'Dte Emitidos - AgroDTE',
+                                        title: 'Certificados - AgroDTE',
                                         text: 'Excel',
                                         className: 'btn bg-green btn-sm waves-effect'
                                     },
                                     {
                                         extend: 'csv',
-                                        title: 'Dte Emitidos - AgroDTE',
+                                        title: 'Certificados - AgroDTE',
                                         text: 'CSV',
                                         className: 'btn bg-teal btn-sm waves-effect'
                                     },
                                     {
                                         extend: 'print',
-                                        title: 'Dte Emitidos - AgroDTE',
+                                        title: 'Certificados - AgroDTE',
                                         text: 'Imprimir',
                                         className: 'btn bg-blue-grey btn-sm waves-effect'
                                     },
                                     {
-                                    text: 'Cargar CAF',
+                                    text: 'Cargar Certificado',
                                     className: 'btn bg-light-blue btn-sm waves-effect',
                                     action: function ( e, dt, node, config ) {
                                          //abrir modal
-                                        $('#cafModal').modal('show');
-                                        $('#tipo_dte_modal').selectpicker('refresh');
+                                        $('#certificadoModal').modal('show');
+                                        $('#estado_modal').selectpicker('refresh');
                                     }
                                     }
                                     
@@ -549,19 +608,97 @@
                             } );
 
             }
-            $('#cafModal').on('hidden.bs.modal', function () {
+            $('#certificadoModal').on('hidden.bs.modal', function () {
               
-                $("#rango_maximo").val("");
-               $("#rango_minimo").val("");
-               $("#fecha_solicitud").val("");
-               $("#tipo_dte_modal").val("");
-               $('#tipo_dte_modal').selectpicker('refresh');
+                $("#nombre_certificado_modal").val("");
+               $("#proveedor_modal").val("");
+               $("#fecha_expiracion_modal").val("");
+               $("#pass_modal").val("");
+               $("#estado_modal").val("");
+               $('#estado_modal').selectpicker('refresh');
               
             });
 
-         
+            function showModalHelp(){
+                $('#helpModal').modal('show');
 
-           function cargarXML(){
+            }
+
+         function cambiarEstado(estado_certificado,id_certificado){
+            let mensaje = "";
+            if (estado_certificado == 1) {
+                // Activo
+                mensaje = "Quieres Desactivar el Certificado?";
+            }else{
+                // Inactivo
+                mensaje = "Quieres Activar el Certificado?";
+            }
+            swal({
+                title: mensaje,
+                text: "Por favor confirma",
+                
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "CONFIRMAR",
+                cancelButtonText: "CANCELAR",
+                closeOnConfirm: false,
+                closeOnCancel: false
+                },
+                function(inputValue){
+                //Use the "Strict Equality Comparison" to accept the user's input "false" as string)
+                if (inputValue===false) {
+                    //BOTON CANCELAR
+                    swal.close();
+                   
+                } else {
+                    let mensaje_confirmacion = "";
+                    //BOTON CONFIRMAR
+                    if (estado_certificado == 1) {
+                    // Activo
+                    mensaje_confirmacion = "Certificado Desactivado";
+                    }else{
+                        // Inactivo
+                    mensaje_confirmacion = "Certificado Activado";
+                    }
+
+                    var data = new FormData();
+                    data.append('estado_certificado',estado_certificado);
+                    data.append('id_certificado',id_certificado);
+
+                    jQuery.ajax({
+                    url: 'Clases/DTE.php?funcion=estadoCertificado',
+                    data: data,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    method: 'POST',
+                    headers: {
+                                'apikey':'928e15a2d14d4a6292345f04960f4cc3' 
+                            },
+                    type: 'POST', // For jQuery < 1.9
+                    success: function(data){
+                        
+                        swal({
+                                    title: "Listo", 
+                                    text: mensaje_confirmacion, 
+                                    type: "success"
+                                    },
+                                function(){ 
+                                    location.reload();
+                                }
+                            );
+                        
+                    }
+                });
+                   
+                    
+                }
+                });
+
+
+         }
+
+           function cargarCertificado(){
 
             var data = new FormData();
             let file = document.getElementById("file").files[0];
@@ -569,16 +706,16 @@
                 data.append('file-'+i, file);
             });
 
-            data.append('estado_caf',"0");
-            data.append('tipo_documento_caf',$('#tipo_dte_modal').val());
-            data.append('rango_minimo_caf',$('#rango_minimo_modal').val());
-            data.append('rango_maximo_caf',$('#rango_maximo_modal').val());
-            data.append('fecha_caf',$('#fecha_solicitado_modal').val());
-            data.append('ruta_caf',file.name);
-            console.log(data);
+            data.append('estado_certificado',$('#estado_modal').val());
+            data.append('nombre_certificado',$('#nombre_certificado_modal').val());
+            data.append('proveedor_certificado',$('#proveedor_modal').val());
+            data.append('fecha_expiracion_certificado',$('#fecha_expiracion_modal').val());
+            data.append('pass_certificado',$('#pass_modal').val());
+            data.append('ruta_certificado',file.name);
+            
 
                 jQuery.ajax({
-                    url: 'Clases/DTE.php?funcion=cargarCaf',
+                    url: 'Clases/DTE.php?funcion=cargarCertificado',
                     data: data,
                     cache: false,
                     contentType: false,
@@ -592,7 +729,7 @@
                         if (data == "ok") {
                                 
                                 swal({
-                                    title: "CAF Registrado", 
+                                    title: "Certificado Registrado", 
                                     text: "", 
                                     type: "success"
                                     },

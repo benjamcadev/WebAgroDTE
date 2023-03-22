@@ -519,19 +519,19 @@
                                  buttons: [
                                     {
                                         extend: 'excel',
-                                        title: 'Dte Emitidos - AgroDTE',
+                                        title: 'CAF - AgroDTE',
                                         text: 'Excel',
                                         className: 'btn bg-green btn-sm waves-effect'
                                     },
                                     {
                                         extend: 'csv',
-                                        title: 'Dte Emitidos - AgroDTE',
+                                        title: 'CAF - AgroDTE',
                                         text: 'CSV',
                                         className: 'btn bg-teal btn-sm waves-effect'
                                     },
                                     {
                                         extend: 'print',
-                                        title: 'Dte Emitidos - AgroDTE',
+                                        title: 'CAF - AgroDTE',
                                         text: 'Imprimir',
                                         className: 'btn bg-blue-grey btn-sm waves-effect'
                                     },

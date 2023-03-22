@@ -51,6 +51,23 @@ if ($apikey == "928e15a2d14d4a6292345f04960f4cc3") {
 				cargarCaf($estado_caf,$rango_minimo_caf,$rango_maximo_caf,$fecha_caf,$ruta_caf,$tipo_documento_caf);
 				break;
 
+		case 'cargarCertificado':
+		
+				$estado_certificado = $_POST['estado_certificado'];
+				$nombre_certificado = $_POST['nombre_certificado'];
+				$proveedor_certificado = $_POST['proveedor_certificado'];
+				$fecha_expiracion_certificado = $_POST['fecha_expiracion_certificado'];
+				$pass_certificado = $_POST['pass_certificado'];
+				$ruta_certificado = $_POST['ruta_certificado'];
+				cargarCertificado($estado_certificado,$nombre_certificado,$proveedor_certificado,$fecha_expiracion_certificado,$pass_certificado,$ruta_certificado);
+				break;
+
+		case 'estadoCertificado':
+			$estado_certificado = $_POST['estado_certificado'];
+			$id_certificado = $_POST['id_certificado'];
+			estadoCertificado($estado_certificado,$id_certificado);
+			break;
+
 		case 'cargarDatosReferencia':
 			$tipo_dte_referencia = $_POST['tipo_dte_referencia'];
 			$folio_referencia = $_POST['folio_referencia'];
@@ -90,11 +107,17 @@ if ($apikey == "928e15a2d14d4a6292345f04960f4cc3") {
 		
 			cargarCAFTabla();
 			break;
+		case 'cargarCertificadosTabla':
+		
+			cargarCertificadosTabla();
+				break;
 
 		case 'busquedaAvanzada':
 			$caso = $_POST['caso'];
 			$valor= $_POST['valor'];
-			busquedaAvanzada($caso,$valor);
+			$fecha_inicial = $_POST['fecha_inicial'];
+			$fecha_final = $_POST['fecha_final'];
+			busquedaAvanzada($caso,$valor,$fecha_inicial,$fecha_final);
 		break;
 
 		case 'crearPDF':
@@ -155,6 +178,50 @@ if ($apikey == "928e15a2d14d4a6292345f04960f4cc3") {
 
 	}
 
+	
+	function estadoCertificado($estado_certificado,$id_certificado){
+		$conexion = new conexion();
+		$sql = "";
+		if ($estado_certificado == 1) {
+			# desactivar
+			$sql = "UPDATE certificado SET estado_certificado=0 WHERE  id_certificado=$id_certificado";
+		}else if($estado_certificado == 0){
+			# activar
+			$sql = "UPDATE certificado SET estado_certificado=1 WHERE  id_certificado=$id_certificado";
+		}
+		
+		$respuesta_update = $conexion->ejecutarQuery($sql);
+		print_r("ok");
+
+	}
+	function cargarCertificadosTabla(){
+		$conexion = new conexion();
+		$sqlCertidicado = "SELECT id_certificado,nombre_certificado,proveedor_certifcado,fecha_expiracion_certificado,estado_certificado,archivo_certificado FROM certificado ";
+		$datosCertificado = $conexion->obtenerDatos($sqlCertidicado);
+		print_r(json_encode($datosCertificado));
+
+	}
+
+	function cargarCertificado($estado_certificado,$nombre_certificado,$proveedor_certificado,$fecha_expiracion_certificado,$pass_certificado,$ruta_certificado){
+		
+
+		$target_dir = "../../AgroDTE_Archivos/Certificado/";
+		$nombre_archivo = basename($_FILES["file-0"]["name"]);
+		$target_file = $target_dir . $nombre_archivo;
+
+		if (move_uploaded_file($_FILES["file-0"]["tmp_name"], $target_file)) {
+			//echo "The file ". htmlspecialchars( basename( $_FILES["file-0"]["name"])). " has been uploaded.";
+			$conexion = new conexion();
+			$sql_caf = "INSERT INTO certificado (nombre_certificado,proveedor_certifcado,fecha_expiracion_certificado,archivo_certificado,estado_certificado,pass_certificado) VALUES (\"$nombre_certificado\", \"$proveedor_certificado\",\"$fecha_expiracion_certificado\",\"$nombre_archivo\",$estado_certificado,\"$pass_certificado\")";
+			$conexion->ejecutarQuery($sql_caf);
+			print_r("ok");
+
+		  } else {
+			echo "Sorry, there was an error uploading your file.";
+		  }
+
+	}
+
 	function cargarCaf($estado_caf,$rango_minimo_caf,$rango_maximo_caf,$fecha_caf,$ruta_caf,$tipo_documento_caf){
 		
 
@@ -171,12 +238,6 @@ if ($apikey == "928e15a2d14d4a6292345f04960f4cc3") {
 		  } else {
 			echo "Sorry, there was an error uploading your file.";
 		  }
-
-
-		
-
-		
-
 
 	}
 
@@ -407,50 +468,56 @@ function crearPDF($folio,$tipo_dte){
 function cargarEmitidosTabla(){
 	$conexion = new conexion();
 
-	$sql = "SELECT factura.folio_factura AS folio,factura.rznsocrecep_factura AS razon_social,factura.mnttotal_factura AS monto_total,envio_dte.fecha_envio_dte AS fecha, ubicacion_factura AS ubicacion FROM factura INNER JOIN envio_dte ON factura.id_envio_dte_fk = envio_dte.id_envio_dte ORDER BY envio_dte.fecha_envio_dte DESC LIMIT 500";
+	$sql = "SELECT factura.folio_factura AS folio, factura.rutrecep_factura as rut, factura.rznsocrecep_factura AS razon_social,factura.mnttotal_factura AS monto_total,envio_dte.fecha_envio_dte AS fecha, ubicacion_factura AS ubicacion FROM factura INNER JOIN envio_dte ON factura.id_envio_dte_fk = envio_dte.id_envio_dte ORDER BY envio_dte.fecha_envio_dte DESC LIMIT 500";
 	$datos_factura = $conexion->obtenerDatos($sql);
+	
 
 	//AGREGAR EL TIPO DE DTE AL ARRAY
 	for ($i=0; $i < count($datos_factura); $i++) { 
 	    $datos_factura[$i]["tipo_dte"] = "33";
 	}
 
-	$sql2 = "SELECT factura_exenta.folio_factura_exenta AS folio,factura_exenta.rznsocrecep_factura_exenta AS razon_social,factura_exenta.mnttotal_factura_exenta AS monto_total,envio_dte.fecha_envio_dte AS fecha, factura_exenta.ubicacion_factura_exenta AS ubicacion FROM factura_exenta INNER JOIN envio_dte ON factura_exenta.id_envio_dte_fk = envio_dte.id_envio_dte ORDER BY envio_dte.fecha_envio_dte DESC LIMIT 500";
+	$sql2 = "SELECT factura_exenta.folio_factura_exenta AS folio,factura_exenta.rutrecep_factura_exenta as rut,factura_exenta.rznsocrecep_factura_exenta AS razon_social,factura_exenta.mnttotal_factura_exenta AS monto_total,envio_dte.fecha_envio_dte AS fecha, factura_exenta.ubicacion_factura_exenta AS ubicacion FROM factura_exenta INNER JOIN envio_dte ON factura_exenta.id_envio_dte_fk = envio_dte.id_envio_dte ORDER BY envio_dte.fecha_envio_dte DESC LIMIT 500";
 	$datos_factura_exenta = $conexion->obtenerDatos($sql2);
+	
 	//AGREGAR EL TIPO DE DTE AL ARRAY
 	for ($i=0; $i < count($datos_factura_exenta); $i++) { 
 	    $datos_factura_exenta[$i]["tipo_dte"] = "34";
 	}
 
-	$sql3 = "SELECT nota_credito.folio_nota_credito AS folio,nota_credito.rznsocrecep_nota_credito AS razon_social,nota_credito.mnttotal_nota_credito AS monto_total,envio_dte.fecha_envio_dte AS fecha, nota_credito.ubicacion_nota_credito AS ubicacion FROM nota_credito INNER JOIN envio_dte ON nota_credito.id_envio_dte_fk = envio_dte.id_envio_dte ORDER BY envio_dte.fecha_envio_dte DESC LIMIT 500";
+	$sql3 = "SELECT nota_credito.folio_nota_credito AS folio,nota_credito.rutrecep_nota_credito as rut,nota_credito.rznsocrecep_nota_credito AS razon_social,nota_credito.mnttotal_nota_credito AS monto_total,envio_dte.fecha_envio_dte AS fecha, nota_credito.ubicacion_nota_credito AS ubicacion FROM nota_credito INNER JOIN envio_dte ON nota_credito.id_envio_dte_fk = envio_dte.id_envio_dte ORDER BY envio_dte.fecha_envio_dte DESC LIMIT 500";
 	$datos_nota_credito = $conexion->obtenerDatos($sql3);
+	
 	//AGREGAR EL TIPO DE DTE AL ARRAY
 	for ($i=0; $i < count($datos_nota_credito); $i++) { 
 	    $datos_nota_credito[$i]["tipo_dte"] = "61";
 	}
 
-	$sql4 = "SELECT nota_debito.folio_nota_debito AS folio,nota_debito.rznsocrecep_nota_debito AS razon_social,nota_debito.mnttotal_nota_debito AS monto_total,envio_dte.fecha_envio_dte AS fecha, nota_debito.ubicacion_nota_debito AS ubicacion FROM nota_debito INNER JOIN envio_dte ON nota_debito.id_envio_dte_fk = envio_dte.id_envio_dte ORDER BY envio_dte.fecha_envio_dte DESC LIMIT 500";
+	$sql4 = "SELECT nota_debito.folio_nota_debito AS folio,nota_debito.rutrecep_nota_debito as rut,nota_debito.rznsocrecep_nota_debito AS razon_social,nota_debito.mnttotal_nota_debito AS monto_total,envio_dte.fecha_envio_dte AS fecha, nota_debito.ubicacion_nota_debito AS ubicacion FROM nota_debito INNER JOIN envio_dte ON nota_debito.id_envio_dte_fk = envio_dte.id_envio_dte ORDER BY envio_dte.fecha_envio_dte DESC LIMIT 500";
 	$datos_nota_debito = $conexion->obtenerDatos($sql4);
+	
 	//AGREGAR EL TIPO DE DTE AL ARRAY
 	for ($i=0; $i < count($datos_nota_debito); $i++) { 
 	    $datos_nota_debito[$i]["tipo_dte"] = "56";
 	}
 
-	$sql5 = "SELECT guia_despacho.folio_guia_despacho AS folio,guia_despacho.rznsocrecep_guia_despacho AS razon_social,guia_despacho.mnttotal_guia_despacho AS monto_total,envio_dte.fecha_envio_dte AS fecha, guia_despacho.ubicacion_guia_despacho AS ubicacion FROM guia_despacho INNER JOIN envio_dte ON guia_despacho.id_envio_dte_fk = envio_dte.id_envio_dte ORDER BY envio_dte.fecha_envio_dte DESC LIMIT 500";
+	$sql5 = "SELECT guia_despacho.folio_guia_despacho AS folio,guia_despacho.rutrecep_guia_despacho as rut,guia_despacho.rznsocrecep_guia_despacho AS razon_social,guia_despacho.mnttotal_guia_despacho AS monto_total,envio_dte.fecha_envio_dte AS fecha, guia_despacho.ubicacion_guia_despacho AS ubicacion FROM guia_despacho INNER JOIN envio_dte ON guia_despacho.id_envio_dte_fk = envio_dte.id_envio_dte ORDER BY envio_dte.fecha_envio_dte DESC LIMIT 500";
 	$datos_guia_despacho = $conexion->obtenerDatos($sql5);
+	
 	//AGREGAR EL TIPO DE DTE AL ARRAY
 	for ($i=0; $i < count($datos_guia_despacho); $i++) { 
 	    $datos_guia_despacho[$i]["tipo_dte"] = "52";
 	}
 
-	$sql6 = "SELECT boleta.folio_boleta AS folio, boleta.folio_boleta AS razon_social,boleta.mnttotal_boleta AS monto_total,envio_dte.fecha_envio_dte AS fecha, boleta.ubicacion_boleta AS ubicacion FROM boleta INNER JOIN envio_dte ON boleta.id_envio_dte_fk = envio_dte.id_envio_dte ORDER BY envio_dte.fecha_envio_dte DESC LIMIT 500";
+	$sql6 = "SELECT boleta.folio_boleta AS folio, '66666666-6' as rut, boleta.folio_boleta AS razon_social,boleta.mnttotal_boleta AS monto_total,envio_dte.fecha_envio_dte AS fecha, boleta.ubicacion_boleta AS ubicacion FROM boleta INNER JOIN envio_dte ON boleta.id_envio_dte_fk = envio_dte.id_envio_dte ORDER BY envio_dte.fecha_envio_dte DESC LIMIT 500";
 	$datos_boleta = $conexion->obtenerDatos($sql6);
+	
 	//AGREGAR EL TIPO DE DTE AL ARRAY
 	for ($i=0; $i < count($datos_boleta); $i++) { 
 	    $datos_boleta[$i]["tipo_dte"] = "39";
 	}
 
-	$sql7 = "SELECT boleta_exenta.folio_boleta_exenta AS folio,boleta_exenta.folio_boleta_exenta AS razon_social,boleta_exenta.mnttotal_boleta_exenta AS monto_total,fechaemis_boleta_exenta AS fecha, boleta_exenta.ubicacion_boleta_exenta AS ubicacion FROM boleta_exenta INNER JOIN envio_dte ON boleta_exenta.id_envio_dte_fk = envio_dte.id_envio_dte ORDER BY envio_dte.fecha_envio_dte DESC LIMIT 500";
+	$sql7 = "SELECT boleta_exenta.folio_boleta_exenta AS folio,'66666666-6' as rut,boleta_exenta.folio_boleta_exenta AS razon_social,boleta_exenta.mnttotal_boleta_exenta AS monto_total,fechaemis_boleta_exenta AS fecha, boleta_exenta.ubicacion_boleta_exenta AS ubicacion FROM boleta_exenta INNER JOIN envio_dte ON boleta_exenta.id_envio_dte_fk = envio_dte.id_envio_dte ORDER BY envio_dte.fecha_envio_dte DESC LIMIT 500";
 	$datos_boleta_exenta = $conexion->obtenerDatos($sql7);
 	for ($i=0; $i < count($datos_boleta_exenta); $i++) { 
 	    $datos_boleta_exenta[$i]["tipo_dte"] = "41";
@@ -733,7 +800,7 @@ function cargarDatosReferenciaEmitidos($tipo_dte_referencia,$folio_referencia,$m
 }
 
 
-function busquedaAvanzada($caso,$valor){
+function busquedaAvanzada($caso,$valor,$fecha_inicial,$fecha_final){
 $conexion = new conexion();
 $tipo_dte_flag = false;
 //QURYS GENERALES
@@ -761,7 +828,7 @@ switch ($caso) {
 
 	case 'busqueda_folio':
 
-		$sql = $sql." WHERE folio_factura = '$valor' ORDER BY folio_factura";
+		$sql = $sql." WHERE folio_factura = '$valor'"; if ($fecha_inicial && $fecha_final != "") {$sql = $sql." AND fchemis_factura BETWEEN '$fecha_inicial' AND '$fecha_final'"; } $sql = $sql." ORDER BY folio_factura";
 		$sql2 = $sql2. " WHERE folio_factura_exenta = '$valor' ORDER BY folio_factura_exenta";
 		$sql3 = $sql3. " WHERE folio_nota_credito = '$valor'  ORDER BY folio_nota_credito"; 
 		$sql4 = $sql4. " WHERE folio_nota_debito = '$valor' ORDER BY folio_nota_debito";
@@ -773,7 +840,7 @@ switch ($caso) {
 
 	case 'busqueda_rut':
 
-	$sql = $sql." WHERE rutrecep_factura = '$valor' ORDER BY folio_factura";
+	$sql = $sql." WHERE rutrecep_factura = '$valor'"; if ($fecha_inicial && $fecha_final != "") {$sql = $sql." AND fchemis_factura BETWEEN '$fecha_inicial' AND '$fecha_final'"; } $sql = $sql." ORDER BY folio_factura";
 	$sql2 = $sql2. " WHERE rutrecep_factura_exenta = '$valor' ORDER BY folio_factura_exenta";
 	$sql3 = $sql3. " WHERE rutrecep_nota_credito = '$valor'  ORDER BY folio_nota_credito"; 
 	$sql4 = $sql4. " WHERE rutrecep_nota_debito = '$valor' ORDER BY folio_nota_debito";
@@ -797,7 +864,7 @@ switch ($caso) {
 
 	case 'busqueda_monto':
 
-		$sql = $sql." WHERE mnttotal_factura = '$valor' ORDER BY folio_factura";
+		$sql = $sql." WHERE mnttotal_factura = '$valor'"; if ($fecha_inicial && $fecha_final != "") {$sql = $sql." AND fchemis_factura BETWEEN '$fecha_inicial' AND '$fecha_final'"; } $sql = $sql." ORDER BY folio_factura";
 		$sql2 = $sql2. " WHERE mnttotal_factura_exenta = '$valor' ORDER BY folio_factura_exenta";
 		$sql3 = $sql3. " WHERE mnttotal_nota_credito = '$valor'  ORDER BY folio_nota_credito"; 
 		$sql4 = $sql4. " WHERE mnttotal_nota_debito = '$valor' ORDER BY folio_nota_debito";
@@ -808,7 +875,7 @@ switch ($caso) {
 		break;
 	case 'busqueda_detalle':
 
-		$sql = $sql." WHERE detalle_factura LIKE '%$valor%' ORDER BY folio_factura";
+		$sql = $sql." WHERE detalle_factura LIKE '%$valor%'"; if ($fecha_inicial && $fecha_final != "") {$sql = $sql." AND fchemis_factura BETWEEN '$fecha_inicial' AND '$fecha_final'"; } $sql = $sql." ORDER BY folio_factura";
 		$sql2 = $sql2. " WHERE detalle_factura_exenta LIKE '%$valor%' ORDER BY folio_factura_exenta";
 		$sql3 = $sql3. " WHERE detalle_nota_credito LIKE '%$valor%'  ORDER BY folio_nota_credito"; 
 		$sql4 = $sql4. " WHERE detalle_nota_debito LIKE '%$valor%' ORDER BY folio_nota_debito";
@@ -821,8 +888,13 @@ switch ($caso) {
 
 	$tipo_dte_flag = true;
 		if ($valor == "select_factura") {
-			$sql = $sql." ORDER BY folio_factura DESC LIMIT 100";
+			if ($fecha_inicial && $fecha_final != "") {$sql = $sql." WHERE fchemis_factura BETWEEN '$fecha_inicial' AND '$fecha_final' ORDER BY folio_factura"; }else{
+				$sql = $sql." ORDER BY folio_factura DESC LIMIT 100";
+			}
+		
+			
 		}
+		
 		if ($valor == "select_factura_exenta") {
 			$sql2 = $sql2." ORDER BY folio_factura_exenta DESC LIMIT 100";
 			$sql = $sql2;
