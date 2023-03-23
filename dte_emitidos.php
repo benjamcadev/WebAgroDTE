@@ -1043,14 +1043,20 @@
                             if(data[0].monto < monto_global){
 
                                 $('#referencia_dte').empty();
-                                $("#referencia_dte").append("<h4><span class=\"label label-warning\">Anulada PARCIALMENTE con "+nombre_dte_ref+" Folio "+data[0].folio+"</span></h4>");
+
+                                for(let i = 0; i < data.length; i++){
+                                    $("#referencia_dte").append("<h4><span class=\"label label-warning\">Anulada PARCIALMENTE con "+nombre_dte_ref+" Folio "+data[i].folio+"</span></h4>");
+                                }                               
+                                
                                 $("#btn_anular").attr('disabled',true);
                                 //swal("Sin Registros", "No hay datos de DTE", "error");
                             }
                             if(data[0].monto == monto_global){
 
                                 $('#referencia_dte').empty();
-                                $("#referencia_dte").append("<h4><span class=\"label label-danger\">Anulada COMPLETAMENTE Con "+nombre_dte_ref+" Folio "+data[0].folio+"</span></h4>");
+                                for(let i = 0; i < data.length; i++){
+                                    $("#referencia_dte").append("<h4><span class=\"label label-danger\">Anulada COMPLETAMENTE Con "+nombre_dte_ref+" Folio "+data[i].folio+"</span></h4>");
+                                }
                                 $("#btn_anular").attr('disabled',true);
                                 //swal("Sin Registros", "No hay datos de DTE", "error");
                             }
@@ -1278,6 +1284,13 @@
                             }
 
                         }                
+                    },error: function (xhr, ajaxOptions, thrownError) {
+                        if (xhr.responseText.includes("Sin path")) {
+                            swal("Hubo un problema","No se encuentra el archivo XML del documento","error");
+                        }else{
+                            swal("Hubo un problema","Codigo Error Servidor: "+xhr.status +" "+ thrownError +" Detalle: "+ xhr.responseText , "error");
+                        }
+                        
                     }
                  });
                    
@@ -1367,7 +1380,7 @@
                         alert("No has escrito nada en Folio");
                     }else{
                         caso = "busqueda_folio";
-                    parametros = {"caso": caso, "valor": input_folio, "fecha_inicial": input_fecha_inicial, "fecha_final": input_fecha_final }; 
+                    parametros = {"caso": caso, "valor": input_folio,"valor2": "", "fecha_inicial": input_fecha_inicial, "fecha_final": input_fecha_final }; 
                     busquedaAvanzadaAjax(parametros);
                     }
                    
@@ -1379,7 +1392,7 @@
                         alert("No has escrito ingresado un RUT");
                     }else{
                     caso = "busqueda_rut";
-                    parametros = {"caso": caso, "valor": input_rut, "fecha_inicial": input_fecha_inicial, "fecha_final": input_fecha_final}; 
+                    parametros = {"caso": caso, "valor": input_rut,"valor2": "", "fecha_inicial": input_fecha_inicial, "fecha_final": input_fecha_final}; 
                     busquedaAvanzadaAjax(parametros);
                     }
                     
@@ -1390,7 +1403,7 @@
                         alert("No has escrito seleccionado Fecha");
                     }else{
                         caso = "busqueda_fecha";
-                    parametros = {"caso": caso, "valor": input_fecha, "fecha_inicial": input_fecha_inicial, "fecha_final": input_fecha_final}; 
+                    parametros = {"caso": caso, "valor": input_fecha,"valor2": "", "fecha_inicial": input_fecha_inicial, "fecha_final": input_fecha_final}; 
                     busquedaAvanzadaAjax(parametros);
                     }
                    
@@ -1401,7 +1414,7 @@
                         alert("No has ingresado un Monto");
                     }else{
                     caso = "busqueda_monto";
-                    parametros = {"caso": caso, "valor": input_monto, "fecha_inicial": input_fecha_inicial, "fecha_final": input_fecha_final}; 
+                    parametros = {"caso": caso, "valor": input_monto,"valor2": "", "fecha_inicial": input_fecha_inicial, "fecha_final": input_fecha_final}; 
                     busquedaAvanzadaAjax(parametros);
                     }
                    
@@ -1413,7 +1426,7 @@
                         alert("No has seleccionado un DTE");
                     }else{
                        caso = "busqueda_tipo";
-                    parametros = {"caso": caso, "valor": input_tipo, "fecha_inicial": input_fecha_inicial, "fecha_final": input_fecha_final}; 
+                    parametros = {"caso": caso, "valor": input_tipo,"valor2": "", "fecha_inicial": input_fecha_inicial, "fecha_final": input_fecha_final}; 
                     busquedaAvanzadaAjax(parametros);
                     }
                     
@@ -1433,12 +1446,20 @@
                    
                 }
 
-                if (select_busqueda_avanzada == "") {
+                if (select_busqueda_avanzada == "" && $('#switch_fechas').prop('checked')) {
+                   //BUSQUEDA POR PERIODOS
+                   if (input_fecha_inicial.length == 0 || input_fecha_final.length == 0) {
+                    alert("No has escrito fecha inicial o final");
+                   }else{
+                    //caso = "busqueda_periodos";
+                    //parametros = {"caso": caso, "valor": input_detalle,"valor2": input_detalle2, "fecha_inicial": input_fecha_inicial, "fecha_final": input_fecha_final}; 
+                    //busquedaAvanzadaAjax(parametros);
+                   }
+                }else if(select_busqueda_avanzada == ""){
                     alert("No has seleccionado un filtro");
                 }
 
-
-
+                
                 console.log(parametros);
 
             }
