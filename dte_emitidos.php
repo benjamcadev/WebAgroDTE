@@ -229,9 +229,9 @@
                             <h2>
                                 DTE EMITIDOS
                             
-                            <div class="alert alert-warning">
+                            <!--<div class="alert alert-warning">
                             <strong>IMPORTANTE!</strong> Se estan realizando cambios en esta pagina. Disculpe las molestias
-                            </div>
+                            </div>-->
 
                             <div class="alert alert-warning" id="warning_detalle" style="display: none;">
                             <strong>IMPORTANTE!</strong> <p style="font-size: 15px;">La busqueda de detalle por producto solo se realiza en los ultimos 4 meses desde la fecha actual. Debido a la gran carga de datos preguntados al servidor.</p>
@@ -263,7 +263,7 @@
                                         <div class="form-line">
                                             <select id="select_busqueda_avanzada" onchange="selectBusquedaAvanzada(this);" class="form-control ">
                                                 <option value="">-- Selecciona Filtro --</option>
-                                                <option  value="select_folio">Folio</option>
+                                                <option value="select_folio">Folio</option>
                                                 <option value="select_rut">Rut Receptor</option>
                                                 <option value="select_fecha">Fecha Emision</option>
                                                 <option value="select_monto">Monto Total</option>
@@ -525,20 +525,23 @@
 
     <!-- Funciones de la pagina -->
     <script type="text/javascript">
+
+        //Primera función se ejecuta al cargar la pagina, carga las tablas de los DTE emitidos 
         window.onload = function() {
 
             $("#lista_dte_emitidos_menu").addClass("active");
 
+            // Llama a la funcion cargar tabla
             cargarEmitidosTabla();
 
-               //Bootstrap datepicker plugin
+               //Carga en loscontenedores, los calendarios para seleccionar fechas
             $('#container_fecha input').datepicker({
                 autoclose: true,
                 container: '#container_fecha',
                 format: 'yyyy-mm-dd',
                 language: 'es'
             });
-                //Bootstrap datepicker plugin
+               
                 $('#container_fecha_inicial input').datepicker({
                 autoclose: true,
                 container: '#container_fecha_inicial',
@@ -546,8 +549,8 @@
                 language: 'es'
             });
                 
-                 //Bootstrap datepicker plugin
-                 $('#container_fecha_final input').datepicker({
+                
+                $('#container_fecha_final input').datepicker({
                 autoclose: true,
                 container: '#container_fecha_final',
                 format: 'yyyy-mm-dd',
@@ -569,8 +572,8 @@
         var tipo_dte_global = "";
         var monto_global = "";   
         
-        function activarFechas(){
-            
+        //Función para mostrar u ocultar los contenedores de fechas para los filtros por periodo
+        function activarFechas(){            
 
             if ($('#switch_fechas').prop('checked')) {
                 $('#container_fecha_inicial').show();
@@ -580,18 +583,11 @@
                 $('#container_fecha_inicial').hide();
                 $('#input_fecha_inicial').val('');
                 $('#input_fecha_final').val('');
-                
-                
-
-                
-                
-
             }
         }
 
         // Funcion que checkea y valida el RUT
-
-         function checkRut(rut) {
+        function checkRut(rut) {
             //capturar rut
             // Despejar Puntos
             var valor = rut.value.replace('.','');
@@ -638,39 +634,36 @@
             
             // Si todo sale bien, eliminar errores (decretar que es válido)
             rut.setCustomValidity('');
-
-
         }
 
-            function rutInvalido(){
-            swal("Error", "Rut invalido", "error");
-            }
+        // Micro funciones para mostrar mensajes de error
+        function rutInvalido(){
+        swal("Error", "Rut invalido", "error");
+        }
 
-            function rutIncompleto(){
-            swal("Ojo !", "Rut incompleto", "warning");
-            }
+        function rutIncompleto(){
+        swal("Ojo !", "Rut incompleto", "warning");
+        }
 
-            function cargarEmitidosTabla(){
-                var parametros = {
-                            
-                };     
+        function cargarEmitidosTabla(){
+            var parametros = {                        
+            };     
             $.ajax({
-                        type: "POST",
-                        data:  parametros,
-                        headers: {
-                            'apikey':'928e15a2d14d4a6292345f04960f4cc3' 
-                        },
-                        dataType: "json",
-                        url: "Clases/DTE.php?funcion=cargarEmitidosTabla",
+                type: "POST",
+                data:  parametros,
+                headers: {
+                    'apikey':'928e15a2d14d4a6292345f04960f4cc3' 
+                },
+                dataType: "json",
+                url: "Clases/DTE.php?funcion=cargarEmitidosTabla",
 
-                        success: function(data) { 
-
-                        console.log(data);
-
-                        cargarTabla(data);    
-                    }
-                    });
-            }
+                success: function(data) { 
+                    console.log(data);
+                    cargarTabla(data);
+                }
+            });
+        
+        }
 
           
             function cargarTabla(data){
@@ -1307,6 +1300,11 @@
                         $('#container_detalle').hide();
                         $('#container_detalle2').hide();
                         $('#warning_detalle').hide();
+                        $('#container_fecha_final').hide();
+                        $('#container_fecha_inicial').hide();
+                        $('#input_fecha_inicial').val('');
+                        $('#input_fecha_final').val('');
+                        $('#switch_fechas').attr('disabled',true);
                         break;
                     case "select_rut":
                         $('#container_folio').hide();
@@ -1317,6 +1315,7 @@
                         $('#container_detalle').hide();
                         $('#container_detalle2').hide();
                         $('#warning_detalle').hide();
+                        $('#switch_fechas').attr('disabled',false);
                         break;
                     case "select_fecha":
                         $('#container_folio').hide();
@@ -1327,6 +1326,11 @@
                         $('#container_detalle').hide();
                         $('#container_detalle2').hide();
                         $('#warning_detalle').hide();
+                        $('#container_fecha_final').hide();
+                        $('#container_fecha_inicial').hide();
+                        $('#input_fecha_inicial').val('');
+                        $('#input_fecha_final').val('');
+                        $('#switch_fechas').attr('disabled',true);
                         break;
                     case "select_monto":
                         $('#container_folio').hide();
@@ -1337,6 +1341,7 @@
                         $('#container_detalle').hide();
                         $('#container_detalle2').hide();
                         $('#warning_detalle').hide();
+                        $('#switch_fechas').attr('disabled',false);
                         break;
                     case "select_tipo":
                         $('#container_folio').hide();
@@ -1347,6 +1352,7 @@
                         $('#container_detalle').hide();
                         $('#container_detalle2').hide();
                         $('#warning_detalle').hide();
+                        $('#switch_fechas').attr('disabled',false);
                         break;
                      case "select_detalle":
                         $('#container_folio').hide();
@@ -1357,9 +1363,20 @@
                         $('#container_detalle').show();
                         $('#container_detalle2').show();
                         $('#warning_detalle').show();
+                        $('#switch_fechas').attr('disabled',false);
                         break;    
                       default:
+                        $('#container_folio').hide();
+                        $('#container_fecha').hide();
+                        $('#container_rut').hide();
+                        $('#container_monto_total').hide();
+                        $('#container_tipo_dte').hide();
+                        $('#container_detalle').hide();
+                        $('#container_detalle2').hide();
+                        $('#warning_detalle').hide();
+                        $('#switch_fechas').attr('disabled',false);
                         // code block
+                        break;
                     }
                    
             }
@@ -1451,9 +1468,9 @@
                    if (input_fecha_inicial.length == 0 || input_fecha_final.length == 0) {
                     alert("No has escrito fecha inicial o final");
                    }else{
-                    //caso = "busqueda_periodos";
-                    //parametros = {"caso": caso, "valor": input_detalle,"valor2": input_detalle2, "fecha_inicial": input_fecha_inicial, "fecha_final": input_fecha_final}; 
-                    //busquedaAvanzadaAjax(parametros);
+                    caso = "busqueda_periodos";
+                    parametros = {"caso": caso, "valor": "","valor2": "", "fecha_inicial": input_fecha_inicial, "fecha_final": input_fecha_final}; 
+                    busquedaAvanzadaAjax(parametros);
                    }
                 }else if(select_busqueda_avanzada == ""){
                     alert("No has seleccionado un filtro");

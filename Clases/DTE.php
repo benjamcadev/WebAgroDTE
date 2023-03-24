@@ -892,11 +892,8 @@ switch ($caso) {
 		if ($valor == "select_factura") {
 			if ($fecha_inicial && $fecha_final != "") {$sql = $sql." WHERE fchemis_factura BETWEEN '$fecha_inicial' AND '$fecha_final' ORDER BY folio_factura"; }else{
 				$sql = $sql." ORDER BY folio_factura DESC LIMIT 100";
-			}
-		
-			
-		}
-		
+			}				
+		}		
 		if ($valor == "select_factura_exenta") {
 			if ($fecha_inicial && $fecha_final != "") {$sql = $sql2." WHERE fchemis_factura_exenta BETWEEN '$fecha_inicial' AND '$fecha_final' ORDER BY folio_factura_exenta"; }else{
 				$sql = $sql2." ORDER BY folio_factura_exenta DESC LIMIT 100";
@@ -929,11 +926,23 @@ switch ($caso) {
 		}
 		
 
-		break;				
+	break;
+
+	case 'busqueda_periodos':
+
+		$sql = $sql." WHERE fchemis_factura BETWEEN '$fecha_inicial' AND '$fecha_final' ORDER BY folio_factura";
+		$sql2 = $sql2. " WHERE fchemis_factura_exenta BETWEEN '$fecha_inicial' AND '$fecha_final' ORDER BY folio_factura_exenta";
+		$sql3 = $sql3. "  WHERE fchemis_nota_credito BETWEEN '$fecha_inicial' AND '$fecha_final' ORDER BY folio_nota_credito"; 
+		$sql4 = $sql4. " WHERE fchemis_nota_debito BETWEEN '$fecha_inicial' AND '$fecha_final' ORDER BY folio_nota_debito";
+		$sql5 = $sql5. "  WHERE fchemis_guia_despacho BETWEEN '$fecha_inicial' AND '$fecha_final' ORDER BY folio_guia_despacho";
+		$sql6 = $sql6. " WHERE fechaemis_boleta BETWEEN '$fecha_inicial' AND '$fecha_final' ORDER BY fechaemis_boleta";
+		$sql7 = $sql7. " WHERE fechaemis_boleta_exenta BETWEEN '$fecha_inicial' AND '$fecha_final' ORDER BY fechaemis_boleta_exenta";
+
+	break;
 	
 	default:
 		// code...
-		break;
+	break;
 	}
 
 	if ($tipo_dte_flag) {
