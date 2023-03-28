@@ -753,7 +753,7 @@
                                      "sSearch": "Busqueda Rapida",
                                      "sLengthMenu": "Mostrar _MENU_ Registros",
                                  },
-                                 dom: 'Blfrtip',
+                                 dom: 'Blprtip',
                                  buttons: [
                                     {
                                         extend: 'excel',
@@ -1065,7 +1065,7 @@
               //BUSCAMOS LOS ACUSES DE RECIBO
                 //LAS BOLETAS NO TIENEN ACUSES
              
-              if (tipo_dte == 33 || tipo_dte == 61 || tipo_dte == 56 || tipo_dte == 52 ) {
+                if (tipo_dte == 33 || tipo_dte == 61 || tipo_dte == 56 || tipo_dte == 52 ) {
 
                     var parametros3 = {"folio": folio, 
                                         "tipo_dte": tipo_dte
@@ -1304,6 +1304,7 @@
                         $('#container_fecha_inicial').hide();
                         $('#input_fecha_inicial').val('');
                         $('#input_fecha_final').val('');
+                        $('#switch_fechas').prop('checked',false);
                         $('#switch_fechas').attr('disabled',true);
                         break;
                     case "select_rut":
@@ -1330,6 +1331,7 @@
                         $('#container_fecha_inicial').hide();
                         $('#input_fecha_inicial').val('');
                         $('#input_fecha_final').val('');
+                        $('#switch_fechas').prop('checked',false);
                         $('#switch_fechas').attr('disabled',true);
                         break;
                     case "select_monto":

@@ -224,6 +224,15 @@
                         <div class="header">
                             <h2>
                                 DTE RECIBIDOS
+                            <!--
+                            <div class="alert alert-warning">
+                            <strong>IMPORTANTE!</strong> Se estan realizando cambios en esta pagina. Disculpe las molestias
+                            </div>
+                            -->
+
+                            <div class="alert alert-warning" id="warning_detalle" style="display: none;">
+                            <strong>IMPORTANTE!</strong> <p style="font-size: 15px;">La busqueda de detalle por producto solo se realiza en los ultimos 4 meses desde la fecha actual. Debido a la gran carga de datos preguntados al servidor.</p>
+                            </div>
                             </h2>
                             <ul class="header-dropdown m-r--5">
                                 <li class="dropdown">
@@ -241,7 +250,7 @@
                         </div>
                         <div class="body">
                              <div class="row clearfix">
-
+                                 <!-- Busqueda por filtro dentro de la tabla cargada, max 5000 registros -->
                               <p>
                                         <b>Busqueda Avanzada</b>
                                     </p>
@@ -254,7 +263,7 @@
                                     <select id="select_busqueda_avanzada" onchange="selectBusquedaAvanzada(this);" class="form-control ">
                                         <option value="">-- Selecciona Filtro --</option>
                                         <option  value="select_folio">Folio</option>
-                                        <option value="select_rut">Rut Receptor</option>
+                                        <option value="select_rut">Rut Emisor</option>
                                         <option value="select_fecha">Fecha Emision</option>
                                         <option value="select_monto">Monto Total</option>
                                         <option value="select_tipo">Tipo de Documento</option>
@@ -307,6 +316,31 @@
                                  </div>
 
                             </div>
+                            <div class="row clearfix">
+                                    <div class="col-md-2">
+                                            <div class="input-group input-group-lg">   
+                                                <div class="switch">
+                                                    <label><input id="switch_fechas" type="checkbox" onclick="activarFechas()"><span class="lever"></span>FILTRO PERIODOS</label>
+                                                </div>
+                                            </div>   
+                                    </div>
+                            
+                                    <div class="col-md-5">
+                                            <div class="input-group input-group-lg">   
+                                                <div id="container_fecha_inicial" class="form-line" style="display: none;">
+                                                    <input id="input_fecha_inicial" type="text" class="form-control" placeholder="Ingresa Fecha">
+                                                </div>
+                                            </div>   
+                                    </div>
+                           
+                                    <div class="col-md-5">
+                                            <div class="input-group input-group-lg">   
+                                                <div id="container_fecha_final" class="form-line" style="display: none;">
+                                                    <input id="input_fecha_final" type="text" class="form-control" placeholder="Ingresa Fecha">
+                                                </div>
+                                            </div>   
+                                    </div>
+                            </div>
                             <div class="table-responsive">
                                 <table id="tabla_dte_emitidos" class="table table-bordered table-striped table-hover js-basic-example dataTable">
                                    
@@ -349,6 +383,8 @@
                             </button>
 
                              <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+                         <div class="modal-header" id="referencia_dte">
                         </div>
                         <div class="modal-body" id="pdfModal_body">
                             <canvas style="width: 100%; height: 100%;"  id="canvas-pdf"></canvas>
@@ -493,13 +529,28 @@
             cargarRecibidosTabla();
 
                //Bootstrap datepicker plugin
-    $('#container_fecha input').datepicker({
-        autoclose: true,
-        container: '#container_fecha',
-        format: 'yyyy-mm-dd',
-        language: 'es'
-        
-    });
+            $('#container_fecha input').datepicker({
+                autoclose: true,
+                container: '#container_fecha',
+                format: 'yyyy-mm-dd',
+                language: 'es'
+                
+            });
+
+             $('#container_fecha_inicial input').datepicker({
+                autoclose: true,
+                container: '#container_fecha_inicial',
+                format: 'yyyy-mm-dd',
+                language: 'es'
+            });
+                
+                
+                $('#container_fecha_final input').datepicker({
+                autoclose: true,
+                container: '#container_fecha_final',
+                format: 'yyyy-mm-dd',
+                language: 'es'
+            });
         }
 
          //Tooltip
@@ -511,7 +562,21 @@
  var pdf_base64 = ""; 
  var xml_base64 = "";
  var folio_global = "";
- var tipo_dte_global = "";      
+ var tipo_dte_global = "";  
+
+  //Función para mostrar u ocultar los contenedores de fechas para los filtros por periodo
+        function activarFechas(){            
+
+            if ($('#switch_fechas').prop('checked')) {
+                $('#container_fecha_inicial').show();
+                $('#container_fecha_final').show();
+            }else{
+                $('#container_fecha_final').hide();
+                $('#container_fecha_inicial').hide();
+                $('#input_fecha_inicial').val('');
+                $('#input_fecha_final').val('');
+            }
+        }    
 
     function checkRut(rut) {
             //capturar rut
@@ -597,7 +662,7 @@
             function cargarTabla(data){
                 $('#tabla_dte_emitidos').DataTable( {
                               data: data,
-                               "order": [[ 5, 'desc' ]],
+                               "order": [[ 7, 'desc' ]],
                                 columns: [
                                     { title: "Folio",data: 'folio' },
                                      { title: "DTE",data: 'tipo_dte',render: function(data){
@@ -618,6 +683,40 @@
                                                                                             }
                                                                                             return data;
                                     } },
+                                     { title: "Neto",data: 'monto_total',render: function(data,type, row, meta){
+
+                                                                                            let formatter = new Intl.NumberFormat('es-CL', {
+                                                                                                style: 'currency',
+                                                                                                currency: 'CLP'
+                                                                                            });
+
+                                                                                            let neto = 0;
+
+                                                                                            if(row['tipo_dte'] == "34"){
+                                                                                                neto = data;
+                                                                                            }else{
+                                                                                                neto = Math.round(data/1.19);
+                                                                                            }                                                                                            
+                                                                                            
+                                                                                            return formatter.format(neto);
+                                    }},
+                                    { title: "IVA",data: 'monto_total',render: function(data,type, row, meta){
+
+                                                                                            let formatter = new Intl.NumberFormat('es-CL', {
+                                                                                                style: 'currency',
+                                                                                                currency: 'CLP'
+                                                                                            });
+
+                                                                                            let iva = 0;
+
+                                                                                            if(row['tipo_dte'] == "34"){
+                                                                                                iva = 0;
+                                                                                            }else{
+                                                                                                iva = Math.round(data * (19/119));
+                                                                                            }
+                                                                                            
+                                                                                            return formatter.format(iva);
+                                    }},
 
                                     { title: "Monto Total",data: 'monto_total',render: function(data){
                                                                                         var formatter = new Intl.NumberFormat('es-CL', {
@@ -630,7 +729,7 @@
                                                                                  
                                     { title: "Fecha",data: 'fecha' },
                                     { title: "Detalle",data: 'folio', render: function(data,type, row, meta){
-                                                                                return '<a onclick="crearPDF('+data+','+row['tipo_dte']+',\''+row['rut']+'\')" style="color: brown;"  class="material-icons">content_paste</a>'
+                                                                                return '<a role="button" onclick="crearPDF('+data+','+row['tipo_dte']+',\''+row['rut']+'\','+row['monto_total']+')" style="color: brown;"  class="material-icons">content_paste</a>'
                                     } }
 
 
@@ -640,7 +739,7 @@
                                      "sSearch": "Busqueda Rapida",
                                      "sLengthMenu": "Mostrar _MENU_ Registros",
                                  },
-                                 dom: 'Blfrtip',
+                                 dom: 'Blprtip',
                                  buttons: [
                                     {
                                         extend: 'excel',
@@ -855,30 +954,104 @@
                         }   
                 }else{
                     alert("No ha escrito un Correo Valido");
-                }
-
-
-              
-
-
-               
+                }        
 
             }
 
-            function crearPDF(folio,tipo_dte,rut){
+            function crearPDF(folio,tipo_dte,rut,monto){
                 folio_global = folio;
                 tipo_dte_global = tipo_dte;
+                monto_global = monto;
 
                 $("#pdf_nombre").text("");
                 $("#xml_nombre").text("");
                 $("#pdf_nombre").text("DTE_"+tipo_dte+"_"+folio+".pdf");
                 $("#xml_nombre").text("DTE_"+tipo_dte+"_"+folio+".xml");
 
+                 //BUSCAR SI TIENE DTE RELACIONADO
+                let tipo_dte_ref = "";
+                let nombre_dte_ref = "";
 
-             var parametros = {"folio": folio, 
+                if (tipo_dte == "33") {
+                    tipo_dte_ref = "61";
+                    nombre_dte_ref = "Nota de Credito";
+                }
+                if (tipo_dte == "34") {
+                    tipo_dte_ref = "61";
+                    nombre_dte_ref = "Nota de Credito";
+                }
+                if (tipo_dte == "61") {
+                    tipo_dte_ref = "56";
+                    nombre_dte_ref = "Nota de Debito";
+                }
+                if (tipo_dte == "39") {
+                    tipo_dte_ref = "61";
+                    nombre_dte_ref = "Nota de Credito";
+                }
+                if (tipo_dte == "52") {
+                    tipo_dte_ref = "61";
+                    nombre_dte_ref = "Nota de Credito";
+                }
+                if (tipo_dte == "56") {
+                    tipo_dte_ref = "61";
+                    nombre_dte_ref = "Nota de Credito";
+                }
+
+                 var parametros2 = {"folio_referencia": folio, 
+                "tipo_dte_referencia": tipo_dte_ref
+                }; 
+                $.ajax({
+                    type: 'POST',
+                    data:  parametros2,
+                    headers: {
+                                    'apikey':'928e15a2d14d4a6292345f04960f4cc3' 
+                                },
+                    dataType: "json",
+                    url: "Clases/DTE_compra.php?funcion=cargarDatosReferenciaRecibidos",
+                    success:function(data){
+                        console.log(data);
+
+                        if (data.length == 0) {
+                            //NO TIENE REFERENCIA
+                            //swal("Sin Registros", "No hay datos de DTE", "error");
+                            $('#referencia_dte').empty();
+                            
+                        }
+                        if (data.length > 0) {
+                            //TIENE REFERENCIA
+                            if(data[0].monto < monto_global){
+
+                                $('#referencia_dte').empty();
+
+                                for(let i = 0; i < data.length; i++){
+                                    $("#referencia_dte").append("<h4><span class=\"label label-warning\">Anulada PARCIALMENTE con "+nombre_dte_ref+" Folio "+data[i].folio+"</span></h4>");
+                                }                               
+                                
+                                //$("#btn_anular").attr('disabled',true);
+                                //swal("Sin Registros", "No hay datos de DTE", "error");
+                            }
+                            if(data[0].monto == monto_global){
+
+                                $('#referencia_dte').empty();
+                                for(let i = 0; i < data.length; i++){
+                                    $("#referencia_dte").append("<h4><span class=\"label label-danger\">Anulada COMPLETAMENTE Con "+nombre_dte_ref+" Folio "+data[i].folio+"</span></h4>");
+                                }
+                                //$("#btn_anular").attr('disabled',true);
+                                //swal("Sin Registros", "No hay datos de DTE", "error");
+                            }
+                        }else{
+                            //$("#btn_anular").attr('disabled',false);
+                        }
+                        
+                    }
+                });
+              // FIN DE BUSQUEDA DTE RELACIONADO
+
+
+                var parametros = {"folio": folio, 
                                 "tipo_dte": tipo_dte,
                                 "rut": rut
-            }; 
+                }; 
 
                 $.ajax({
                     type: 'POST',
@@ -918,10 +1091,12 @@
                                             $("#canvas-pdf").css("width","40%");
                                             $("#canvas-pdf").css("height","40%");
                                             $("#canvas-pdf").css("margin-left","30%");
+                                            $("#canvas-pdf").css("box-shadow","0px 0px 12px 1px black");
                                          }else{
                                              $("#canvas-pdf").css("width","100%");
                                             $("#canvas-pdf").css("height","100%");
                                             $("#canvas-pdf").css("margin-left","0%");
+                                            $("#canvas-pdf").css("box-shadow","0px 0px 12px 1px black");
                                          }
                                        var canvas = document.getElementById('canvas-pdf');
                                        var unscaledViewport = page.getViewport({scale: scale});
@@ -978,6 +1153,14 @@
                         $('#container_monto_total').hide();
                         $('#container_tipo_dte').hide();
                         $('#container_detalle').hide();
+                        $('#container_detalle2').hide();
+                        $('#warning_detalle').hide();
+                        $('#container_fecha_final').hide();
+                        $('#container_fecha_inicial').hide();
+                        $('#input_fecha_inicial').val('');
+                        $('#input_fecha_final').val('');
+                        $('#switch_fechas').prop('checked',false);
+                        $('#switch_fechas').attr('disabled',true);
 
                         break;
                     case "select_rut":
@@ -987,6 +1170,9 @@
                         $('#container_monto_total').hide();
                         $('#container_tipo_dte').hide();
                         $('#container_detalle').hide();
+                        $('#container_detalle2').hide();
+                        $('#warning_detalle').hide();
+                        $('#switch_fechas').attr('disabled',false);
                         
                         break;
                     case "select_fecha":
@@ -996,6 +1182,14 @@
                         $('#container_monto_total').hide();
                         $('#container_tipo_dte').hide();
                         $('#container_detalle').hide();
+                        $('#container_detalle2').hide();
+                        $('#warning_detalle').hide();
+                        $('#container_fecha_final').hide();
+                        $('#container_fecha_inicial').hide();
+                        $('#input_fecha_inicial').val('');
+                        $('#input_fecha_final').val('');
+                        $('#switch_fechas').prop('checked',false);
+                        $('#switch_fechas').attr('disabled',true);
                         
                         break;
                     case "select_monto":
@@ -1005,6 +1199,9 @@
                         $('#container_monto_total').show();
                         $('#container_tipo_dte').hide();
                         $('#container_detalle').hide();
+                        $('#container_detalle2').hide();
+                        $('#warning_detalle').hide();
+                        $('#switch_fechas').attr('disabled',false);
                         break;
                     case "select_tipo":
                         $('#container_folio').hide();
@@ -1013,6 +1210,9 @@
                         $('#container_monto_total').hide();
                         $('#container_tipo_dte').show();
                         $('#container_detalle').hide();
+                        $('#container_detalle2').hide();
+                        $('#warning_detalle').hide();
+                        $('#switch_fechas').attr('disabled',false);
                         break;
                      case "select_detalle":
                         $('#container_folio').hide();
@@ -1021,8 +1221,22 @@
                         $('#container_monto_total').hide();
                         $('#container_tipo_dte').hide();
                         $('#container_detalle').show();
+                        $('#container_detalle2').show();
+                        $('#warning_detalle').show();
+                        $('#switch_fechas').attr('disabled',false);
                         break;    
                       default:
+                        $('#container_folio').hide();
+                        $('#container_fecha').hide();
+                        $('#container_rut').hide();
+                        $('#container_monto_total').hide();
+                        $('#container_tipo_dte').hide();
+                        $('#container_detalle').hide();
+                        $('#container_detalle2').hide();
+                        $('#warning_detalle').hide();
+                        $('#switch_fechas').attr('disabled',false);
+                        // code block
+                        break;
                         // code block
                     }
                    
@@ -1031,6 +1245,8 @@
             function busquedaAvanzada(){
                 var caso = "";
                 var select_busqueda_avanzada = $('#select_busqueda_avanzada option:selected').val();
+                let input_fecha_inicial = $('#input_fecha_inicial').val();
+                let input_fecha_final = $('#input_fecha_final').val();
                 var parametros = {
                             
                     }; 
@@ -1041,7 +1257,7 @@
                         alert("No has escrito nada en Folio");
                     }else{
                         caso = "busqueda_folio";
-                    parametros = {"caso": caso, "valor": input_folio}; 
+                    parametros = {"caso": caso, "valor": input_folio,"valor2": "", "fecha_inicial": input_fecha_inicial, "fecha_final": input_fecha_final}; 
                     busquedaAvanzadaAjax(parametros);
                     }
                    
@@ -1053,7 +1269,7 @@
                         alert("No has escrito ingresado un RUT");
                     }else{
                     caso = "busqueda_rut";
-                    parametros = {"caso": caso, "valor": input_rut}; 
+                    parametros = {"caso": caso, "valor": input_rut,"valor2": "", "fecha_inicial": input_fecha_inicial, "fecha_final": input_fecha_final}; 
                     busquedaAvanzadaAjax(parametros);
                     }
                     
@@ -1064,7 +1280,7 @@
                         alert("No has escrito seleccionado Fecha");
                     }else{
                         caso = "busqueda_fecha";
-                    parametros = {"caso": caso, "valor": input_fecha}; 
+                    parametros = {"caso": caso, "valor": input_fecha,"valor2": "", "fecha_inicial": input_fecha_inicial, "fecha_final": input_fecha_final}; 
                     busquedaAvanzadaAjax(parametros);
                     }
                    
@@ -1075,7 +1291,7 @@
                         alert("No has ingresado un Monto");
                     }else{
                     caso = "busqueda_monto";
-                    parametros = {"caso": caso, "valor": input_monto}; 
+                    parametros = {"caso": caso, "valor": input_monto,"valor2": "", "fecha_inicial": input_fecha_inicial, "fecha_final": input_fecha_final}; 
                     busquedaAvanzadaAjax(parametros);
                     }
                    
@@ -1087,7 +1303,7 @@
                         alert("No has seleccionado un DTE");
                     }else{
                        caso = "busqueda_tipo";
-                    parametros = {"caso": caso, "valor": input_tipo}; 
+                    parametros = {"caso": caso, "valor": input_tipo,"valor2": "", "fecha_inicial": input_fecha_inicial, "fecha_final": input_fecha_final}; 
                     busquedaAvanzadaAjax(parametros);
                     }
                     
@@ -1099,13 +1315,22 @@
                         alert("No has escrito ningun Producto");
                     }else{
                         caso = "busqueda_detalle";
-                    parametros = {"caso": caso, "valor": input_detalle}; 
+                    parametros = {"caso": caso, "valor": input_detalle,"valor2": "", "fecha_inicial": input_fecha_inicial, "fecha_final": input_fecha_final}; 
                     busquedaAvanzadaAjax(parametros);
                     }
                    
                 }
 
-                if (select_busqueda_avanzada == "") {
+                if (select_busqueda_avanzada == "" && $('#switch_fechas').prop('checked')) {
+                   //BUSQUEDA POR PERIODOS
+                   if (input_fecha_inicial.length == 0 || input_fecha_final.length == 0) {
+                    alert("No has escrito fecha inicial o final");
+                   }else{
+                    caso = "busqueda_periodos";
+                    parametros = {"caso": caso, "valor": "","valor2": "", "fecha_inicial": input_fecha_inicial, "fecha_final": input_fecha_final}; 
+                    busquedaAvanzadaAjax(parametros);
+                   }
+                }else if(select_busqueda_avanzada == "") {
                     alert("No has seleccionado un filtro");
                 }
 
@@ -1125,7 +1350,28 @@
                         },
             dataType: "json",
             url: "Clases/DTE_compra.php?funcion=busquedaAvanzada",
+            beforeSend: function() {
+
+                            //mensaje temporal de busqueda de datos
+                            swal({
+                                title: '<div class="preloader pl-size-xl">'+
+                                          '     <div class="spinner-layer pl-light-blue">'+
+                                          '         <div class="circle-clipper left">'+
+                                          '             <div class="circle"></div>'+
+                                          '         </div>'+
+                                          '         <div class="circle-clipper right">'+
+                                          '             <div class="circle"></div>'+
+                                          '         </div>'+
+                                          '     </div>'+
+                                          ' </div>', 
+                                text: "Cargando datos ...",
+                                showConfirmButton: false,
+                                //timer: 1800,
+                                html: true           
+                            });
+                        },
             success:function(data){
+                swal.close();
                 console.log(data);
 
                 if (data.length == 0) {
@@ -1133,8 +1379,6 @@
                 }
                  $('#tabla_dte_emitidos').DataTable().destroy();
                  cargarTabla(data);
-
-
             }
         });
            } 

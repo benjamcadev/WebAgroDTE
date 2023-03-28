@@ -50,7 +50,10 @@ if ($apikey == "928e15a2d14d4a6292345f04960f4cc3") {
 		case 'busquedaAvanzada':
 			$caso = $_POST['caso'];
 			$valor= $_POST['valor'];
-			busquedaAvanzada($caso,$valor);
+			$valor2= $_POST['valor2'];
+			$fecha_inicial = $_POST['fecha_inicial'];
+			$fecha_final = $_POST['fecha_final'];
+			busquedaAvanzada($caso,$valor,$fecha_inicial,$fecha_final,$valor2);
 		break;
 
 		case 'crearPDF':
@@ -58,6 +61,12 @@ if ($apikey == "928e15a2d14d4a6292345f04960f4cc3") {
 			$tipo_dte = $_POST['tipo_dte'];
 			$rut = $_POST['rut'];
 			crearPDF($folio,$tipo_dte,$rut);
+		break;
+
+		case 'cargarDatosReferenciaRecibidos':
+			$tipo_dte_referencia = $_POST['tipo_dte_referencia'];
+			$folio_referencia = $_POST['folio_referencia'];
+			cargarDatosReferenciaRecibidos($tipo_dte_referencia,$folio_referencia);
 		break;	
 
 		case 'emitirDTE':
@@ -340,7 +349,63 @@ function cargarDatosReceptor($rutReceptor){
 	//print_r(json_encode($datos));
 }
 
-function busquedaAvanzada($caso,$valor){
+function cargarDatosReferenciaRecibidos($tipo_dte_referencia,$folio_referencia){
+
+	$campo_tabla = ""; 
+	$campo_fecha= ""; 
+	$campo_folio_ref= "";
+	$campo_tipo_dteref= "";
+	$campo_folio= "";
+	$campo_monto= "";
+	
+	if($tipo_dte_referencia == "33"){
+		$campo_tabla = "factura_compra";
+		$campo_fecha = "fchemis_factura_compra";
+		$campo_folio_ref ="folioref_factura_compra";
+		$campo_tipo_dteref ="tipo_dteref_factura_compra";
+		$campo_folio= "folio_factura_compra";
+		$campo_monto= "mnttotal_factura_compra";
+	}
+	if($tipo_dte_referencia == "34"){
+		$campo_tabla = "factura_exenta_compra";
+		$campo_fecha = "fchemis_factura_exenta_compra";
+		$campo_folio_ref ="folioref_factura_exenta_compra";
+		$campo_tipo_dteref ="tipo_dteref_factura_exenta_compra";
+		$campo_folio= "folio_factura_exenta_compra";
+		$campo_monto= "mnttotal_factura_exenta_compra";
+	}
+	/* No existen las tablas de boletas de compra
+	
+	*/	
+	if($tipo_dte_referencia == "56"){
+		$campo_tabla = "nota_debito_compra";
+		$campo_fecha = "fchemis_nota_debito_compra";
+		$campo_folio_ref ="folioref_nota_debito_compra";
+		$campo_tipo_dteref ="tipo_dteref_nota_debito_compra";
+		$campo_folio= "folio_nota_debito_compra";
+		$campo_monto= "mnttotal_nota_debito_compra";
+	}
+	if($tipo_dte_referencia == "61"){
+		$campo_tabla = "nota_credito_compra";
+		$campo_fecha = "fchemis_nota_credito_compra";
+		$campo_folio_ref ="folioref_nota_credito_compra";
+		$campo_tipo_dteref ="tipo_dteref_nota_credito_compra";
+		$campo_folio= "folio_nota_credito_compra";
+		$campo_monto= "mnttotal_nota_credito_compra";
+	}
+
+	$conexion = new conexion();
+	$sqlDatos_referencia = "SELECT ".$campo_fecha." AS fecha,".$campo_folio." AS folio,".$campo_monto." AS monto FROM ".$campo_tabla." WHERE ".$campo_folio_ref."='".$folio_referencia."'";
+		
+	//print_r($sqlDatos_referencia);
+	$datosReferencia = $conexion->obtenerDatos($sqlDatos_referencia);
+	//print_r($sqlDatos_referencia);
+
+	print_r(json_encode($datosReferencia));
+	//print_r(json_encode($datos));
+}
+
+function busquedaAvanzada($caso,$valor,$fecha_inicial,$fecha_final,$valor2){
 $conexion = new conexion();
 $tipo_dte_flag = false;
 //QURYS GENERALES
@@ -380,11 +445,11 @@ switch ($caso) {
 
 	case 'busqueda_rut':
 
-	$sql = $sql." WHERE rutemis_factura_compra = '$valor' ORDER BY folio_factura_compra";
-	$sql2 = $sql2. " WHERE rutemis_factura_exenta_compra = '$valor' ORDER BY folio_factura_exenta_compra";
-	$sql3 = $sql3. " WHERE rutemis_nota_credito_compra = '$valor'  ORDER BY folio_nota_credito_compra"; 
-	$sql4 = $sql4. " WHERE rutemis_nota_debito_compra = '$valor' ORDER BY folio_nota_debito_compra";
-	$sql5 = $sql5. " WHERE rutemis_guia_despacho_compra = '$valor' ORDER BY folio_guia_despacho_compra";
+	$sql = $sql." WHERE rutemis_factura_compra = '$valor'"; if($fecha_inicial && $fecha_final != ""){$sql = $sql." AND fchemis_factura_compra BETWEEN '$fecha_inicial' AND '$fecha_final'"; } $sql = $sql." ORDER BY folio_factura_compra";
+	$sql2 = $sql2. " WHERE rutemis_factura_exenta_compra = '$valor'"; if ($fecha_inicial && $fecha_final != "") {$sql2 = $sql2." AND fchemis_factura_exenta_compra BETWEEN '$fecha_inicial' AND '$fecha_final'"; } $sql2 = $sql2." ORDER BY folio_factura_exenta_compra";
+	$sql3 = $sql3. " WHERE rutemis_nota_credito_compra = '$valor'"; if ($fecha_inicial && $fecha_final != "") {$sql3 = $sql3." AND fchemis_nota_credito_compra BETWEEN '$fecha_inicial' AND '$fecha_final'"; } $sql3 = $sql3." ORDER BY folio_nota_credito_compra"; 
+	$sql4 = $sql4. " WHERE rutemis_nota_debito_compra = '$valor'"; if ($fecha_inicial && $fecha_final != "") {$sql4 = $sql4." AND fchemis_nota_debito_compra BETWEEN '$fecha_inicial' AND '$fecha_final'"; } $sql4 = $sql4." ORDER BY folio_nota_debito_compra";
+	$sql5 = $sql5. " WHERE rutemis_guia_despacho_compra = '$valor'"; if ($fecha_inicial && $fecha_final != "") {$sql5 = $sql5." AND fchemis_guia_despacho_compra BETWEEN '$fecha_inicial' AND '$fecha_final'"; } $sql5 = $sql5." ORDER BY folio_guia_despacho_compra";
 	//$sql6 = "";
 	//$sql7 = "";
 
@@ -400,51 +465,57 @@ switch ($caso) {
 		//$sql6 = $sql6. " WHERE fechaemis_boleta = '$valor' ORDER BY folio_boleta";
 		//$sql7 = $sql7. " WHERE fechaemis_boleta_exenta = '$valor' ORDER BY folio_boleta_exenta";
 
-		break;
+	break;
 
 	case 'busqueda_monto':
 
-		$sql = $sql." WHERE mnttotal_factura_compra = '$valor' ORDER BY folio_factura_compra";
-		$sql2 = $sql2. " WHERE mnttotal_factura_exenta_compra = '$valor' ORDER BY folio_factura_exenta_compra";
-		$sql3 = $sql3. " WHERE mnttotal_nota_credito_compra = '$valor'  ORDER BY folio_nota_credito_compra"; 
-		$sql4 = $sql4. " WHERE mnttotal_nota_debito_compra = '$valor' ORDER BY folio_nota_debito_compra";
-		$sql5 = $sql5. " WHERE mnttotal_guia_despacho_compra = '$valor' ORDER BY folio_guia_despacho_compra";
+		$sql = $sql." WHERE mnttotal_factura_compra = '$valor'"; if($fecha_inicial && $fecha_final != ""){$sql = $sql." AND fchemis_factura_compra BETWEEN '$fecha_inicial' AND '$fecha_final'"; } $sql = $sql." ORDER BY folio_factura_compra";
+		$sql2 = $sql2. " WHERE mnttotal_factura_exenta_compra = '$valor'"; if ($fecha_inicial && $fecha_final != "") {$sql2 = $sql2." AND fchemis_factura_exenta_compra BETWEEN '$fecha_inicial' AND '$fecha_final'"; } $sql2 = $sql2." ORDER BY folio_factura_exenta_compra";
+		$sql3 = $sql3. " WHERE mnttotal_nota_credito_compra = '$valor'"; if ($fecha_inicial && $fecha_final != "") {$sql3 = $sql3." AND fchemis_nota_credito_compra BETWEEN '$fecha_inicial' AND '$fecha_final'"; } $sql3 = $sql3." ORDER BY folio_nota_credito_compra";  
+		$sql4 = $sql4. " WHERE mnttotal_nota_debito_compra = '$valor'"; if ($fecha_inicial && $fecha_final != "") {$sql4 = $sql4." AND fchemis_nota_debito_compra BETWEEN '$fecha_inicial' AND '$fecha_final'"; } $sql4 = $sql4." ORDER BY folio_nota_debito_compra";
+		$sql5 = $sql5. " WHERE mnttotal_guia_despacho_compra = '$valor'"; if ($fecha_inicial && $fecha_final != "") {$sql5 = $sql5." AND fchemis_guia_despacho_compra BETWEEN '$fecha_inicial' AND '$fecha_final'"; } $sql5 = $sql5." ORDER BY folio_guia_despacho_compra";
 		//$sql6 = $sql6. " WHERE mnttotal_boleta = '$valor' ORDER BY folio_boleta";
 		//$sql7 = $sql7. " WHERE mnttotal_boleta_exenta = '$valor' ORDER BY folio_boleta_exenta";
 
-		break;
+	break;
 	case 'busqueda_detalle':
 
-		$sql = $sql." WHERE detalle_factura_compra LIKE '%$valor%' ORDER BY folio_factura_compra";
-		$sql2 = $sql2. " WHERE detalle_factura_exenta_compra LIKE '%$valor%' ORDER BY folio_factura_exenta_compra";
-		$sql3 = $sql3. " WHERE detalle_nota_credito_compra LIKE '%$valor%'  ORDER BY folio_nota_credito_compra"; 
-		$sql4 = $sql4. " WHERE detalle_nota_debito_compra LIKE '%$valor%' ORDER BY folio_nota_debito_compra";
-		$sql5 = $sql5. " WHERE detalle_guia_despacho_compra LIKE '%$valor%' ORDER BY folio_guia_despacho_compra";
+		$sql = $sql." WHERE detalle_factura_compra LIKE '%$valor%'"; if ($fecha_inicial && $fecha_final != "") {$sql = $sql." AND fchemis_factura_compra BETWEEN '$fecha_inicial' AND '$fecha_final'"; }else if($valor2 != ""){$sql = $sql." AND detalle_factura_compra LIKE '%$valor2%' ";}else{$sql = $sql." AND fchemis_factura_compra >= now()-interval 4 MONTH ORDER BY folio_factura_compra";} 
+		$sql2 = $sql2. " WHERE detalle_factura_exenta_compra LIKE '%$valor%'"; if ($fecha_inicial && $fecha_final != "") {$sql2 = $sql2." AND fchemis_factura_exenta_compra BETWEEN '$fecha_inicial' AND '$fecha_final'"; }else if($valor2 != ""){$sql2 = $sql2." AND detalle_factura_exenta_compra LIKE '%$valor2%' ";}else{$sql2 = $sql2." AND fchemis_factura_exenta_compra >= now()-interval 4 MONTH ORDER BY folio_factura_exenta_compra";}
+		$sql3 = $sql3. " WHERE detalle_nota_credito_compra LIKE '%$valor%'"; if ($fecha_inicial && $fecha_final != "") {$sql3 = $sql3." AND fchemis_nota_credito_compra BETWEEN '$fecha_inicial' AND '$fecha_final'"; }else if($valor2 != ""){$sql3 = $sql3." AND detalle_nota_credito_compra LIKE '%$valor2%' ";}else{$sql3 = $sql3." AND fchemis_nota_credito_compra >= now()-interval 4 MONTH ORDER BY folio_nota_credito_compra";}
+		$sql4 = $sql4. " WHERE detalle_nota_debito_compra LIKE '%$valor%'"; if ($fecha_inicial && $fecha_final != "") {$sql4 = $sql4." AND fchemis_nota_debito_compra BETWEEN '$fecha_inicial' AND '$fecha_final'"; }else if($valor2 != ""){$sql4 = $sql4." AND detalle_nota_debito_compra LIKE '%$valor2%' ";}else{$sql4 = $sql4." AND fchemis_nota_debito_compra >= now()-interval 4 MONTH ORDER BY folio_nota_debito_compra";}
+		$sql5 = $sql5. " WHERE detalle_guia_despacho_compra LIKE '%$valor%'"; if ($fecha_inicial && $fecha_final != "") {$sql5 = $sql5." AND fchemis_guia_despacho_compra BETWEEN '$fecha_inicial' AND '$fecha_final'"; }else if($valor2 != ""){$sql5 = $sql5." AND detalle_guia_despacho_compra LIKE '%$valor2%' ";}else{$sql5 = $sql5." AND fchemis_guia_despacho_compra >= now()-interval 4 MONTH ORDER BY folio_guia_despacho_compra";}
 		//$sql6 = $sql6. " WHERE detalle_boleta LIKE '%$valor%' ORDER BY folio_boleta";
 		//$sql7 = $sql7. " WHERE detalle_boleta_exenta LIKE '%$valor%' ORDER BY folio_boleta_exenta";
 
-		break;
+	break;
 	case 'busqueda_tipo':
 
 	$tipo_dte_flag = true;
 		if ($valor == "select_factura") {
-			$sql = $sql." ORDER BY folio_factura_compra DESC LIMIT 100";
-		}
+			if ($fecha_inicial && $fecha_final != "") {$sql = $sql." WHERE fchemis_factura_compra BETWEEN '$fecha_inicial' AND '$fecha_final' ORDER BY folio_factura_compra"; }else{
+				$sql = $sql." ORDER BY folio_factura_compra DESC LIMIT 100";
+			}				
+		}		
 		if ($valor == "select_factura_exenta") {
-			$sql2 = $sql2." ORDER BY folio_factura_exenta_compra DESC LIMIT 100";
-			$sql = $sql2;
+			if ($fecha_inicial && $fecha_final != "") {$sql = $sql2." WHERE fchemis_factura_exenta_compra BETWEEN '$fecha_inicial' AND '$fecha_final' ORDER BY folio_factura_exenta_compra"; }else{
+				$sql = $sql2." ORDER BY folio_factura_exenta_compra DESC LIMIT 100";
+			}
 		}
 		if ($valor == "select_nota_credito") {
-			$sql3 = $sql3." ORDER BY folio_nota_credito_compra DESC LIMIT 100";
-			$sql = $sql3;
+			if ($fecha_inicial && $fecha_final != "") {$sql = $sql3." WHERE fchemis_nota_credito_compra BETWEEN '$fecha_inicial' AND '$fecha_final' ORDER BY folio_nota_credito_compra"; }else{
+				$sql = $sql3." ORDER BY folio_nota_credito_compra DESC LIMIT 100";
+			}
 		}
 		if ($valor == "select_nota_debito") {
-			$sql4 = $sql4." ORDER BY folio_nota_debito_compra DESC LIMIT 100";
-			$sql = $sql4;
+			if ($fecha_inicial && $fecha_final != "") {$sql = $sql4." WHERE fchemis_nota_debito_compra BETWEEN '$fecha_inicial' AND '$fecha_final' ORDER BY folio_nota_debito_compra"; }else{
+				$sql = $sql4." ORDER BY folio_nota_debito_compra DESC LIMIT 100";
+			}
 		}
 		if ($valor == "select_guia_despacho") {
-			$sql5 = $sql5." ORDER BY folio_guia_despacho_compra DESC LIMIT 100";
-			$sql = $sql5;
+			if ($fecha_inicial && $fecha_final != "") {$sql = $sql5." WHERE fchemis_guia_despacho_compra BETWEEN '$fecha_inicial' AND '$fecha_final' ORDER BY folio_guia_despacho_compra"; }else{
+				$sql = $sql5." ORDER BY folio_guia_despacho_compra DESC LIMIT 100";
+			}
 		}
 		/*if ($valor == "select_boleta") {
 			$sql6 = $sql6." ORDER BY folio_boleta DESC LIMIT 100";
@@ -456,7 +527,19 @@ switch ($caso) {
 		}*/
 		
 
-		break;				
+	break;
+
+	case 'busqueda_periodos':
+
+		$sql = $sql." WHERE fchemis_factura_compra BETWEEN '$fecha_inicial' AND '$fecha_final' ORDER BY folio_factura_compra";
+		$sql2 = $sql2. " WHERE fchemis_factura_exenta_compra BETWEEN '$fecha_inicial' AND '$fecha_final' ORDER BY folio_factura_exenta_compra";
+		$sql3 = $sql3. "  WHERE fchemis_nota_credito_compra BETWEEN '$fecha_inicial' AND '$fecha_final' ORDER BY folio_nota_credito_compra"; 
+		$sql4 = $sql4. " WHERE fchemis_nota_debito_compra BETWEEN '$fecha_inicial' AND '$fecha_final' ORDER BY folio_nota_debito_compra";
+		$sql5 = $sql5. "  WHERE fchemis_guia_despacho_compra BETWEEN '$fecha_inicial' AND '$fecha_final' ORDER BY folio_guia_despacho_compra";
+		//$sql6 = $sql6. " WHERE fechaemis_boleta BETWEEN '$fecha_inicial' AND '$fecha_final' ORDER BY fechaemis_boleta";
+		//$sql7 = $sql7. " WHERE fechaemis_boleta_exenta BETWEEN '$fecha_inicial' AND '$fecha_final' ORDER BY fechaemis_boleta_exenta";
+
+	break;				
 	
 	default:
 		// code...

@@ -86,10 +86,9 @@ if ($apikey == "928e15a2d14d4a6292345f04960f4cc3") {
 
 		case 'cargarDatosReferenciaEmitidos':
 			$tipo_dte_referencia = $_POST['tipo_dte_referencia'];
-			$folio_referencia = $_POST['folio_referencia'];
-			$monto_referencia = $_POST['folio_referencia'];
-			cargarDatosReferenciaEmitidos($tipo_dte_referencia,$folio_referencia,$monto_referencia);
-			break;
+			$folio_referencia = $_POST['folio_referencia'];			
+			cargarDatosReferenciaEmitidos($tipo_dte_referencia,$folio_referencia);
+			break;		
 
 		case 'enviarSobre':
 			$id_sobre = $_GET['id_sobre'];
@@ -731,7 +730,7 @@ function cargarDatosNC($folio_referencia){
 	print_r(json_encode($datosReferencia));
 }
 
-function cargarDatosReferenciaEmitidos($tipo_dte_referencia,$folio_referencia,$monto_referencia){
+function cargarDatosReferenciaEmitidos($tipo_dte_referencia,$folio_referencia){
 
 	$campo_tabla = ""; 
 	$campo_fecha= ""; 
@@ -799,6 +798,8 @@ function cargarDatosReferenciaEmitidos($tipo_dte_referencia,$folio_referencia,$m
 	print_r(json_encode($datosReferencia));
 	//print_r(json_encode($datos));
 }
+
+
 
 
 function busquedaAvanzada($caso,$valor,$fecha_inicial,$fecha_final,$valor2){

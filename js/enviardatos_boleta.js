@@ -363,9 +363,12 @@ function EnviarDatos(){
 
             success: function(data) {  
 
+                console.log($.parseJSON(data));
+                var dataJson = $.parseJSON(data);
+
                 swal({
                     title:"¡Documento Emitido!", 
-                    text:"Se ha generado "+documento+" con folio : "+data['FOLIO'], 
+                    text:"Se ha generado "+documento+" con folio : "+dataJson.FOLIO, 
                     type:"success",
                     showConfirmButton: true,
                     showCancelButton: true,
@@ -376,7 +379,7 @@ function EnviarDatos(){
                     },
                     function(flag){
                         if(flag){
-                            crearPDF(data['FOLIO'],tipo_dte);
+                            crearPDF(dataJson.FOLIO,tipo_dte);
                             //location.reload();
                         }else{
                             location.reload();
