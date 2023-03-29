@@ -806,20 +806,20 @@ function busquedaAvanzada($caso,$valor,$fecha_inicial,$fecha_final,$valor2){
 $conexion = new conexion();
 $tipo_dte_flag = false;
 //QURYS GENERALES
-		$sql = "SELECT folio_factura AS folio,rutrecep_factura as rut,rznsocrecep_factura AS razon_social,mnttotal_factura AS monto_total,fchemis_factura AS fecha,ubicacion_factura AS ubicacion FROM factura";
+		$sql = "SELECT folio_factura AS folio,rutrecep_factura as rut,rznsocrecep_factura AS razon_social,mnttotal_factura AS monto_total,envio_dte.fecha_envio_dte AS fecha,ubicacion_factura AS ubicacion FROM factura INNER JOIN envio_dte ON factura.id_envio_dte_fk = envio_dte.id_envio_dte";
 		
-		$sql2 = "SELECT folio_factura_exenta AS folio,rutrecep_factura_exenta as rut,rznsocrecep_factura_exenta AS razon_social,mnttotal_factura_exenta AS monto_total,fchemis_factura_exenta AS fecha, ubicacion_factura_exenta AS ubicacion FROM factura_exenta";
+		$sql2 = "SELECT folio_factura_exenta AS folio,rutrecep_factura_exenta as rut,rznsocrecep_factura_exenta AS razon_social,mnttotal_factura_exenta AS monto_total,envio_dte.fecha_envio_dte AS fecha, ubicacion_factura_exenta AS ubicacion FROM factura_exenta INNER JOIN envio_dte ON factura_exenta.id_envio_dte_fk = envio_dte.id_envio_dte";
 
 
-		$sql3 = "SELECT folio_nota_credito AS folio,rutrecep_nota_credito as rut,rznsocrecep_nota_credito AS razon_social,mnttotal_nota_credito AS monto_total,fchemis_nota_credito AS fecha, ubicacion_nota_credito AS ubicacion FROM nota_credito";
+		$sql3 = "SELECT folio_nota_credito AS folio,rutrecep_nota_credito as rut,rznsocrecep_nota_credito AS razon_social,mnttotal_nota_credito AS monto_total,envio_dte.fecha_envio_dte AS fecha, ubicacion_nota_credito AS ubicacion FROM nota_credito INNER JOIN envio_dte ON nota_credito.id_envio_dte_fk = envio_dte.id_envio_dte";
 		
-		$sql4 = "SELECT folio_nota_debito AS folio,rutrecep_nota_debito as rut,rznsocrecep_nota_debito AS razon_social,mnttotal_nota_debito AS monto_total,fchemis_nota_debito AS fecha, ubicacion_nota_debito AS ubicacion FROM nota_debito";
-		
-
-		$sql5 = "SELECT folio_guia_despacho AS folio,rutrecep_guia_despacho as rut,rznsocrecep_guia_despacho AS razon_social,mnttotal_guia_despacho AS monto_total,fchemis_guia_despacho AS fecha, ubicacion_guia_despacho AS ubicacion FROM guia_despacho";
+		$sql4 = "SELECT folio_nota_debito AS folio,rutrecep_nota_debito as rut,rznsocrecep_nota_debito AS razon_social,mnttotal_nota_debito AS monto_total,envio_dte.fecha_envio_dte AS fecha, ubicacion_nota_debito AS ubicacion FROM nota_debito INNER JOIN envio_dte ON nota_debito.id_envio_dte_fk = envio_dte.id_envio_dte";
 		
 
-		$sql6 = "SELECT folio_boleta AS folio,'66666666-6' as rut,folio_boleta AS razon_social,mnttotal_boleta AS monto_total,fechaemis_boleta AS fecha, ubicacion_boleta AS ubicacion FROM boleta";
+		$sql5 = "SELECT folio_guia_despacho AS folio,rutrecep_guia_despacho as rut,rznsocrecep_guia_despacho AS razon_social,mnttotal_guia_despacho AS monto_total,envio_dte.fecha_envio_dte AS fecha, ubicacion_guia_despacho AS ubicacion FROM guia_despacho INNER JOIN envio_dte ON guia_despacho.id_envio_dte_fk = envio_dte.id_envio_dte";
+		
+
+		$sql6 = "SELECT folio_boleta AS folio,'66666666-6' as rut,folio_boleta AS razon_social,mnttotal_boleta AS monto_total,envio_dte.fecha_envio_dte AS fecha, ubicacion_boleta AS ubicacion FROM boleta INNER JOIN envio_dte ON boleta.id_envio_dte_fk = envio_dte.id_envio_dte";
 		
 
 		$sql7 = "SELECT folio_boleta_exenta AS folio,'66666666-6' as rut,folio_boleta_exenta AS razon_social,mnttotal_boleta_exenta AS monto_total,fechaemis_boleta_exenta AS fecha, ubicacion_boleta_exenta AS ubicacion FROM boleta_exenta";
