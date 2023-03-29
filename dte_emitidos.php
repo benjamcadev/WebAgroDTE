@@ -777,7 +777,7 @@
                                         extend: 'print',
                                         title: 'Dte Emitidos - AgroDTE',
                                         text: 'Imprimir',
-                                        className: 'btn bg-blue-grey btn-sm waves-effect'
+                                        className: 'btn bg-blue-grey btn-sm waves-effect',
                                         exportOptions: {
                                             columns: [ 0, 1, 2, 3, 4, 5, 6, 7 ]
                                         }
