@@ -219,7 +219,7 @@ function crearPDF($folio,$tipo_dte,$rut){
 		$ruta_sobre = str_replace("\\","\\\\",$ruta_sobre);
 		
 		$url = 'http://192.168.1.9:90/api_agrodte/api/dte/document/crearPDF';  
-
+		
 		 
 
 		$curl = curl_init();

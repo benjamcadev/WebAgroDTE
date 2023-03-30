@@ -258,7 +258,7 @@
                                 <p>
                                     <b>Busqueda Avanzada</b>
                                 </p>
-                                <div class="col-md-5">                                  
+                                <div style="z-index: 10;" class="col-md-5">                                  
                                     <div class="input-group input-group-lg">                                       
                                         <div class="form-line">
                                             <select id="select_busqueda_avanzada" onchange="selectBusquedaAvanzada(this);" class="form-control ">
@@ -328,8 +328,8 @@
                             
                                     <div class="col-md-5">
                                             <div class="input-group input-group-lg">   
-                                                <div id="container_fecha_inicial" class="form-line" style="display: none;">
-                                                    <input id="input_fecha_inicial" type="text" class="form-control" placeholder="Ingresa Fecha">
+                                                <div  id="container_fecha_inicial" class="form-line" style="display: none;">
+                                                    <input  id="input_fecha_inicial" type="text" class="form-control" placeholder="Ingresa Fecha">
                                                 </div>
                                             </div>   
                                     </div>

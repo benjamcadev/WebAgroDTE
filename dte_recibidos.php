@@ -254,7 +254,7 @@
                               <p>
                                         <b>Busqueda Avanzada</b>
                                     </p>
-                             <div class="col-md-5">
+                             <div style="z-index: 10;" class="col-md-5">
                                   
                                     <div class="input-group input-group-lg">
                                         
