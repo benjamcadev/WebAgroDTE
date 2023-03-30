@@ -224,11 +224,11 @@
                         <div class="header">
                             <h2>
                                 DTE RECIBIDOS
-                            <!--
-                            <div class="alert alert-warning">
-                            <strong>IMPORTANTE!</strong> Se estan realizando cambios en esta pagina. Disculpe las molestias
-                            </div>
-                            -->
+                            
+                            <!-- <div class="alert alert-warning">
+                            <strong>IMPORTANTE!</strong> Se estan realizando cambios en esta pagina. Es posible que no funcione correctamente Disculpe las molestias
+                            </div> -->
+                            
 
                             <div class="alert alert-warning" id="warning_detalle" style="display: none;">
                             <strong>IMPORTANTE!</strong> <p style="font-size: 15px;">La busqueda de detalle por producto solo se realiza en los ultimos 4 meses desde la fecha actual. Debido a la gran carga de datos preguntados al servidor.</p>
@@ -268,6 +268,7 @@
                                         <option value="select_monto">Monto Total</option>
                                         <option value="select_tipo">Tipo de Documento</option>
                                         <option value="select_detalle">Detalle Productos</option>
+                                        <option value="select_razon_social">Razon Social Emisor</option>
                                     </select>
                                         </div>
                                     </div>
@@ -303,6 +304,10 @@
 
                                     <div id="container_detalle" class="form-line" style="display: none;">
                                             <input id="input_detalle" type="text" class="form-control" placeholder="Ingresa un Producto">
+                                    </div>
+
+                                    <div id="container_razon_social" class="form-line" style="display: none;">
+                                            <input id="input_razon_social" type="text" class="form-control" placeholder="Ingresa Razon Social">
                                     </div>
                                   
 
@@ -1154,6 +1159,7 @@
                         $('#container_tipo_dte').hide();
                         $('#container_detalle').hide();
                         $('#container_detalle2').hide();
+                        $('#container_razon_social').hide();
                         $('#warning_detalle').hide();
                         $('#container_fecha_final').hide();
                         $('#container_fecha_inicial').hide();
@@ -1173,6 +1179,7 @@
                         $('#container_detalle2').hide();
                         $('#warning_detalle').hide();
                         $('#switch_fechas').attr('disabled',false);
+                        $('#container_razon_social').hide();
                         
                         break;
                     case "select_fecha":
@@ -1190,6 +1197,7 @@
                         $('#input_fecha_final').val('');
                         $('#switch_fechas').prop('checked',false);
                         $('#switch_fechas').attr('disabled',true);
+                        $('#container_razon_social').hide();
                         
                         break;
                     case "select_monto":
@@ -1202,6 +1210,7 @@
                         $('#container_detalle2').hide();
                         $('#warning_detalle').hide();
                         $('#switch_fechas').attr('disabled',false);
+                        $('#container_razon_social').hide();
                         break;
                     case "select_tipo":
                         $('#container_folio').hide();
@@ -1213,6 +1222,7 @@
                         $('#container_detalle2').hide();
                         $('#warning_detalle').hide();
                         $('#switch_fechas').attr('disabled',false);
+                        $('#container_razon_social').hide();
                         break;
                      case "select_detalle":
                         $('#container_folio').hide();
@@ -1224,6 +1234,19 @@
                         $('#container_detalle2').show();
                         $('#warning_detalle').show();
                         $('#switch_fechas').attr('disabled',false);
+                        $('#container_razon_social').hide();
+                        break;  
+                        case "select_razon_social":
+                        $('#container_folio').hide();
+                        $('#container_fecha').hide();
+                        $('#container_rut').hide();
+                        $('#container_monto_total').hide();
+                        $('#container_tipo_dte').hide();
+                        $('#container_detalle').hide();
+                        $('#container_detalle2').hide();
+                        $('#warning_detalle').hide();
+                        $('#switch_fechas').attr('disabled',false);
+                        $('#container_razon_social').show();
                         break;    
                       default:
                         $('#container_folio').hide();
@@ -1235,6 +1258,7 @@
                         $('#container_detalle2').hide();
                         $('#warning_detalle').hide();
                         $('#switch_fechas').attr('disabled',false);
+                        $('#container_razon_social').hide();
                         // code block
                         break;
                         // code block
@@ -1319,6 +1343,18 @@
                     busquedaAvanzadaAjax(parametros);
                     }
                    
+                }
+
+                if(select_busqueda_avanzada == "select_razon_social") {
+                    var input_razon_social = $('#input_razon_social').val();
+                    if (input_razon_social.length == 0) {
+                        alert("No has escrito ingresado una Razon social");
+                    }else{
+                    caso = "busqueda_razon_social";
+                    parametros = {"caso": caso, "valor": input_razon_social,"valor2": "", "fecha_inicial": input_fecha_inicial, "fecha_final": input_fecha_final}; 
+                    busquedaAvanzadaAjax(parametros);
+                    }
+                    
                 }
 
                 if (select_busqueda_avanzada == "" && $('#switch_fechas').prop('checked')) {
