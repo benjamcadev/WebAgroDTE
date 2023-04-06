@@ -208,6 +208,11 @@
                             <h2>
                                REGISTRO ENVIO DTE
                             </h2>
+                            <br>
+                            <small>Activar/Desactivar envio inmediato al SII</small>
+                            <div class="switch">
+                                <label><input id="switch_fechas" type="checkbox" onclick="activarEnvioInmediato()">DESFASADO<span class="lever"></span>INMEDIATO</label>
+                            </div>
                             <ul class="header-dropdown m-r--5">
                                 <li class="dropdown">
                                     <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
@@ -283,6 +288,60 @@
              
             cargarSobresTabla();
         }
+
+            function activarEnvioInmediato(){
+
+                let flag_envio;
+                    
+            if ($('#switch_fechas').prop('checked')) {
+               flag_envio ="Inmediato";
+            }else{
+               flag_envio ="Desfasado";
+            }       
+
+               var parametros = {
+                 "flag_envio": flag_envio                            
+                    };  
+
+            $.ajax({
+                        type: "POST",
+                        data:  parametros,
+                        headers: {
+                            'apikey':'928e15a2d14d4a6292345f04960f4cc3' 
+                        },
+                        dataType: "json",
+                        url: "Clases/Envio_dte.php?funcion=cargarSobresTabla",
+                        beforeSend: function() {
+
+                            //mensaje temporal de busqueda de datos
+                            swal({
+                                title: '<div class="preloader pl-size-xl">'+
+                                          '     <div class="spinner-layer pl-light-blue">'+
+                                          '         <div class="circle-clipper left">'+
+                                          '             <div class="circle"></div>'+
+                                          '         </div>'+
+                                          '         <div class="circle-clipper right">'+
+                                          '             <div class="circle"></div>'+
+                                          '         </div>'+
+                                          '     </div>'+
+                                          ' </div>', 
+                                text: "Cargando datos ...",
+                                showConfirmButton: true,
+                                //timer: 1800,
+                                html: true           
+                            });
+                        },
+                        success: function(data) { 
+
+                            if(data == "Inmediato"){
+                                $('#switch_fechas').prop('checked',true)
+                            }else{
+                                $('#switch_fechas').prop('checked',false)
+                            }
+                        }
+                    });
+
+            }
 
             function cargarSobresTabla(){
                 
@@ -422,6 +481,8 @@
 
 
             }
+
+            
 
 
     </script>

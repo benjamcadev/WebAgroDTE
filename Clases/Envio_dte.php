@@ -31,8 +31,15 @@ switch ($funcion) {
 		$rut_emisor = $_GET['rut_emisor'];
 		$rut_empresa = $_GET['rut_empresa'];
 		enviarSobre($id_sobre,$rut_emisor,$rut_empresa);
-		break;	
-	
+		break;
+
+	case 'activarEnvioInmediato':
+
+		$flag_envio = $_POST['flag_envio'];
+
+		activarEnvioInmediato($flag_envio);
+		break;
+
 	default:
 		// code...
 		break;
@@ -44,10 +51,30 @@ switch ($funcion) {
 	print_r($mensaje);
 }
 
+function activarEnvioInmediato($flag_envio){
+
+	$conexion = new conexion();
+
+	$sqlinmediato = "UPDATE empresa SET estado_conexion_empresa = 'Con Conexion' WHERE id_empresa='1'";
+	$sqldesfasado = "UPDATE empresa SET estado_conexion_empresa = 'Sin Conexion' WHERE id_empresa='1'";
+
+	if($flag_envio == "Inmediato" ){
+		$conexion->ejecutarQuery($sqlinmediato);
+		print_r("CambioInmediato");
+
+	}else{
+		$conexion->ejecutarQuery($sqldesfasado);
+		print_r("CambioDesfasado");
+
+	}
+
+
+}
+
 
 function cargarSobresTabla(){
 	$conexion = new conexion();
-	$sql2 = "SELECT * FROM envio_dte ORDER BY id_envio_dte DESC LIMIT 5000";
+	$sql2 = "SELECT * FROM envio_dte ORDER BY id_envio_dte DESC LIMIT 1000";
 	//$sql2 = "SELECT * FROM envio_dte WHERE estado_envio_dte='No Enviado'"; 
 	$datos = $conexion->obtenerDatos($sql2);
 	$datos_str = json_encode($datos);

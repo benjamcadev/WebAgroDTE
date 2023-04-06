@@ -48,7 +48,8 @@ if ($apikey == "928e15a2d14d4a6292345f04960f4cc3") {
 				$tipo_documento_caf = $_POST['tipo_documento_caf'];
 				$fecha_caf = $_POST['fecha_caf'];
 				$ruta_caf = $_POST['ruta_caf'];
-				cargarCaf($estado_caf,$rango_minimo_caf,$rango_maximo_caf,$fecha_caf,$ruta_caf,$tipo_documento_caf);
+				$base64_caf = $_POST['base64_caf'];
+				cargarCaf($estado_caf,$rango_minimo_caf,$rango_maximo_caf,$fecha_caf,$ruta_caf,$tipo_documento_caf,$base64_caf);
 				break;
 
 		case 'cargarCertificado':
@@ -222,14 +223,47 @@ if ($apikey == "928e15a2d14d4a6292345f04960f4cc3") {
 
 	}
 
-	function cargarCaf($estado_caf,$rango_minimo_caf,$rango_maximo_caf,$fecha_caf,$ruta_caf,$tipo_documento_caf){
+	function cargarCaf($estado_caf,$rango_minimo_caf,$rango_maximo_caf,$fecha_caf,$ruta_caf,$tipo_documento_caf,$base64_caf){
+		$file_name = basename($_FILES["file-0"]["name"]);
+
+		if ($file_name != "") {
+			$url = 'http://192.168.1.9:90/api_agrodte/api/dte/cargarCaf'; 
+			$curl = curl_init();
+
+			$json_request = "{
+				\"base64Caf\": \"".$base64_caf."\",
+				\"nameFileCaf\": \"".$file_name."\"
+			}";
+
+			
+
+			$data = $json_request;
+
+			curl_setopt_array($curl, array(
+			CURLOPT_URL => $url,
+			CURLOPT_RETURNTRANSFER => true,
+			CURLOPT_ENCODING => "",
+			CURLOPT_MAXREDIRS => 10,
+			CURLOPT_TIMEOUT => 30,
+			CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+			CURLOPT_CUSTOMREQUEST => "POST",
+			CURLOPT_POSTFIELDS => $data,
+			CURLOPT_SSL_VERIFYPEER => false,
+			CURLOPT_HTTPHEADER => array(
+				"Accept: */*",
+				"Cache-Control: no-cache",
+				"Connection: keep-alive",
+				"Content-Type: application/json",
+				"apikey: ".$apikey."",
+			),
+			));
+
+		$response = curl_exec($curl);
+		$err = curl_error($curl);
 		
+		$decoded_response_object = json_encode($response);
 
-		$target_dir = "../../AgroDTE_Archivos/CAF_PRUEBA/";
-		$target_file = $target_dir . basename($_FILES["file-0"]["name"]);
 
-		if (move_uploaded_file($_FILES["file-0"]["tmp_name"], $target_file)) {
-			//echo "The file ". htmlspecialchars( basename( $_FILES["file-0"]["name"])). " has been uploaded.";
 			$conexion = new conexion();
 			$sql_caf = "INSERT INTO xml_caf (estado_caf,rango_minimo_caf,rango_maximo_caf,tipo_documento_caf,fecha_caf,ruta_caf) VALUES ($estado_caf, $rango_minimo_caf,$rango_maximo_caf,$tipo_documento_caf,\"$fecha_caf\",\"$ruta_caf\")";
 			$conexion->ejecutarQuery($sql_caf);
@@ -331,7 +365,7 @@ if ($apikey == "928e15a2d14d4a6292345f04960f4cc3") {
 	function crearDTE($json_request,$apikey){
 
 		$url = 'http://192.168.1.9:90/api_agrodte/api/dte/document'; 
-		//$url = 'https://localhost:44324/api/dte/document';  
+		
 
 		$curl = curl_init();
 		$data = $json_request;
@@ -1078,8 +1112,8 @@ function leerXML($ubicacion_xml){
        //abrimos el archivo como solo permisos de lectura "r"
         $fp = fopen($ubicacion_xml,"r");
 
-        // leemos el archivo hasta un tamaño maximo de 8192 bytes
-        $data = fread($fp,8192);
+        // leemos el archivo hasta un tamaño maximo de 20480 bytes
+        $data = fread($fp,20480);
 
         $xml = new SimpleXMLElement($data);
 

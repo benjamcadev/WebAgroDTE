@@ -349,7 +349,7 @@
                         <div class="col-md-12">
                             
                                 <div class="form-line">
-                                    <button class="btn btn-info waves-effect" onclick="cargarXML()" name="submit">Cargar archivo XML</button>
+                                    <button class="btn btn-info waves-effect" onclick="cargarCAF()" name="submit">Cargar archivo XML</button>
                                 </div>
                            
                         </div>
@@ -564,12 +564,20 @@
               
             });
 
-         
+    function getBase64(file) {
+        var reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = function () {
+            // ENVIAR DATOS
+            enviarCAF(reader.result);
+        };
+        reader.onerror = function (error) {
+            console.log('Error: ', error);
+        };
+    } 
+    function enviarCAF(file_base64){
 
-           function cargarXML(){
-
-            var data = new FormData();
-            let file = document.getElementById("file").files[0];
+        var data = new FormData();
             jQuery.each(jQuery('#file')[0].files, function(i, file) {
                 data.append('file-'+i, file);
             });
@@ -580,9 +588,11 @@
             data.append('rango_maximo_caf',$('#rango_maximo_modal').val());
             data.append('fecha_caf',$('#fecha_solicitado_modal').val());
             data.append('ruta_caf',file.name);
+            data.append('base64_caf',file_base64);
+            
             console.log(data);
 
-                jQuery.ajax({
+            jQuery.ajax({
                     url: 'Clases/DTE.php?funcion=cargarCaf',
                     data: data,
                     cache: false,
@@ -621,9 +631,15 @@
                     }
                 });
 
-              
+    }      
 
-            }
+function cargarCAF(){
+
+           //CONVERTIMOS EN BASE64 EL ARCHIVO
+           let file = document.getElementById("file").files[0];
+           let file_base64 = getBase64(file);
+
+    }
 
 
 
