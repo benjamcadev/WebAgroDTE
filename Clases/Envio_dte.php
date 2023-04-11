@@ -26,6 +26,11 @@ switch ($funcion) {
 		cargarSobresTabla();
 		break;
 
+	case 'cargarTipoEnvio':
+
+		cargarTipoEnvio();
+		break;
+
 	case 'enviarSobre':
 		$id_sobre = $_GET['id_sobre'];
 		$rut_emisor = $_GET['rut_emisor'];
@@ -49,6 +54,19 @@ switch ($funcion) {
 }else{
 	$mensaje = "apikey incorrecta";
 	print_r($mensaje);
+}
+
+function cargarTipoEnvio(){
+
+	$conexion = new conexion();
+
+	$sqlcargarestado = "SELECT estado_conexion_empresa FROM empresa WHERE id_empresa='1'";
+
+	$datos = $conexion->obtenerDatos($sqlcargarestado);
+	$datos_str = json_encode($datos);
+
+	print_r($datos_str);
+
 }
 
 function activarEnvioInmediato($flag_envio){

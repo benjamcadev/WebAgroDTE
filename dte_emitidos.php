@@ -742,6 +742,40 @@
                                     }  },
                                                                                  
                                     { title: "Fecha",data: 'fecha' },
+                                    { title: "DTE Referencia",data: 'folio_referencia',render: function(data,type, row, meta){
+                                                                                let folio = ''; let tipo_dte = '';
+                                                                                if (row['folio_referencia'] == null) {
+                                                                                    folio = ''
+                                                                                }else{
+                                                                                    folio = row['folio_referencia'];
+                                                                                }
+                                                                                if (row['dte_referencia'] == null) {
+                                                                                    tipo_dte = 'No hay referencia';
+                                                                                }else{
+                                                                                    switch (row['dte_referencia']) {
+                                                                                        case '33':
+                                                                                            tipo_dte = 'Factura';
+                                                                                            break;
+                                                                                        case '61':
+                                                                                        tipo_dte = 'Nota Credito';
+                                                                                        break;
+                                                                                        case '39':
+                                                                                        tipo_dte = 'Boleta';
+                                                                                        break;  
+                                                                                        case '34':
+                                                                                        tipo_dte = 'Factura Exenta';
+                                                                                        break;     
+                                                                                        case '56':
+                                                                                        tipo_dte = 'Nota Debito';
+                                                                                        break;   
+                                                                                    
+                                                                                        default:
+                                                                                            break;
+                                                                                    }
+                                                                                }
+
+                                                                                return folio + ' '+ tipo_dte;
+                                    } },
                                     { title: "Detalle",data: 'folio', render: function(data,type, row, meta){
                                                                                 return '<a role="button" onclick="crearPDF('+data+','+row['tipo_dte']+','+row['monto_total']+')"><i style="color: brown;"  class="material-icons">content_paste</i></a>'
                                     } }
@@ -761,7 +795,7 @@
                                         text: 'Excel',
                                         className: 'btn bg-green btn-sm waves-effect',
                                         exportOptions: {
-                                            columns: [ 0, 1, 2, 3, 4, 5, 6, 7 ]
+                                            columns: [ 0, 1, 2, 3, 4, 5, 6, 7, 8 ]
                                         }
                                     },
                                     {
@@ -770,7 +804,7 @@
                                         text: 'CSV',
                                         className: 'btn bg-teal btn-sm waves-effect',
                                         exportOptions: {
-                                            columns: [ 0, 1, 2, 3, 4, 5, 6, 7 ]
+                                            columns: [ 0, 1, 2, 3, 4, 5, 6, 7, 8 ]
                                         }
                                     },
                                     {
@@ -779,7 +813,7 @@
                                         text: 'Imprimir',
                                         className: 'btn bg-blue-grey btn-sm waves-effect',
                                         exportOptions: {
-                                            columns: [ 0, 1, 2, 3, 4, 5, 6, 7 ]
+                                            columns: [ 0, 1, 2, 3, 4, 5, 6, 7, 8 ]
                                         }
                                     }
                                     

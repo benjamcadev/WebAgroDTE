@@ -287,6 +287,31 @@
             //$("#lista_registro_envios_menu").addClass("active");
              
             cargarSobresTabla();
+            cargarTipoEnvio();
+        }
+
+        function cargarTipoEnvio(){
+            var parametros = {};
+            $.ajax({
+                type: "POST",
+                data: parametros,
+                headers: {
+                    'apikey':'928e15a2d14d4a6292345f04960f4cc3'
+                },
+                dataType: "json",
+                url: "Clases/Envio_dte.php?funcion=cargarTipoEnvio",
+                success: function(data) {    
+                //const json_data = JSON.parse(data);
+                //const json_respuesta = JSON.parse(json_data);              
+                
+                    if(data[0].estado_conexion_empresa == "Con Conexion"){
+                        $('#switch_fechas').prop('checked',true)
+                    }
+                    if(data[0].estado_conexion_empresa == "Sin Conexion"){
+                        $('#switch_fechas').prop('checked',false)
+                    }
+                }
+            });
         }
 
             function activarEnvioInmediato(){
@@ -310,7 +335,7 @@
                             'apikey':'928e15a2d14d4a6292345f04960f4cc3' 
                         },
                         dataType: "json",
-                        url: "Clases/Envio_dte.php?funcion=cargarSobresTabla",
+                        url: "Clases/Envio_dte.php?funcion=activarEnvioInmediato",
                         beforeSend: function() {
 
                             //mensaje temporal de busqueda de datos
@@ -325,13 +350,15 @@
                                           '         </div>'+
                                           '     </div>'+
                                           ' </div>', 
-                                text: "Cargando datos ...",
-                                showConfirmButton: true,
-                                //timer: 1800,
+                                text: "Cambiando tipo de envío ...",
+                                showConfirmButton: false,
+                                timer: 1500,
                                 html: true           
                             });
                         },
                         success: function(data) { 
+
+                            swal.close();
 
                             if(data == "Inmediato"){
                                 $('#switch_fechas').prop('checked',true)

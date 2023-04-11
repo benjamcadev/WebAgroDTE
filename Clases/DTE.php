@@ -49,7 +49,7 @@ if ($apikey == "928e15a2d14d4a6292345f04960f4cc3") {
 				$fecha_caf = $_POST['fecha_caf'];
 				$ruta_caf = $_POST['ruta_caf'];
 				$base64_caf = $_POST['base64_caf'];
-				cargarCaf($estado_caf,$rango_minimo_caf,$rango_maximo_caf,$fecha_caf,$ruta_caf,$tipo_documento_caf,$base64_caf);
+				cargarCaf($estado_caf,$rango_minimo_caf,$rango_maximo_caf,$fecha_caf,$ruta_caf,$tipo_documento_caf,$base64_caf,$apikey);
 				break;
 
 		case 'cargarCertificado':
@@ -223,7 +223,7 @@ if ($apikey == "928e15a2d14d4a6292345f04960f4cc3") {
 
 	}
 
-	function cargarCaf($estado_caf,$rango_minimo_caf,$rango_maximo_caf,$fecha_caf,$ruta_caf,$tipo_documento_caf,$base64_caf){
+	function cargarCaf($estado_caf,$rango_minimo_caf,$rango_maximo_caf,$fecha_caf,$ruta_caf,$tipo_documento_caf,$base64_caf,$apikey){
 		$file_name = basename($_FILES["file-0"]["name"]);
 
 		if ($file_name != "") {
@@ -235,9 +235,9 @@ if ($apikey == "928e15a2d14d4a6292345f04960f4cc3") {
 				\"nameFileCaf\": \"".$file_name."\"
 			}";
 
-			
-
 			$data = $json_request;
+
+			
 
 			curl_setopt_array($curl, array(
 			CURLOPT_URL => $url,
@@ -263,9 +263,8 @@ if ($apikey == "928e15a2d14d4a6292345f04960f4cc3") {
 		
 		$decoded_response_object = json_encode($response);
 
-
 			$conexion = new conexion();
-			$sql_caf = "INSERT INTO xml_caf (estado_caf,rango_minimo_caf,rango_maximo_caf,tipo_documento_caf,fecha_caf,ruta_caf) VALUES ($estado_caf, $rango_minimo_caf,$rango_maximo_caf,$tipo_documento_caf,\"$fecha_caf\",\"$ruta_caf\")";
+			$sql_caf = "INSERT INTO xml_caf (estado_caf,rango_minimo_caf,rango_maximo_caf,tipo_documento_caf,fecha_caf,ruta_caf) VALUES ($estado_caf, $rango_minimo_caf,$rango_maximo_caf,$tipo_documento_caf,\"$fecha_caf\",\"$file_name\")";
 			$conexion->ejecutarQuery($sql_caf);
 			print_r("ok");
 
@@ -502,7 +501,7 @@ function crearPDF($folio,$tipo_dte){
 function cargarEmitidosTabla(){
 	$conexion = new conexion();
 
-	$sql = "SELECT factura.folio_factura AS folio, factura.rutrecep_factura as rut, factura.rznsocrecep_factura AS razon_social,factura.mnttotal_factura AS monto_total,envio_dte.fecha_envio_dte AS fecha, ubicacion_factura AS ubicacion FROM factura INNER JOIN envio_dte ON factura.id_envio_dte_fk = envio_dte.id_envio_dte ORDER BY envio_dte.fecha_envio_dte DESC LIMIT 500";
+	$sql = "SELECT factura.folio_factura AS folio, factura.rutrecep_factura as rut, factura.rznsocrecep_factura AS razon_social,factura.mnttotal_factura AS monto_total,envio_dte.fecha_envio_dte AS fecha, ubicacion_factura AS ubicacion,folioref_factura AS folio_referencia,tipo_dteref_factura AS dte_referencia FROM factura INNER JOIN envio_dte ON factura.id_envio_dte_fk = envio_dte.id_envio_dte ORDER BY envio_dte.fecha_envio_dte DESC LIMIT 500";
 	$datos_factura = $conexion->obtenerDatos($sql);
 	
 
@@ -511,7 +510,7 @@ function cargarEmitidosTabla(){
 	    $datos_factura[$i]["tipo_dte"] = "33";
 	}
 
-	$sql2 = "SELECT factura_exenta.folio_factura_exenta AS folio,factura_exenta.rutrecep_factura_exenta as rut,factura_exenta.rznsocrecep_factura_exenta AS razon_social,factura_exenta.mnttotal_factura_exenta AS monto_total,envio_dte.fecha_envio_dte AS fecha, factura_exenta.ubicacion_factura_exenta AS ubicacion FROM factura_exenta INNER JOIN envio_dte ON factura_exenta.id_envio_dte_fk = envio_dte.id_envio_dte ORDER BY envio_dte.fecha_envio_dte DESC LIMIT 500";
+	$sql2 = "SELECT factura_exenta.folio_factura_exenta AS folio,factura_exenta.rutrecep_factura_exenta as rut,factura_exenta.rznsocrecep_factura_exenta AS razon_social,factura_exenta.mnttotal_factura_exenta AS monto_total,envio_dte.fecha_envio_dte AS fecha, factura_exenta.ubicacion_factura_exenta AS ubicacion,folioref_factura_exenta AS folio_referencia,tipo_dteref_factura_exenta AS dte_referencia FROM factura_exenta INNER JOIN envio_dte ON factura_exenta.id_envio_dte_fk = envio_dte.id_envio_dte ORDER BY envio_dte.fecha_envio_dte DESC LIMIT 500";
 	$datos_factura_exenta = $conexion->obtenerDatos($sql2);
 	
 	//AGREGAR EL TIPO DE DTE AL ARRAY
@@ -519,7 +518,7 @@ function cargarEmitidosTabla(){
 	    $datos_factura_exenta[$i]["tipo_dte"] = "34";
 	}
 
-	$sql3 = "SELECT nota_credito.folio_nota_credito AS folio,nota_credito.rutrecep_nota_credito as rut,nota_credito.rznsocrecep_nota_credito AS razon_social,nota_credito.mnttotal_nota_credito AS monto_total,envio_dte.fecha_envio_dte AS fecha, nota_credito.ubicacion_nota_credito AS ubicacion FROM nota_credito INNER JOIN envio_dte ON nota_credito.id_envio_dte_fk = envio_dte.id_envio_dte ORDER BY envio_dte.fecha_envio_dte DESC LIMIT 500";
+	$sql3 = "SELECT nota_credito.folio_nota_credito AS folio,nota_credito.rutrecep_nota_credito as rut,nota_credito.rznsocrecep_nota_credito AS razon_social,nota_credito.mnttotal_nota_credito AS monto_total,envio_dte.fecha_envio_dte AS fecha, nota_credito.ubicacion_nota_credito AS ubicacion,folioref_nota_credito AS folio_referencia,tipo_dteref_nota_credito AS dte_referencia FROM nota_credito INNER JOIN envio_dte ON nota_credito.id_envio_dte_fk = envio_dte.id_envio_dte ORDER BY envio_dte.fecha_envio_dte DESC LIMIT 500";
 	$datos_nota_credito = $conexion->obtenerDatos($sql3);
 	
 	//AGREGAR EL TIPO DE DTE AL ARRAY
@@ -527,7 +526,7 @@ function cargarEmitidosTabla(){
 	    $datos_nota_credito[$i]["tipo_dte"] = "61";
 	}
 
-	$sql4 = "SELECT nota_debito.folio_nota_debito AS folio,nota_debito.rutrecep_nota_debito as rut,nota_debito.rznsocrecep_nota_debito AS razon_social,nota_debito.mnttotal_nota_debito AS monto_total,envio_dte.fecha_envio_dte AS fecha, nota_debito.ubicacion_nota_debito AS ubicacion FROM nota_debito INNER JOIN envio_dte ON nota_debito.id_envio_dte_fk = envio_dte.id_envio_dte ORDER BY envio_dte.fecha_envio_dte DESC LIMIT 500";
+	$sql4 = "SELECT nota_debito.folio_nota_debito AS folio,nota_debito.rutrecep_nota_debito as rut,nota_debito.rznsocrecep_nota_debito AS razon_social,nota_debito.mnttotal_nota_debito AS monto_total,envio_dte.fecha_envio_dte AS fecha, nota_debito.ubicacion_nota_debito AS ubicacion,folioref_nota_debito AS folio_referencia,tipo_dteref_nota_debito AS dte_referencia FROM nota_debito INNER JOIN envio_dte ON nota_debito.id_envio_dte_fk = envio_dte.id_envio_dte ORDER BY envio_dte.fecha_envio_dte DESC LIMIT 500";
 	$datos_nota_debito = $conexion->obtenerDatos($sql4);
 	
 	//AGREGAR EL TIPO DE DTE AL ARRAY
@@ -535,7 +534,7 @@ function cargarEmitidosTabla(){
 	    $datos_nota_debito[$i]["tipo_dte"] = "56";
 	}
 
-	$sql5 = "SELECT guia_despacho.folio_guia_despacho AS folio,guia_despacho.rutrecep_guia_despacho as rut,guia_despacho.rznsocrecep_guia_despacho AS razon_social,guia_despacho.mnttotal_guia_despacho AS monto_total,envio_dte.fecha_envio_dte AS fecha, guia_despacho.ubicacion_guia_despacho AS ubicacion FROM guia_despacho INNER JOIN envio_dte ON guia_despacho.id_envio_dte_fk = envio_dte.id_envio_dte ORDER BY envio_dte.fecha_envio_dte DESC LIMIT 500";
+	$sql5 = "SELECT guia_despacho.folio_guia_despacho AS folio,guia_despacho.rutrecep_guia_despacho as rut,guia_despacho.rznsocrecep_guia_despacho AS razon_social,guia_despacho.mnttotal_guia_despacho AS monto_total,envio_dte.fecha_envio_dte AS fecha, guia_despacho.ubicacion_guia_despacho AS ubicacion,folioref_guia_despacho AS folio_referencia,tipo_dteref_guia_despacho AS dte_referencia FROM guia_despacho INNER JOIN envio_dte ON guia_despacho.id_envio_dte_fk = envio_dte.id_envio_dte ORDER BY envio_dte.fecha_envio_dte DESC LIMIT 500";
 	$datos_guia_despacho = $conexion->obtenerDatos($sql5);
 	
 	//AGREGAR EL TIPO DE DTE AL ARRAY
@@ -543,7 +542,7 @@ function cargarEmitidosTabla(){
 	    $datos_guia_despacho[$i]["tipo_dte"] = "52";
 	}
 
-	$sql6 = "SELECT boleta.folio_boleta AS folio, '66666666-6' as rut, boleta.folio_boleta AS razon_social,boleta.mnttotal_boleta AS monto_total,envio_dte.fecha_envio_dte AS fecha, boleta.ubicacion_boleta AS ubicacion FROM boleta INNER JOIN envio_dte ON boleta.id_envio_dte_fk = envio_dte.id_envio_dte ORDER BY envio_dte.fecha_envio_dte DESC LIMIT 500";
+	$sql6 = "SELECT boleta.folio_boleta AS folio, '66666666-6' as rut, boleta.folio_boleta AS razon_social,boleta.mnttotal_boleta AS monto_total,envio_dte.fecha_envio_dte AS fecha, boleta.ubicacion_boleta AS ubicacion,'No hay referencia' AS folio_referencia,'No hay referencia' AS dte_referencia FROM boleta INNER JOIN envio_dte ON boleta.id_envio_dte_fk = envio_dte.id_envio_dte ORDER BY envio_dte.fecha_envio_dte DESC LIMIT 500";
 	$datos_boleta = $conexion->obtenerDatos($sql6);
 	
 	//AGREGAR EL TIPO DE DTE AL ARRAY
@@ -551,7 +550,7 @@ function cargarEmitidosTabla(){
 	    $datos_boleta[$i]["tipo_dte"] = "39";
 	}
 
-	$sql7 = "SELECT boleta_exenta.folio_boleta_exenta AS folio,'66666666-6' as rut,boleta_exenta.folio_boleta_exenta AS razon_social,boleta_exenta.mnttotal_boleta_exenta AS monto_total,fechaemis_boleta_exenta AS fecha, boleta_exenta.ubicacion_boleta_exenta AS ubicacion FROM boleta_exenta INNER JOIN envio_dte ON boleta_exenta.id_envio_dte_fk = envio_dte.id_envio_dte ORDER BY envio_dte.fecha_envio_dte DESC LIMIT 500";
+	$sql7 = "SELECT boleta_exenta.folio_boleta_exenta AS folio,'66666666-6' as rut,boleta_exenta.folio_boleta_exenta AS razon_social,boleta_exenta.mnttotal_boleta_exenta AS monto_total,fechaemis_boleta_exenta AS fecha, boleta_exenta.ubicacion_boleta_exenta AS ubicacion,'No hay referencia' AS folio_referencia,'No hay referencia' AS dte_referencia FROM boleta_exenta INNER JOIN envio_dte ON boleta_exenta.id_envio_dte_fk = envio_dte.id_envio_dte ORDER BY envio_dte.fecha_envio_dte DESC LIMIT 500";
 	$datos_boleta_exenta = $conexion->obtenerDatos($sql7);
 	for ($i=0; $i < count($datos_boleta_exenta); $i++) { 
 	    $datos_boleta_exenta[$i]["tipo_dte"] = "41";
@@ -840,23 +839,23 @@ function busquedaAvanzada($caso,$valor,$fecha_inicial,$fecha_final,$valor2){
 $conexion = new conexion();
 $tipo_dte_flag = false;
 //QURYS GENERALES
-		$sql = "SELECT folio_factura AS folio,rutrecep_factura as rut,rznsocrecep_factura AS razon_social,mnttotal_factura AS monto_total,envio_dte.fecha_envio_dte AS fecha,ubicacion_factura AS ubicacion FROM factura INNER JOIN envio_dte ON factura.id_envio_dte_fk = envio_dte.id_envio_dte";
+		$sql = "SELECT folio_factura AS folio,rutrecep_factura as rut,rznsocrecep_factura AS razon_social,mnttotal_factura AS monto_total,envio_dte.fecha_envio_dte AS fecha,ubicacion_factura AS ubicacion,folioref_factura AS folio_referencia,tipo_dteref_factura AS dte_referencia FROM factura INNER JOIN envio_dte ON factura.id_envio_dte_fk = envio_dte.id_envio_dte";
 		
-		$sql2 = "SELECT folio_factura_exenta AS folio,rutrecep_factura_exenta as rut,rznsocrecep_factura_exenta AS razon_social,mnttotal_factura_exenta AS monto_total,envio_dte.fecha_envio_dte AS fecha, ubicacion_factura_exenta AS ubicacion FROM factura_exenta INNER JOIN envio_dte ON factura_exenta.id_envio_dte_fk = envio_dte.id_envio_dte";
+		$sql2 = "SELECT folio_factura_exenta AS folio,rutrecep_factura_exenta as rut,rznsocrecep_factura_exenta AS razon_social,mnttotal_factura_exenta AS monto_total,envio_dte.fecha_envio_dte AS fecha, ubicacion_factura_exenta AS ubicacion,folioref_factura_exenta AS folio_referencia,tipo_dteref_factura_exenta AS dte_referencia FROM factura_exenta INNER JOIN envio_dte ON factura_exenta.id_envio_dte_fk = envio_dte.id_envio_dte";
 
 
-		$sql3 = "SELECT folio_nota_credito AS folio,rutrecep_nota_credito as rut,rznsocrecep_nota_credito AS razon_social,mnttotal_nota_credito AS monto_total,envio_dte.fecha_envio_dte AS fecha, ubicacion_nota_credito AS ubicacion FROM nota_credito INNER JOIN envio_dte ON nota_credito.id_envio_dte_fk = envio_dte.id_envio_dte";
+		$sql3 = "SELECT folio_nota_credito AS folio,rutrecep_nota_credito as rut,rznsocrecep_nota_credito AS razon_social,mnttotal_nota_credito AS monto_total,envio_dte.fecha_envio_dte AS fecha, ubicacion_nota_credito AS ubicacion,folioref_nota_credito AS folio_referencia,tipo_dteref_nota_credito AS dte_referencia FROM nota_credito INNER JOIN envio_dte ON nota_credito.id_envio_dte_fk = envio_dte.id_envio_dte";
 		
-		$sql4 = "SELECT folio_nota_debito AS folio,rutrecep_nota_debito as rut,rznsocrecep_nota_debito AS razon_social,mnttotal_nota_debito AS monto_total,envio_dte.fecha_envio_dte AS fecha, ubicacion_nota_debito AS ubicacion FROM nota_debito INNER JOIN envio_dte ON nota_debito.id_envio_dte_fk = envio_dte.id_envio_dte";
-		
-
-		$sql5 = "SELECT folio_guia_despacho AS folio,rutrecep_guia_despacho as rut,rznsocrecep_guia_despacho AS razon_social,mnttotal_guia_despacho AS monto_total,envio_dte.fecha_envio_dte AS fecha, ubicacion_guia_despacho AS ubicacion FROM guia_despacho INNER JOIN envio_dte ON guia_despacho.id_envio_dte_fk = envio_dte.id_envio_dte";
+		$sql4 = "SELECT folio_nota_debito AS folio,rutrecep_nota_debito as rut,rznsocrecep_nota_debito AS razon_social,mnttotal_nota_debito AS monto_total,envio_dte.fecha_envio_dte AS fecha, ubicacion_nota_debito AS ubicacion,folioref_nota_debito AS folio_referencia,tipo_dteref_nota_debito AS dte_referencia FROM nota_debito INNER JOIN envio_dte ON nota_debito.id_envio_dte_fk = envio_dte.id_envio_dte";
 		
 
-		$sql6 = "SELECT folio_boleta AS folio,'66666666-6' as rut,folio_boleta AS razon_social,mnttotal_boleta AS monto_total,envio_dte.fecha_envio_dte AS fecha, ubicacion_boleta AS ubicacion FROM boleta INNER JOIN envio_dte ON boleta.id_envio_dte_fk = envio_dte.id_envio_dte";
+		$sql5 = "SELECT folio_guia_despacho AS folio,rutrecep_guia_despacho as rut,rznsocrecep_guia_despacho AS razon_social,mnttotal_guia_despacho AS monto_total,envio_dte.fecha_envio_dte AS fecha, ubicacion_guia_despacho AS ubicacion,folioref_guia_despacho AS folio_referencia,tipo_dteref_guia_despacho AS dte_referencia FROM guia_despacho INNER JOIN envio_dte ON guia_despacho.id_envio_dte_fk = envio_dte.id_envio_dte";
 		
 
-		$sql7 = "SELECT folio_boleta_exenta AS folio,'66666666-6' as rut,folio_boleta_exenta AS razon_social,mnttotal_boleta_exenta AS monto_total,fechaemis_boleta_exenta AS fecha, ubicacion_boleta_exenta AS ubicacion FROM boleta_exenta";
+		$sql6 = "SELECT folio_boleta AS folio,'66666666-6' as rut,folio_boleta AS razon_social,mnttotal_boleta AS monto_total,envio_dte.fecha_envio_dte AS fecha, ubicacion_boleta AS ubicacion,'No hay referencia' AS folio_referencia,'No hay referencia' AS dte_referencia FROM boleta INNER JOIN envio_dte ON boleta.id_envio_dte_fk = envio_dte.id_envio_dte";
+		
+
+		$sql7 = "SELECT folio_boleta_exenta AS folio,'66666666-6' as rut,folio_boleta_exenta AS razon_social,mnttotal_boleta_exenta AS monto_total,fechaemis_boleta_exenta AS fecha, ubicacion_boleta_exenta AS ubicacion,'No hay referencia' AS folio_referencia,'No hay referencia' AS dte_referencia FROM boleta_exenta";
 		
 
 
