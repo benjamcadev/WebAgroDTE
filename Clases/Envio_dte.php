@@ -37,6 +37,11 @@ switch ($funcion) {
 		$rut_empresa = $_GET['rut_empresa'];
 		enviarSobre($id_sobre,$rut_emisor,$rut_empresa);
 		break;
+	case 'estadoSobre':
+		$track_id = $_GET['track_id'];
+		$servidor = $_GET['servidor'];
+		estadoSobre($track_id,$servidor);
+		break;
 
 	case 'activarEnvioInmediato':
 
@@ -92,15 +97,80 @@ function activarEnvioInmediato($flag_envio){
 
 function cargarSobresTabla(){
 	$conexion = new conexion();
-	$sql2 = "SELECT * FROM envio_dte ORDER BY id_envio_dte DESC LIMIT 1000";
-	//$sql2 = "SELECT * FROM envio_dte WHERE estado_envio_dte='No Enviado'"; 
-	$datos = $conexion->obtenerDatos($sql2);
-	$datos_str = json_encode($datos);
+	//$sql2 = "SELECT * FROM envio_dte ORDER BY id_envio_dte DESC LIMIT 1000";
+	$sql_factura = "SELECT envio_dte.*,factura.folio_factura as folio FROM envio_dte INNER JOIN factura ON envio_dte.id_envio_dte = factura.id_envio_dte_fk ORDER BY id_envio_dte DESC LIMIT 200";
+	$datos_factura = $conexion->obtenerDatos($sql_factura);
+
+	$sql_factura_exenta = "SELECT envio_dte.*,factura_exenta.folio_factura_exenta as folio FROM envio_dte INNER JOIN factura_exenta ON envio_dte.id_envio_dte = factura_exenta.id_envio_dte_fk ORDER BY id_envio_dte DESC LIMIT 200";
+	$datos_factura_exenta = $conexion->obtenerDatos($sql_factura_exenta);
+
+	$sql_boleta = "SELECT envio_dte.*,boleta.folio_boleta as folio FROM envio_dte INNER JOIN boleta ON envio_dte.id_envio_dte = boleta.id_envio_dte_fk ORDER BY id_envio_dte DESC LIMIT 200";
+	$datos_boleta = $conexion->obtenerDatos($sql_boleta);
+
+	$sql_boleta_exenta = "SELECT envio_dte.*,boleta_exenta.folio_boleta_exenta as folio FROM envio_dte INNER JOIN boleta_exenta ON envio_dte.id_envio_dte = boleta_exenta.id_envio_dte_fk ORDER BY id_envio_dte DESC LIMIT 200";
+	$datos_boleta_exenta = $conexion->obtenerDatos($sql_boleta_exenta);
+
+	$sql_nota_credito = "SELECT envio_dte.*,nota_credito.folio_nota_credito as folio FROM envio_dte INNER JOIN nota_credito ON envio_dte.id_envio_dte = nota_credito.id_envio_dte_fk ORDER BY id_envio_dte DESC LIMIT 200";
+	$datos_nota_credito = $conexion->obtenerDatos($sql_nota_credito);
+
+	$sql_nota_debito = "SELECT envio_dte.*,nota_debito.folio_nota_debito as folio FROM envio_dte INNER JOIN nota_debito ON envio_dte.id_envio_dte = nota_debito.id_envio_dte_fk ORDER BY id_envio_dte DESC LIMIT 200";
+	$datos_nota_debito = $conexion->obtenerDatos($sql_nota_debito);
+
+	$sql_guia_despacho = "SELECT envio_dte.*,guia_despacho.folio_guia_despacho as folio FROM envio_dte INNER JOIN guia_despacho ON envio_dte.id_envio_dte = guia_despacho.id_envio_dte_fk ORDER BY id_envio_dte DESC LIMIT 200";
+	$datos_guia_despacho = $conexion->obtenerDatos($sql_nota_debito);
+
+
+	
+
+	$datos_str = json_encode(array_merge($datos_factura,$datos_factura_exenta,$datos_boleta,$datos_boleta_exenta,$datos_nota_credito,$datos_nota_debito,$datos_guia_despacho));
 	
 	print_r($datos_str);
 	//print_r(json_encode($datos));
 }
 
+function estadoSobre($track_id,$servidor){
+	if (is_connected()) {
+
+		$url = 'http://192.168.1.9:90/api_agrodte/api/dte/document/estadosobre';  
+		$curl = curl_init();
+		$data = "{\"trackid\": \"".$track_id."\",\"servidor\": \"".$servidor."\"}";
+
+		
+
+		curl_setopt_array($curl, array(
+		  CURLOPT_URL => $url,
+		  CURLOPT_RETURNTRANSFER => true,
+		  CURLOPT_ENCODING => "",
+		  CURLOPT_MAXREDIRS => 10,
+		  CURLOPT_TIMEOUT => 30,
+		  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+		  CURLOPT_CUSTOMREQUEST => "POST",
+		  CURLOPT_POSTFIELDS => $data,
+		  CURLOPT_SSL_VERIFYPEER => false,
+		  CURLOPT_HTTPHEADER => array(
+		    "Accept: */*",
+		    "Cache-Control: no-cache",
+		    "Connection: keep-alive",
+		    "Content-Type: application/json",
+		  ),
+		));
+
+		$response = curl_exec($curl);
+		print_r($response);
+		//$decoded_response_object = json_decode($response);
+		
+		
+		//print_r(json_encode($response));
+
+
+
+
+
+	}else{
+
+	print_r(json_encode("{\"Error\": \"No hay conexion a internet\"}"));
+}
+}
 function enviarSobre($id,$rutEmisor,$rutEmpresa){
 
 	if (is_connected()) {

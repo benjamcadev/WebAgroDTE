@@ -32,6 +32,25 @@
 
     <!-- AdminBSB Themes. You can choose a theme from css/themes instead of get all themes -->
     <link href="css/themes/all-themes.css" rel="stylesheet" />
+
+    <style> 
+    .icon-sii-check{
+    background-image: url('./images/sii_check.png');
+    height: 30px;
+    width: 30px;
+    display: block;
+    background-repeat: no-repeat;
+  background-size: contain;
+    }
+    .icon-sii-wait{
+    background-image: url('./images/sii_wait.png');
+    height: 30px;
+    width: 30px;
+    display: block;
+    background-repeat: no-repeat;
+  background-size: contain;
+    }
+</style>
 </head>
 
 <body class="theme-indigo">
@@ -282,10 +301,11 @@
     <script type="text/javascript">
          $("#lista_registro_envios_menu").addClass("active");
          $("#lista_envio_dte_menu").addClass("active");
+         let id_row_table = ""; 
         window.onload = function() {
             //$("#lista_envio_dte_menu").addClass("active");
             //$("#lista_registro_envios_menu").addClass("active");
-             
+           
             cargarSobresTabla();
             cargarTipoEnvio();
         }
@@ -313,6 +333,8 @@
                 }
             });
         }
+
+
 
             function activarEnvioInmediato(){
 
@@ -375,7 +397,7 @@
             var rut_emisor = String("6402678-k");
             var rut_empresa = String("76958430-7");
 
-           
+          
 
                var parametros = {
                             
@@ -391,9 +413,14 @@
 
                         success: function(data) {  
 
-                        console.log(data[1].detalle_envio_dte);      
+                        console.log(data);      
 
                         $('#tabla_sobres').DataTable( {
+                            "rowCallback": function( row, data ) {
+                                if (data.id_envio_dte == id_row_table) {
+                                    $( row ).addClass( "success" );
+                                }
+                            },
                               data: data,
                                "order": [[ 0, 'desc' ]],
                                 columns: [
@@ -401,20 +428,20 @@
                                     { title: "Track Id (SII)",data: 'trackid_envio_dte' },
                                     { title: "Estado",data: 'estado_envio_dte',render: function(data,type, row, meta){ 
                                                                                         if (data == 'No Enviado'){
-                                                                                            return data+'<a onclick="enviarSobre('+row['id_envio_dte']+',\''+rut_emisor+'\',\''+rut_empresa+'\')" class="material-icons" href="#">compare_arrows</a>'; 
+                                                                                            return data+'<a onclick="enviarSobre('+row['id_envio_dte']+',\''+rut_emisor+'\',\''+rut_empresa+'\')"  class="material-icons" href="#">compare_arrows</a>'; 
                                                                                         }else{
                                                                                             return data;
                                                                                         } 
                                                                                     } },
-                                    { title: "DTE",data: 'tipo_dte_envio_dte',render: function(data){
-                                                                                        if (data == "33") {return "Factura"};
-                                                                                        if (data == "34") {return "Factura Exenta"};
-                                                                                        if (data == "39") {return "Boleta"};
-                                                                                        if (data == "41") {return "Boleta Exenta"};
-                                                                                        if (data == "61") {return "Nota Credito"};
-                                                                                        if (data == "56") {return "Nota Debito"};
-                                                                                        if (data == "52") {return "Guia Despacho"};
-                                                                                        if (data == "0") {return "Consumo Folios"};
+                                    { title: "DTE",data: 'tipo_dte_envio_dte',render: function(data,type, row, meta){
+                                                                                        if (data == "33") {return "Factura "+row['folio']};
+                                                                                        if (data == "34") {return "Factura Exenta "+row['folio']};
+                                                                                        if (data == "39") {return "Boleta "+row['folio']};
+                                                                                        if (data == "41") {return "Boleta Exenta "+row['folio']};
+                                                                                        if (data == "61") {return "Nota Credito "+row['folio']};
+                                                                                        if (data == "56") {return "Nota Debito "+row['folio']};
+                                                                                        if (data == "52") {return "Guia Despacho "+row['folio']};
+                                                                                        if (data == "0") {return "Consumo Folios "+row['folio']};
                                                                                         return data;
 
                                                                                     }},                                                
@@ -439,11 +466,11 @@
                                                                                                     return data;
                                                                                         } },
                                     { title: "Fecha",data: 'fecha_envio_dte' },
-                                    { title: "Revision SII",data: 'revision_envio_dte',render: function(data){
+                                    { title: "Revision SII",data: 'revision_envio_dte',render: function(data,type, row, meta){
                                                                                             if (data == '1') {
-                                                                                                return '<i style="color: limegreen;"  class="material-icons">done</i>'
+                                                                                                return '<i class="icon-sii-check"></i>'
                                                                                             }else{
-                                                                                               return '<i class="material-icons">schedule</i>' 
+                                                                                               return '<a onclick="estadoSobre('+row['trackid_envio_dte']+','+row['tipo_dte_envio_dte']+',\''+row['estado_envio_dte']+'\')" class="icon-sii-wait" href="#" ></a>' 
                                                                                             }
                                                                                             }},
                                     { title: "Envio Cliente",data: 'envio_cliente_envio_dte',render: function(data){
@@ -467,9 +494,10 @@
                     });
             }
 
-            function enviarSobre(id,rutEmisor,rutEmpresa){
+        function enviarSobre(id,rutEmisor,rutEmpresa){
 
-             
+        id_row_table = id;  
+
          $.ajax({
             type: 'GET',
             headers: {
@@ -509,6 +537,84 @@
 
             }
 
+
+            function estadoSobre(trackid,tipo_dte,estado_envio){
+
+                let servidor = "";
+
+                if (estado_envio == 'No Enviado') {
+                    //swal("Atención !", "Debes enviar el DTE primero,<i class=\"material-icons\">remove</i> ","warning");
+                    swal(
+                        { 
+                           
+                            title:'Atención',
+                            text:'Debes enviar el DTE primero, en el icono <i style=\"color: blue;\" class=\"material-icons\">compare_arrows</i> de la columna \"Estado\"',
+                            icon: "warning",
+                            html:true,
+                            dangerMode: true,
+                            });
+                }else{
+
+                    if (tipo_dte == "33" || tipo_dte == "34" || tipo_dte == "61" || tipo_dte == "56" || tipo_dte == "52" ) {servidor = "palena"};
+                    if (tipo_dte == "39" || tipo_dte == "41") {servidor =  "api"};
+                   
+                    var closeInSeconds = 20,
+                    displayText = "Estamos preguntando al SII el estado del DTE, Esperando #1 segundos...",
+                    timer;
+                    //MOSTRAMOS MENSAJE DE DELAY
+                    swal({
+                                title: 'Verificando...',
+                                text: displayText.replace(/#1/, closeInSeconds),
+                                imageUrl: "./images/sii_wait.png",
+                                imageSize: '100x100',
+                                timer: 20000,
+                                showConfirmButton: false
+                            });
+
+                            timer = setInterval(function() {
+                            closeInSeconds--;
+
+                            if (closeInSeconds < 0) {
+                            clearInterval(timer);
+                            }
+                            $('.sweet-alert > p').text(displayText.replace(/#1/, closeInSeconds));
+                            }, 1000);
+                            
+                         //HACEMOS UN DELAY PARA LA QEURY   
+                    setTimeout(function(){  
+                       
+                        $.ajax({
+                            type: 'GET',
+                            headers: {
+                                            'apikey':'928e15a2d14d4a6292345f04960f4cc3' 
+                                        },
+                            url: "Clases/Envio_dte.php?funcion=estadoSobre&track_id="+trackid+"&servidor="+servidor,
+                                beforeSend: function() {
+                                    // setting a timeout
+                                
+                                },
+                            success:function(data){
+                                
+                            
+                                const json_respuesta = JSON.parse(data);
+
+                                if (json_respuesta.respuesta.includes("Aceptado")) {
+                                  
+                                swal("Correcto", "DTE Aceptado en el SII", "success");
+                                $('#tabla_sobres').DataTable().destroy();
+                                cargarSobresTabla();
+
+                                }else{
+                                
+                                    swal("Error", "Detalle: "+json_respuesta.respuesta,"error");
+
+                                }
+                            }
+                        });
+                    },21000);   
+                }
+
+   }
             
 
 
