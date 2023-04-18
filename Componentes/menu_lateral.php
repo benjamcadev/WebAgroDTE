@@ -81,10 +81,17 @@
                             <span>REGISTRO VENTAS</span>
                         </a>
                     </li>
+                  
                     <li id="lista_registro_compras_menu">
                         <a href="registro_compras.php">
                             <i class="material-icons">description</i>
                             <span>REGISTRO COMPRAS</span>
+                        </a>
+                    </li>
+                    <li id="lista_registro_guia_despacho_menu">
+                        <a href="registro_guia_despacho.php">
+                            <i class="material-icons">local_shipping</i>
+                            <span>REGISTRO GUIA DESPACHO</span>
                         </a>
                     </li>
                      <li id="lista_registro_envios_menu" >

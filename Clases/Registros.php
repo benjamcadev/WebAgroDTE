@@ -41,6 +41,11 @@ if ($apikey == "928e15a2d14d4a6292345f04960f4cc3") {
 			$year = $_POST['year'];
 			consultarVentasRegistro($dvEmisor,$rutEmisor,$month,$year);
 			break;
+		case 'consultarGDRegistro':
+				$month = $_POST['month'];
+				$year = $_POST['year'];
+				consultarGDRegistro($month,$year);
+				break;
 		case 'consultarComprasRegistro':
 			
 				$dvEmisor = $_POST['dvEmisor'];
@@ -100,7 +105,7 @@ function cargarFechasRegistro($tipo){
 			$datos_factura_exenta[0]["fecha_factura_exenta"],$datos_guia_despacho[0]["fecha_guia_despacho"],$datos_nota_credito[0]["fecha_nota_credito"],
 			$datos_nota_debito[0]["fecha_nota_debito"]);
 
-	}elseif ($tipo == "compra") {
+	}else if ($tipo == "compra") {
 		$sql_factura_compra = "SELECT MIN(fchemis_factura_compra) as fecha_factura FROM factura_compra";
 		$sql_guia_despacho_compra = "SELECT MIN(fchemis_guia_despacho_compra) as fecha_guia_despacho FROM guia_despacho_compra";
 		$sql_factura_exenta_compra = "SELECT MIN(fchemis_factura_exenta_compra) as fecha_factura_exenta FROM factura_exenta_compra";
@@ -117,6 +122,11 @@ function cargarFechasRegistro($tipo){
 			$datos_factura_exenta_compra[0]["fecha_factura_exenta"],$datos_guia_despacho_compra[0]["fecha_guia_despacho"],$datos_nota_credito_compra[0]["fecha_nota_credito"],
 			$datos_nota_debito_compra[0]["fecha_nota_debito"]);
 
+	}else if ($tipo == "guia_despacho") {
+		$sql_guia_despacho = "SELECT MIN(fchemis_guia_despacho) as fecha_guia_despacho FROM  guia_despacho";
+		$datos_guia_despacho = $conexion->obtenerDatos($sql_guia_despacho);
+		array_push($fechas,$datos_guia_despacho[0]["fecha_guia_despacho"]);
+	
 	}
 	
 	array_multisort(array_map('strtotime', $fechas), $fechas);
@@ -169,6 +179,50 @@ function busquedaRegistroBoletas($dvEmisor,$rutEmisor,$month,$year){
 
 }
 
+function consultarGDRegistro($month,$year){
+
+	$month_ingles = "";
+
+	if ($month == "01") {$month_ingles = "January";}
+	if ($month == "02") {$month_ingles = "February";}
+	if ($month == "03") {$month_ingles = "March";}
+	if ($month == "04") {$month_ingles = "April";}
+	if ($month == "05") {$month_ingles = "May";}
+	if ($month == "06") {$month_ingles = "June";}
+	if ($month == "07") {$month_ingles = "July";}
+	if ($month == "08") {$month_ingles = "August";}
+	if ($month == "09") {$month_ingles = "September";}
+	if ($month == "10") {$month_ingles = "October";}
+	if ($month == "11") {$month_ingles = "November";}
+	if ($month == "12") {$month_ingles = "December";}
+
+	$first_day = date('d',strtotime('first day of '.$month_ingles.' '.$year, time()));
+	$last_day = date('d',strtotime('last day of '.$month_ingles.' '.$year, time()));
+
+	$conexion = new conexion();
+
+	$fecha_dte = "fchemis_";$tabla_dte = "guia_despacho";
+
+	$sql = "SELECT folio_guia_despacho,fchemis_guia_despacho,rutrecep_guia_despacho,rznsocrecep_guia_despacho,mnttotal_guia_despacho,folioref_guia_despacho,anulado_guia_despacho  FROM ".$tabla_dte." WHERE ".$fecha_dte.$tabla_dte." BETWEEN '".$year."-".$month."-".$first_day."' AND '".$year."-".$month."-".$last_day."' AND anulado_guia_despacho = 0";
+
+	$datos_vigentes = $conexion->obtenerDatos($sql);
+
+	$sql2 = "SELECT folio_guia_despacho,fchemis_guia_despacho,rutrecep_guia_despacho,rznsocrecep_guia_despacho,mnttotal_guia_despacho,folioref_guia_despacho,anulado_guia_despacho  FROM ".$tabla_dte." WHERE ".$fecha_dte.$tabla_dte." BETWEEN '".$year."-".$month."-".$first_day."' AND '".$year."-".$month."-".$last_day."' AND anulado_guia_despacho = 1";
+
+	$datos_anuladas = $conexion->obtenerDatos($sql2);
+
+	$datos_vigentes = json_encode($datos_vigentes);
+	$datos_anuladas = json_encode($datos_anuladas);
+
+	$respuesta_final = '{"vigentes":[';
+	$respuesta_final = $respuesta_final. $datos_vigentes ;
+	$respuesta_final = $respuesta_final. '],"anuladas":[';
+	$respuesta_final = $respuesta_final. $datos_anuladas;
+	$respuesta_final = $respuesta_final.'] }';
+	print_r(json_encode($respuesta_final));
+	
+}
+
 function consultarVentasRegistro($dvEmisor,$rutEmisor,$month,$year){
 
 	$month_ingles = "";
@@ -215,7 +269,7 @@ function consultarVentasRegistro($dvEmisor,$rutEmisor,$month,$year){
 		
 		$datos = $conexion->obtenerDatos($sql);
 
-		
+	
 
 		
 
