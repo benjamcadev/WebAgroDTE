@@ -228,10 +228,15 @@
                                REGISTRO ENVIO DTE
                             </h2>
                             <br>
-                            <small>Activar/Desactivar envio inmediato al SII</small>
-                            <div class="switch">
-                                <label><input id="switch_fechas" type="checkbox" onclick="activarEnvioInmediato()">DESFASADO<span class="lever"></span>INMEDIATO</label>
-                            </div>
+                            
+
+                            <?php if ($_SESSION["rol_usuario"] == "Administrador") {
+                                    echo ' <small>Activar/Desactivar envio inmediato al SII</small>
+                                    <div class="switch">
+                                        <label><input id="switch_fechas" type="checkbox" onclick="activarEnvioInmediato()">DESFASADO<span class="lever"></span>INMEDIATO</label>
+                                    </div>';
+                            } ?>
+                           
                             <ul class="header-dropdown m-r--5">
                                 <li class="dropdown">
                                     <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">

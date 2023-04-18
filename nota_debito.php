@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html>
-<?php include'Componentes/verificar_sesion.php'; ?>
+<?php include'Componentes/verificar_sesion.php';
+if ($_SESSION["rol_usuario"] != "Administrador") {
+    echo '<script language="javascript"> alert("Usuario Sin Permidos"); </script>';
+    header("Location: login.html");
+	session_destroy();
+ } ?>
 <head>
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">

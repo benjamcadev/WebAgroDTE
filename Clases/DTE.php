@@ -159,6 +159,11 @@ if ($apikey == "928e15a2d14d4a6292345f04960f4cc3") {
 			$ubicacion_xml = $_POST['ubicacion_xml'];			
 			leerXML($ubicacion_xml);
 			break;
+
+		case 'anularGD':
+			$folio_guia_despacho = $_POST['folio_guia_despacho'];			
+			anularGD($folio_guia_despacho);
+			break;
 		
 		default:
 			// code...
@@ -822,14 +827,20 @@ function cargarDatosReferenciaEmitidos($tipo_dte_referencia,$folio_referencia){
 	}
 
 	$conexion = new conexion();
-	$sqlDatos_referencia = "SELECT ".$campo_fecha." AS fecha,".$campo_folio." AS folio,".$campo_monto." AS monto FROM ".$campo_tabla." WHERE ".$campo_folio_ref."='".$folio_referencia."'";
-		
-	//print_r($sqlDatos_referencia);
-	$datosReferencia = $conexion->obtenerDatos($sqlDatos_referencia);
-	//print_r($sqlDatos_referencia);
 
+	$sqlDatos_referencia = "";
+
+	if($tipo_dte_referencia != "52"){
+
+		$sqlDatos_referencia = "SELECT ".$campo_fecha." AS fecha,".$campo_folio." AS folio,".$campo_monto." AS monto FROM ".$campo_tabla." WHERE ".$campo_folio_ref."='".$folio_referencia."'";
+		
+	}else{
+
+		$sqlDatos_referencia = "SELECT anulado_guia_despacho AS estado FROM guia_despacho WHERE folio_guia_despacho='".$folio_referencia."'";
+		
+	}
+	$datosReferencia = $conexion->obtenerDatos($sqlDatos_referencia);
 	print_r(json_encode($datosReferencia));
-	//print_r(json_encode($datos));
 }
 
 
@@ -1093,6 +1104,11 @@ function buscarXml($tipo_dte_referencia,$folio_referencia){
 		$campo_ubicacion = "ubicacion_nota_credito";
 		$campo_folio= "folio_nota_credito";
 	}
+	if($tipo_dte_referencia == "52"){
+		$campo_tabla = "guia_despacho";
+		$campo_ubicacion = "ubicacion_guia_despacho";
+		$campo_folio= "folio_guia_despacho";
+	}
 
 	$conexion = new conexion();
 	$sqlDatos_referencia = "SELECT ".$campo_ubicacion." AS ubicacion FROM ".$campo_tabla." WHERE ".$campo_folio."='".$folio_referencia."'";
@@ -1101,6 +1117,15 @@ function buscarXml($tipo_dte_referencia,$folio_referencia){
 	print_r(json_encode($datosReferencia));
 }
 
+function anularGD($folio_guia_despacho){
+
+	$conexion = new conexion();	
+	# desactivar
+	$sql = "UPDATE guia_despacho SET anulado_guia_despacho = 1 WHERE  folio_guia_despacho = $folio_guia_despacho";	
+	
+	$conexion->ejecutarQuery($sql);
+	print_r("ok");
+}
 
 function leerXML($ubicacion_xml){
 

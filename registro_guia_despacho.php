@@ -429,7 +429,7 @@
 
     <script type="text/javascript">
         window.onload = function() {
-             $("#lista_registro_ventas_menu").addClass("active");
+             $("#lista_registro_guia_despacho_menu").addClass("active");
              cargarFechasRegistro();
 
              

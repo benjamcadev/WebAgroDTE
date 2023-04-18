@@ -1,6 +1,8 @@
 ﻿<!DOCTYPE html>
 <html>
- <?php include'Componentes/verificar_sesion.php'; ?>
+ <?php include'Componentes/verificar_sesion.php'; 
+ 
+ ?>
 <head>
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
@@ -376,9 +378,13 @@
                             <button onclick="descargarXML();" type="button" class="btn btn-default btn-circle-lg waves-effect waves-circle waves-float" data-toggle="tooltip" data-placement="bottom" title="Descargar XML">
                                     <i class="material-icons">settings_ethernet</i>
                             </button>
-                            <button onclick="anularDTE();" id="btn_anular" disabled="false" type="button" class="btn btn-default btn-circle-lg waves-effect waves-circle waves-float" data-toggle="tooltip" data-placement="bottom" title="Anular">
-                                    <i class="material-icons">do_not_disturb</i>
-                            </button>
+                            <?php if ($_SESSION["rol_usuario"] == "Administrador") {
+                                echo '  <button onclick="anularDTE();" id="btn_anular" disabled="false" type="button" class="btn btn-default btn-circle-lg waves-effect waves-circle waves-float" data-toggle="tooltip" data-placement="bottom" title="Anular">
+                                <i class="material-icons">do_not_disturb</i>
+                        </button>';
+                            }
+                            ?>
+                          
                             <button type="button" class="close" data-dismiss="modal">&times;</button>                             
                         </div>
                         <div class="modal-header" id="referencia_dte">
@@ -1076,25 +1082,43 @@
                         }
                         if (data.length > 0) {
                             //TIENE REFERENCIA
-                            if(data[0].monto < monto_global){
 
-                                $('#referencia_dte').empty();
+                            if(tipo_dte_ref != "52"){
 
-                                for(let i = 0; i < data.length; i++){
-                                    $("#referencia_dte").append("<h4><span class=\"label label-warning\">Anulada PARCIALMENTE con "+nombre_dte_ref+" Folio "+data[i].folio+"</span></h4>");
-                                }                               
-                                
-                                $("#btn_anular").attr('disabled',true);
-                                //swal("Sin Registros", "No hay datos de DTE", "error");
-                            }
-                            if(data[0].monto == monto_global){
+                                if(data[0].monto < monto_global){
 
-                                $('#referencia_dte').empty();
-                                for(let i = 0; i < data.length; i++){
-                                    $("#referencia_dte").append("<h4><span class=\"label label-danger\">Anulada COMPLETAMENTE Con "+nombre_dte_ref+" Folio "+data[i].folio+"</span></h4>");
+                                    $('#referencia_dte').empty();
+
+                                    for(let i = 0; i < data.length; i++){
+                                        $("#referencia_dte").append("<h4><span class=\"label label-warning\">Anulada PARCIALMENTE con "+nombre_dte_ref+" Folio "+data[i].folio+"</span></h4>");
+                                    }                               
+                                    
+                                    $("#btn_anular").attr('disabled',true);
+                                    //swal("Sin Registros", "No hay datos de DTE", "error");
                                 }
-                                $("#btn_anular").attr('disabled',true);
-                                //swal("Sin Registros", "No hay datos de DTE", "error");
+                                if(data[0].monto == monto_global){
+
+                                    $('#referencia_dte').empty();
+                                    for(let i = 0; i < data.length; i++){
+                                        $("#referencia_dte").append("<h4><span class=\"label label-danger\">Anulada COMPLETAMENTE Con "+nombre_dte_ref+" Folio "+data[i].folio+"</span></h4>");
+                                    }
+                                    $("#btn_anular").attr('disabled',true);
+                                    //swal("Sin Registros", "No hay datos de DTE", "error");
+                                }
+
+                            }else{
+
+                                if(data[0].estado == "1"){
+
+                                    $('#referencia_dte').empty();
+                               
+                                    $("#referencia_dte").append("<h4><span class=\"label label-danger\">Guia de Despacho ANULADA </span></h4>");
+                               
+                                    $("#btn_anular").attr('disabled',true);
+                                    //swal("Sin Registros", "No hay datos de DTE", "error");
+
+                                }else{ $("#btn_anular").attr('disabled',false);}
+
                             }
                         }else{
                             $("#btn_anular").attr('disabled',false);
@@ -1605,16 +1629,19 @@
                                           '     </div>'+
                                           ' </div>', 
                                 text: "Cargando datos ...",
-                                showConfirmButton: true,
+                                showConfirmButton: false,
                                 //timer: 1800,
                                 html: true           
                             });
                         },
 
-                        success: function(path) {                           
+                        success: function(path) { 
+
+                            //swal.close();                           
                             
                             let json_path = path[0].ubicacion;
                             let parametros = {"ubicacion_xml": json_path};
+                            let parametrosGD = {"folio_guia_despacho": folio_global};
                             //console.log(json_path);
 
                             if (path.length == 0) {
@@ -1635,30 +1662,11 @@
                                     closeOnConfirm: true,
                                     closeOnCancel: true
                                     },
-                                    function(flag){
+                                    function(flag){                                        
 
-                                        if(flag){
+                                        if(tipo_dte_global == "33" || tipo_dte_global == "34" || tipo_dte_global == "39" || tipo_dte_global == "41" || tipo_dte_global == "61" || tipo_dte_global == "56"){
 
-                                            //DIALOGO DE CARGA MIENTRAS SE ENVIA
-                                            swal({
-                                                title: '<div class="preloader pl-size-xl">'+
-                                                      '     <div class="spinner-layer pl-light-blue">'+
-                                                      '         <div class="circle-clipper left">'+
-                                                      '             <div class="circle"></div>'+
-                                                      '         </div>'+
-                                                      '         <div class="circle-clipper right">'+
-                                                      '             <div class="circle"></div>'+
-                                                      '         </div>'+
-                                                      '     </div>'+
-                                                      ' </div>', 
-                                                text: "EMITIENDO DOCUMENTO...",
-                                                showConfirmButton: false,
-                                                html: true,
-                                                showCancelButton: false,
-                                                closeOnConfirm: false,
-                                                showLoaderOnConfirm: true
-                                                //timer: 1800,           
-                                            });
+                                            // anular todos los dte menos guia de despacho                                                                                  
 
                                             $.ajax({
                                                 type: "POST",
@@ -1667,9 +1675,11 @@
                                                     'apikey':'928e15a2d14d4a6292345f04960f4cc3' 
                                                 },
                                                 dataType: "json",
-                                                url: "Clases/DTE.php?funcion=leerXML", // la funcion lee el xml y ahi mismo emite el dte                                               
+                                                url: "Clases/DTE.php?funcion=leerXML", // la funcion lee el xml y ahi mismo emite el dte                                                                                              
 
-                                                success: function(data) { 
+                                                success: function(data) {
+
+                                                    swal.close(); 
 
                                                     console.log(data);
                                                     var dataJson = $.parseJSON(data);
@@ -1685,17 +1695,7 @@
                                                             cancelButtonText: 'Cerrar',
                                                             //closeOnConfirm: true,
                                                             closeOnCancel: true
-                                                            },
-                                                            /*function(flag){
-                                                                if(flag){
-                                                                    crearPDF(dataJson.FOLIO,tipo_dte);
-                                                                    //location.reload();
-                                                                }else{
-                                                                    location.reload();
-                                                                }
-                                        
-                                                            }*/
-                                                        );
+                                                        });
                                                         $("#btn_anular").attr('disabled',true);
                                         
                                                         //console.log(data['FOLIO']); 
@@ -1706,10 +1706,51 @@
                                                     }
                                                 }
                                             });
-                                            //location.reload();
+                                            //location.reload();                                            
                                         }else{
-                                            location.reload();
+
+                                            // anular guia de despacho
+                                           
+                                            $.ajax({
+                                                type: "POST",
+                                                data:  parametrosGD,
+                                                headers: {
+                                                    'apikey':'928e15a2d14d4a6292345f04960f4cc3' 
+                                                },
+                                                dataType: "text",
+                                                url: "Clases/DTE.php?funcion=anularGD", // la funcion cambiará el estado interno de la guia de despacho  
+                                              
+                                                success: function(data) {
+
+                                                    swal.close(); 
+
+                                                    console.log(data);
+                                                    //var dataJson = $.parseJSON(data);
+                                                   
+                                                    if(data == "ok") {
+                                                        alert("¡Documento anulado con éxito!");
+                                                        //swal("Error", "Detalle del error: Problemas para cambiar el estado de la Guia de Despacho seleccionada", "error");
+                                                        // swal({
+                                                        //     title:"¡Documento Anulado!", 
+                                                        //     text:"Se ha anulado correctamente Guia de Despacho", 
+                                                        //     type:"success",
+                                                        //     showConfirmButton: false,
+                                                        //     showCancelButton: true,
+                                                        //     cancelButtonText: 'Cerrar',
+                                                        //     closeOnCancel: true
+                                                        // });
+                                                        $("#btn_anular").attr('disabled',true);
+                                        
+                                                        //console.log(data['FOLIO']); 
+                                                    }else{
+                                                        swal("Error", "Detalle del error: Problemas para cambiar el estado de la Guia de Despacho seleccionada", "error");
+                                                        // habilita el boton enviar 
+                                                        //$('#btn_enviar').attr('disabled', false);  
+                                                    }
+                                                }
+                                            });
                                         }
+                                        
                 
                                     }
                                 );

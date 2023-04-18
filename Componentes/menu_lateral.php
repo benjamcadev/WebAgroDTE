@@ -6,35 +6,17 @@
                 <div class="image">
                     <img src="images/logo_sin_piramides_AgroDTE.png" width="260" height="100" alt="User" />
                 </div>
-                <div class="info-container">
-                    <div class="name" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><?php echo $_SESSION["nombre_usuario"]; ?></div>
-                    <div class="email"><?php echo $_SESSION["correo_usuario"]; ?></div>
-                    <!-- <div class="btn-group user-helper-dropdown">
-                        <i class="material-icons" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">keyboard_arrow_down</i>
-                        <ul class="dropdown-menu pull-right">
-                            <li><a href="javascript:void(0);"><i class="material-icons">person</i>Profile</a></li>
-                            <li role="separator" class="divider"></li>
-                            <li><a href="javascript:void(0);"><i class="material-icons">group</i>Followers</a></li>
-                            <li><a href="javascript:void(0);"><i class="material-icons">shopping_cart</i>Sales</a></li>
-                            <li><a href="javascript:void(0);"><i class="material-icons">favorite</i>Likes</a></li>
-                            <li role="separator" class="divider"></li>
-                            <li><a href="javascript:void(0);"><i class="material-icons">input</i>Sign Out</a></li>
-                        </ul>
-                    </div> -->
-                </div>
+               
             </div>
             <!-- #User Info -->
             <!-- Menu -->
             <div class="menu">
+                
                 <ul class="list">
+                  
                     <li class="header">MENU DE NAVEGACION</li>
-                    <!-- <li>
-                        <a href="../../index.html">
-                            <i class="material-icons">home</i>
-                            <span>INICIO</span>
-                        </a>
-                    </li> -->
-                     <li id="lista_emitir_dte_menu">
+                    <?php if ($_SESSION["rol_usuario"] == "Administrador") {
+                        echo '<li id="lista_emitir_dte_menu">
                         <a href="javascript:void(0);" class="menu-toggle">
                             <i class="material-icons">note_add</i>
                             <span>EMITIR DTE</span>
@@ -62,7 +44,9 @@
                                 <a href="boleta_exenta.php">Boleta Exenta</a>
                             </li>
                         </ul>
-                    </li>                   
+                    </li>       ';
+                    }  ?>
+                                 
                     <li id="lista_dte_emitidos_menu" >
                         <a href="dte_emitidos.php">
                             <i class="material-icons">unarchive</i>
@@ -109,7 +93,8 @@
                             
                         </ul>
                     </li>
-                    <li id="lista_configuracion_menu">
+                    <?php if ($_SESSION["rol_usuario"] == "Administrador") {
+                        echo ' <li id="lista_configuracion_menu">
                         <a href="javascript:void(0);" class="menu-toggle">
                             <i class="material-icons">settings</i>
                             <span>CONFIGURACIÓN</span>
@@ -130,7 +115,9 @@
 
                                                      
                         </ul>
-                    </li> 
+                    </li> ';
+                    }?>
+                   
                      <!-- <li id="lista_configuracion_menu">
                         <a href="javascript:void(0);" class="menu-toggle">
                             <i class="material-icons">settings</i>
