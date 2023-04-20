@@ -589,11 +589,12 @@
             data.append('fecha_caf',$('#fecha_solicitado_modal').val());
             data.append('ruta_caf',file.name);
             data.append('base64_caf',file_base64);
+            data.append('tipo_archivo',"xml");
             
             console.log(data);
 
             jQuery.ajax({
-                    url: 'Clases/DTE.php?funcion=cargarCaf',
+                    url: 'Clases/DTE.php?funcion=cargarArchivo',
                     data: data,
                     cache: false,
                     contentType: false,

@@ -320,7 +320,7 @@
                             </div>
                             <div class="col-sm-12">
                             <div class="alert alert-info">
-                                <strong>IMPORTANTE!</strong> Debes cargar el certificado el dia que el anterior certificado expire, <strong>tambien debes desactivarlo.</strong>  y ademas debes cargarlo en el SII, si no sabes como <a href="#" onclick="showModalHelp();" class="alert-link"> Haz Click aqui</a>.
+                                <strong>IMPORTANTE!</strong> Debes cargar el certificado el dia que el anterior certificado expire, <strong>tambien debes desactivar el antiguo.</strong>  y ademas el nuevo certificado debes cargarlo en el portal del SII, si no sabes como <a href="#" onclick="showModalHelp();" class="alert-link"> Haz Click aqui</a>.
                             </div>
                           
                                 <div class="form-group">
@@ -496,8 +496,8 @@
     <script type="text/javascript">
         window.onload = function() {
 
-            $("#lista_dte_emitidos_menu").addClass("active");
-
+            $("#lista_cetificado_menu").addClass("active");
+            $("#lista_configuracion_menu").addClass("active");
             cargarEmitidosTabla();
 
         }
@@ -698,9 +698,21 @@
 
          }
 
-           function cargarCertificado(){
 
-            var data = new FormData();
+     function getBase64(file) {
+        var reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = function () {
+            // ENVIAR DATOS
+            enviarCertificado(reader.result);
+        };
+        reader.onerror = function (error) {
+            console.log('Error: ', error);
+        };
+    } 
+    function enviarCertificado(file_base64){
+
+        var data = new FormData();
             let file = document.getElementById("file").files[0];
             jQuery.each(jQuery('#file')[0].files, function(i, file) {
                 data.append('file-'+i, file);
@@ -712,10 +724,13 @@
             data.append('fecha_expiracion_certificado',$('#fecha_expiracion_modal').val());
             data.append('pass_certificado',$('#pass_modal').val());
             data.append('ruta_certificado',file.name);
-            
+            data.append('tipo_archivo',"pfx");
+            data.append('base64_pfx',file_base64);
 
-                jQuery.ajax({
-                    url: 'Clases/DTE.php?funcion=cargarCertificado',
+
+
+            jQuery.ajax({
+                    url: 'Clases/DTE.php?funcion=cargarArchivo',
                     data: data,
                     cache: false,
                     contentType: false,
@@ -752,6 +767,18 @@
                             }
                     }
                 });
+
+    }
+
+    function cargarCertificado(){
+
+              //CONVERTIMOS EN BASE64 EL ARCHIVO
+            let file = document.getElementById("file").files[0];
+            let file_base64 = getBase64(file);
+
+          
+
+               
 
               
 

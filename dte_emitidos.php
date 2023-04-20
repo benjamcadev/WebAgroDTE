@@ -1052,8 +1052,8 @@
                     nombre_dte_ref = "Nota de Credito";
                 }
                 if (tipo_dte == "52") {
-                    tipo_dte_ref = "61";
-                    nombre_dte_ref = "Nota de Credito";
+                    tipo_dte_ref = "52";
+                    nombre_dte_ref = "Guia de Despacho"; //Probando, antes estaba en nota de credito, pero considero que puede tener una factura como referencia.
                 }
                 if (tipo_dte == "56") {
                     tipo_dte_ref = "61";
@@ -1072,7 +1072,8 @@
                     dataType: "json",
                     url: "Clases/DTE.php?funcion=cargarDatosReferenciaEmitidos",
                     success:function(data){
-                        console.log(data);
+                        console.log("data");
+                        console.log(data[0].estado);
 
                         if (data.length == 0) {
                             //NO TIENE REFERENCIA
@@ -1083,7 +1084,7 @@
                         if (data.length > 0) {
                             //TIENE REFERENCIA
 
-                            if(tipo_dte_ref != "52"){
+                            if(tipo_dte_ref != "52"){ // si es diferente a guia de despacho
 
                                 if(data[0].monto < monto_global){
 
@@ -1106,9 +1107,9 @@
                                     //swal("Sin Registros", "No hay datos de DTE", "error");
                                 }
 
-                            }else{
+                            }else{ // si es guia de despacho
 
-                                if(data[0].estado == "1"){
+                                if(data[0].estado == "1"){ // si la guia de despacho está con estado 1, está anulada
 
                                     $('#referencia_dte').empty();
                                
@@ -1117,7 +1118,9 @@
                                     $("#btn_anular").attr('disabled',true);
                                     //swal("Sin Registros", "No hay datos de DTE", "error");
 
-                                }else{ $("#btn_anular").attr('disabled',false);}
+                                }else{ // con estado 0, está activa
+                                    $('#referencia_dte').empty();
+                                    $("#btn_anular").attr('disabled',false);}
 
                             }
                         }else{

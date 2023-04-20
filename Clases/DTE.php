@@ -40,8 +40,12 @@ if ($apikey == "928e15a2d14d4a6292345f04960f4cc3") {
 
 			cargarDatosReceptor($rut_receptor);
 			break;
-		case 'cargarCaf':
+		case 'cargarArchivo':
 		
+
+			switch ($_POST['tipo_archivo']) {
+
+				case 'xml':
 				$estado_caf = $_POST['estado_caf'];
 				$rango_minimo_caf = $_POST['rango_minimo_caf'];
 				$rango_maximo_caf = $_POST['rango_maximo_caf'];
@@ -49,19 +53,41 @@ if ($apikey == "928e15a2d14d4a6292345f04960f4cc3") {
 				$fecha_caf = $_POST['fecha_caf'];
 				$ruta_caf = $_POST['ruta_caf'];
 				$base64_caf = $_POST['base64_caf'];
-				cargarCaf($estado_caf,$rango_minimo_caf,$rango_maximo_caf,$fecha_caf,$ruta_caf,$tipo_documento_caf,$base64_caf,$apikey);
+				$respuesta = cargarArchivo($base64_caf,$apikey);
+				if (str_contains($respuesta, 'ok')) {
+					//EJECUTAR EL REGISTRO
+					RegistrarCaf($estado_caf,$rango_minimo_caf,$rango_maximo_caf,$fecha_caf,$ruta_caf,$tipo_documento_caf,$base64_caf,$apikey);
+				}else{
+					print_r($respuesta);
+				}
+				
 				break;
-
-		case 'cargarCertificado':
-		
+				case 'pfx':
+					
 				$estado_certificado = $_POST['estado_certificado'];
 				$nombre_certificado = $_POST['nombre_certificado'];
 				$proveedor_certificado = $_POST['proveedor_certificado'];
 				$fecha_expiracion_certificado = $_POST['fecha_expiracion_certificado'];
 				$pass_certificado = $_POST['pass_certificado'];
 				$ruta_certificado = $_POST['ruta_certificado'];
-				cargarCertificado($estado_certificado,$nombre_certificado,$proveedor_certificado,$fecha_expiracion_certificado,$pass_certificado,$ruta_certificado);
+				$base64_pfx = $_POST['base64_pfx'];
+				$respuesta = cargarArchivo($base64_pfx,$apikey);
+				if (str_contains($respuesta, 'ok')) {
+					registrarCertificado($estado_certificado,$nombre_certificado,$proveedor_certificado,$fecha_expiracion_certificado,$pass_certificado,$ruta_certificado);
+				}else{
+					print_r($respuesta);
+				}
+						break;
+				
+				default:
+					# code...
+					break;
+			}
+				
+			
 				break;
+
+		
 
 		case 'estadoCertificado':
 			$estado_certificado = $_POST['estado_certificado'];
@@ -178,9 +204,42 @@ if ($apikey == "928e15a2d14d4a6292345f04960f4cc3") {
 
 	function cargarCAFTabla(){
 		$conexion = new conexion();
+		$folios=array();
+
 		$sqlCaf = "SELECT * FROM xml_caf ";
+
+		$sqlFolioFactura = "SELECT MAX(folio_factura) AS ultimo_folio_factura FROM factura";
+		$sqlFolioFacturaExenta = "SELECT MAX(folio_factura_exenta) AS ultimo_folio_factura_exenta FROM factura_exenta";
+		$sqlFolioBoleta = "SELECT MAX(folio_boleta) AS ultimo_folio_boleta FROM boleta";
+		$sqlFolioNotaCredito = "SELECT MAX(folio_nota_credito) AS ultimo_folio_nota_credito FROM nota_credito";
+		$sqlFolioNotaDebito = "SELECT MAX(folio_nota_debito) AS ultimo_folio_nota_debito FROM nota_debito";
+		$sqlFolioGuiaDespacho = "SELECT MAX(folio_guia_despacho) AS ultimo_folio_guia_despacho FROM guia_despacho";
+
 		$datosCaf = $conexion->obtenerDatos($sqlCaf);
-		print_r(json_encode($datosCaf));
+
+		$datosFactura = $conexion->obtenerDatos($sqlFolioFactura);
+		$datosFacturaExenta = $conexion->obtenerDatos($sqlFolioFacturaExenta);
+		$datosBoleta = $conexion->obtenerDatos($sqlFolioBoleta);
+		$datosNotaCredito = $conexion->obtenerDatos($sqlFolioNotaCredito);
+		$datosNotaDebito = $conexion->obtenerDatos($sqlFolioNotaDebito);
+		$datosGuiaDespacho = $conexion->obtenerDatos($sqlFolioGuiaDespacho);
+
+		array_push($folios,$datosFactura[0]["ultimo_folio_factura"],$datosBoleta[0]["ultimo_folio_boleta"],$datosFacturaExenta[0]["ultimo_folio_factura_exenta"],
+		$datosGuiaDespacho[0]["ultimo_folio_guia_despacho"],$datosNotaCredito[0]["ultimo_folio_nota_credito"],$datosNotaDebito[0]["ultimo_folio_nota_debito"]);
+
+		$folios_encode = json_encode($folios);
+		$datosCaf_encode = json_encode($datosCaf);
+
+		$respuesta_final = '{"folios":[';
+		$respuesta_final = $respuesta_final. $folios_encode ;
+		$respuesta_final = $respuesta_final. '],"caf":[';
+		$respuesta_final = $respuesta_final. $datosCaf_encode;
+		$respuesta_final = $respuesta_final.'] }';
+		print_r(json_encode($respuesta_final));
+
+
+
+		//print_r(json_encode($datosCaf));
 
 	}
 
@@ -208,40 +267,30 @@ if ($apikey == "928e15a2d14d4a6292345f04960f4cc3") {
 
 	}
 
-	function cargarCertificado($estado_certificado,$nombre_certificado,$proveedor_certificado,$fecha_expiracion_certificado,$pass_certificado,$ruta_certificado){
+	function registrarCertificado($estado_certificado,$nombre_certificado,$proveedor_certificado,$fecha_expiracion_certificado,$pass_certificado,$ruta_certificado){
 		
-
-		$target_dir = "../../AgroDTE_Archivos/Certificado/";
 		$nombre_archivo = basename($_FILES["file-0"]["name"]);
-		$target_file = $target_dir . $nombre_archivo;
-
-		if (move_uploaded_file($_FILES["file-0"]["tmp_name"], $target_file)) {
-			//echo "The file ". htmlspecialchars( basename( $_FILES["file-0"]["name"])). " has been uploaded.";
-			$conexion = new conexion();
-			$sql_caf = "INSERT INTO certificado (nombre_certificado,proveedor_certifcado,fecha_expiracion_certificado,archivo_certificado,estado_certificado,pass_certificado) VALUES (\"$nombre_certificado\", \"$proveedor_certificado\",\"$fecha_expiracion_certificado\",\"$nombre_archivo\",$estado_certificado,\"$pass_certificado\")";
-			$conexion->ejecutarQuery($sql_caf);
-			print_r("ok");
-
-		  } else {
-			echo "Sorry, there was an error uploading your file.";
-		  }
+		$conexion = new conexion();
+		$sql_certificado = "INSERT INTO certificado (nombre_certificado,proveedor_certifcado,fecha_expiracion_certificado,archivo_certificado,estado_certificado,pass_certificado) VALUES (\"$nombre_certificado\", \"$proveedor_certificado\",\"$fecha_expiracion_certificado\",\"$nombre_archivo\",$estado_certificado,\"$pass_certificado\")";
+		$conexion->ejecutarQuery($sql_certificado);
+		print_r("ok");
 
 	}
 
-	function cargarCaf($estado_caf,$rango_minimo_caf,$rango_maximo_caf,$fecha_caf,$ruta_caf,$tipo_documento_caf,$base64_caf,$apikey){
+	function cargarArchivo($base64_archivo,$apikey){
+
 		$file_name = basename($_FILES["file-0"]["name"]);
 
 		if ($file_name != "") {
-			$url = 'http://192.168.1.9:90/api_agrodte/api/dte/cargarCaf'; 
+			$url = 'http://192.168.1.9:90/api_agrodte/api/dte/cargarArchivo'; 
 			$curl = curl_init();
 
 			$json_request = "{
-				\"base64Caf\": \"".$base64_caf."\",
-				\"nameFileCaf\": \"".$file_name."\"
+				\"base64Archivo\": \"".$base64_archivo."\",
+				\"nameFileArchivo\": \"".$file_name."\"
 			}";
 
 			$data = $json_request;
-
 			
 
 			curl_setopt_array($curl, array(
@@ -265,17 +314,24 @@ if ($apikey == "928e15a2d14d4a6292345f04960f4cc3") {
 
 		$response = curl_exec($curl);
 		$err = curl_error($curl);
+		//$decoded_response_object = json_encode($response);
+			
+			if (str_contains($response, 'error')) { 
+				return 	"error ".$response;
+			}else{
+				return "ok";
+			}
+		}	
+	}
+
+	function registrarCaf($estado_caf,$rango_minimo_caf,$rango_maximo_caf,$fecha_caf,$ruta_caf,$tipo_documento_caf,$base64_caf,$apikey){
 		
-		$decoded_response_object = json_encode($response);
 
 			$conexion = new conexion();
 			$sql_caf = "INSERT INTO xml_caf (estado_caf,rango_minimo_caf,rango_maximo_caf,tipo_documento_caf,fecha_caf,ruta_caf) VALUES ($estado_caf, $rango_minimo_caf,$rango_maximo_caf,$tipo_documento_caf,\"$fecha_caf\",\"$file_name\")";
 			$conexion->ejecutarQuery($sql_caf);
 			print_r("ok");
-
-		  } else {
-			echo "Sorry, there was an error uploading your file.";
-		  }
+		 
 
 	}
 
@@ -832,10 +888,11 @@ function cargarDatosReferenciaEmitidos($tipo_dte_referencia,$folio_referencia){
 
 	if($tipo_dte_referencia != "52"){
 
+        //print_r(json_encode("no gd"));
 		$sqlDatos_referencia = "SELECT ".$campo_fecha." AS fecha,".$campo_folio." AS folio,".$campo_monto." AS monto FROM ".$campo_tabla." WHERE ".$campo_folio_ref."='".$folio_referencia."'";
-		
-	}else{
 
+	}else{
+        //print_r(json_encode("gd"));		
 		$sqlDatos_referencia = "SELECT anulado_guia_despacho AS estado FROM guia_despacho WHERE folio_guia_despacho='".$folio_referencia."'";
 		
 	}

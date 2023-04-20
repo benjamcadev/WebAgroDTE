@@ -103,7 +103,7 @@
                              <!--<li id="cargar_xml" >
                                 <a href="cargar_xml.php">Cargar XML</a>
                             </li>-->
-                            <li>
+                            <li id="lista_cetificado_menu">
                                 <a href="certificados.php">Certificado</a>
                             </li>
                             <li>
