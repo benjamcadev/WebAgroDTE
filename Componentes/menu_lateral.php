@@ -117,6 +117,21 @@
                         </ul>
                     </li> ';
                     }?>
+                     <li id="lista_ayuda_menu" >
+                        <a href="javascript:void(0);" class="menu-toggle">
+                            <i class="material-icons">help</i>
+                            <span>AYUDA</span>
+                        </a>
+                        <ul class="ml-menu">
+                            <li id="lista_ayuda_usuario_menu" >
+                                 <a href="./docs/MANUAL_DE_USUARIO_AgroDTE.pdf">Manual Usuario <i class="material-icons" style="margin-top: 0px;margin-left: 5px;">picture_as_pdf</i> </a>
+                            </li>
+                            <li id="lista_ayuda_api_menu">
+                                <a href="https://documenter.getpostman.com/view/27039785/2s93Y3w23o">Documentacion API <i class="material-icons" style="margin-top: 0px;margin-left: 5px;">link</i></a>
+                            </li>
+                            
+                        </ul>
+                    </li>
                    
                      <!-- <li id="lista_configuracion_menu">
                         <a href="javascript:void(0);" class="menu-toggle">

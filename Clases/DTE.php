@@ -204,37 +204,25 @@ if ($apikey == "928e15a2d14d4a6292345f04960f4cc3") {
 
 	function cargarCAFTabla(){
 		$conexion = new conexion();
-		$folios=array();
 
-		$sqlCaf = "SELECT * FROM xml_caf ";
+		$sqlCafFactura = "SELECT xml_caf.*,xml_caf.rango_maximo_caf - MAX(factura.folio_factura) AS restante FROM factura,xml_caf WHERE xml_caf.estado_caf = '1' AND xml_caf.tipo_documento_caf = '33'";
+		$sqlCafFacturaExenta = "SELECT xml_caf.*,xml_caf.rango_maximo_caf - MAX(factura_exenta.folio_factura_exenta) AS restante FROM factura_exenta,xml_caf WHERE xml_caf.estado_caf = '1' AND xml_caf.tipo_documento_caf = '34'";
+		$sqlCafBoleta = "SELECT xml_caf.*,xml_caf.rango_maximo_caf - MAX(boleta.folio_boleta) AS restante FROM boleta,xml_caf WHERE xml_caf.estado_caf = '1' AND xml_caf.tipo_documento_caf = '39'";
+		$sqlCafNotaCredito = "SELECT xml_caf.*,xml_caf.rango_maximo_caf - MAX(nota_credito.folio_nota_credito) AS restante FROM nota_credito,xml_caf WHERE xml_caf.estado_caf = '1' AND xml_caf.tipo_documento_caf = '61'";
+		$sqlCafNotaDebito = "SELECT xml_caf.*,xml_caf.rango_maximo_caf - MAX(nota_debito.folio_nota_debito) AS restante FROM nota_debito,xml_caf WHERE xml_caf.estado_caf = '1' AND xml_caf.tipo_documento_caf = '56'";
+		$sqlCafGuiaDespacho = "SELECT xml_caf.*,xml_caf.rango_maximo_caf - MAX(guia_despacho.folio_guia_despacho) AS restante FROM guia_despacho,xml_caf WHERE xml_caf.estado_caf = '1' AND xml_caf.tipo_documento_caf = '52'";
+		$sqlCafInactivos = "SELECT *, 0 AS 'restante' FROM xml_caf WHERE estado_caf = '0'";		
 
-		$sqlFolioFactura = "SELECT MAX(folio_factura) AS ultimo_folio_factura FROM factura";
-		$sqlFolioFacturaExenta = "SELECT MAX(folio_factura_exenta) AS ultimo_folio_factura_exenta FROM factura_exenta";
-		$sqlFolioBoleta = "SELECT MAX(folio_boleta) AS ultimo_folio_boleta FROM boleta";
-		$sqlFolioNotaCredito = "SELECT MAX(folio_nota_credito) AS ultimo_folio_nota_credito FROM nota_credito";
-		$sqlFolioNotaDebito = "SELECT MAX(folio_nota_debito) AS ultimo_folio_nota_debito FROM nota_debito";
-		$sqlFolioGuiaDespacho = "SELECT MAX(folio_guia_despacho) AS ultimo_folio_guia_despacho FROM guia_despacho";
+		$datosFactura = $conexion->obtenerDatos($sqlCafFactura);
+		$datosFacturaExenta = $conexion->obtenerDatos($sqlCafFacturaExenta);
+		$datosBoleta = $conexion->obtenerDatos($sqlCafBoleta);
+		$datosNotaCredito = $conexion->obtenerDatos($sqlCafNotaCredito);
+		$datosNotaDebito = $conexion->obtenerDatos($sqlCafNotaDebito);
+		$datosGuiaDespacho = $conexion->obtenerDatos($sqlCafGuiaDespacho);
+		$datosInactivos = $conexion->obtenerDatos($sqlCafInactivos);
 
-		$datosCaf = $conexion->obtenerDatos($sqlCaf);
+		$respuesta_final = array_merge($datosFactura,$datosFacturaExenta,$datosBoleta,$datosNotaCredito,$datosNotaDebito,$datosGuiaDespacho,$datosInactivos);		
 
-		$datosFactura = $conexion->obtenerDatos($sqlFolioFactura);
-		$datosFacturaExenta = $conexion->obtenerDatos($sqlFolioFacturaExenta);
-		$datosBoleta = $conexion->obtenerDatos($sqlFolioBoleta);
-		$datosNotaCredito = $conexion->obtenerDatos($sqlFolioNotaCredito);
-		$datosNotaDebito = $conexion->obtenerDatos($sqlFolioNotaDebito);
-		$datosGuiaDespacho = $conexion->obtenerDatos($sqlFolioGuiaDespacho);
-
-		array_push($folios,$datosFactura[0]["ultimo_folio_factura"],$datosBoleta[0]["ultimo_folio_boleta"],$datosFacturaExenta[0]["ultimo_folio_factura_exenta"],
-		$datosGuiaDespacho[0]["ultimo_folio_guia_despacho"],$datosNotaCredito[0]["ultimo_folio_nota_credito"],$datosNotaDebito[0]["ultimo_folio_nota_debito"]);
-
-		$folios_encode = json_encode($folios);
-		$datosCaf_encode = json_encode($datosCaf);
-
-		$respuesta_final = '{"folios":[';
-		$respuesta_final = $respuesta_final. $folios_encode ;
-		$respuesta_final = $respuesta_final. '],"caf":[';
-		$respuesta_final = $respuesta_final. $datosCaf_encode;
-		$respuesta_final = $respuesta_final.'] }';
 		print_r(json_encode($respuesta_final));
 
 
@@ -326,7 +314,7 @@ if ($apikey == "928e15a2d14d4a6292345f04960f4cc3") {
 
 	function registrarCaf($estado_caf,$rango_minimo_caf,$rango_maximo_caf,$fecha_caf,$ruta_caf,$tipo_documento_caf,$base64_caf,$apikey){
 		
-
+			$file_name = basename($_FILES["file-0"]["name"]);
 			$conexion = new conexion();
 			$sql_caf = "INSERT INTO xml_caf (estado_caf,rango_minimo_caf,rango_maximo_caf,tipo_documento_caf,fecha_caf,ruta_caf) VALUES ($estado_caf, $rango_minimo_caf,$rango_maximo_caf,$tipo_documento_caf,\"$fecha_caf\",\"$file_name\")";
 			$conexion->ejecutarQuery($sql_caf);

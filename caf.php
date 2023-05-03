@@ -484,11 +484,12 @@
 
           
             function cargarTabla(data){
+
                 
                 $('#tabla_dte_caf').DataTable( {
 
                               data: data,
-                               "order": [[ 4, 'desc' ]],
+                               "order": [[ 5, 'desc' ]],
                                //"ordering": false,
                                 columns: [
                                     { title: "Tipo DTE",data: 'tipo_documento_caf',render: function(data){
@@ -504,10 +505,17 @@
                                                                                     }},
                                     { title: "Rango Minimo",data: 'rango_minimo_caf' },
                                     { title: "Rango Maximo",data: 'rango_maximo_caf' },
+                                    { title: "Restantes",data: 'restante',render: function(data){
+                                                                                        if (data > 100) {return "<p class=\"font-bold col-teal\">"+data+"</p>"};
+                                                                                        if (data < 100 && data > 1) {return "<p class=\"font-bold col-orange\">"+data+"</p>"};
+                                                                                        if (data == 0 || data < 1) {return "<p class=\"font-bold col-red\">"+data+"</p>"};
+                                                                                        return data;
+
+                                                                                    }},
                                     { title: "Fecha Solicitado",data: 'fecha_caf' },
                                     { title: "Estado CAF",data: 'estado_caf',render: function(data){
                                                                                         if (data == "1") {return "<p class=\"font-bold col-teal\">En uso</p>"};
-                                                                                        if (data == "0") {return "<p class=\"font-bold col-blue-grey\">Deshuso</p>"};
+                                                                                        if (data == "0") {return "<p class=\"font-bold col-orange\">Deshuso</p>"};
                                                                                         return data;
 
                                                                                     }},
