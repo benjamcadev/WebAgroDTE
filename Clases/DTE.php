@@ -648,6 +648,9 @@ function cargarDatosAcuses($tipo_dte_acuses,$folio_acuses){
 		case '33':
 			$tabla = "factura";
 			break;
+		case '34':
+				$tabla = "factura_exenta";
+				break;
 		case '61':
 			$tabla = "nota_credito";
 			break;
