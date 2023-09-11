@@ -254,6 +254,9 @@ function EnviarDatos(){
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     // ingresa solo si los campos principales están con datos
+
+// REVISAR VALIDACION DE MONTOS 0 Y CANTIDADES 0 PARA NOTAS DE CREDITO CORRECCION DE TEXTO
+
     if(forma_pago != "0" && compra == true && fecha_emision != "" && venta == true && rut_receptor != "" && flag_item_false == 0 && referencia == true &&  transporte == true && comuna_receptor != "" && giro_receptor != "" && direccion_receptor != "" && razon_social_receptor != ""){
         
         // deshabilita el boton enviar 
@@ -333,6 +336,10 @@ function EnviarDatos(){
             tipo_monto = "MntNeto";            
 
         }       
+
+
+// DEBE IMPRIMIR ESTAS ETIQUETAS IGUALMENTE AUNQUE LOS MONTOS Y LAS CANTIDADES ESTÉN EN 0 A MENOS QUESEAN EXENTAS, PERO SI SON CORRECCIONES DE TEXTO DEBEN ESTAR*******************
+
 
         if(monto_neto_global != ""){ parametros = parametros + '"'+ tipo_monto +'": '+ monto_neto_global+',';}
         if(iva_global == 0){}else{

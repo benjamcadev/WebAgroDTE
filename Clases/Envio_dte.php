@@ -104,7 +104,7 @@ function cargarSobresTabla(){
 	$sql_factura_exenta = "SELECT envio_dte.*,factura_exenta.folio_factura_exenta as folio FROM envio_dte INNER JOIN factura_exenta ON envio_dte.id_envio_dte = factura_exenta.id_envio_dte_fk ORDER BY id_envio_dte DESC LIMIT 200";
 	$datos_factura_exenta = $conexion->obtenerDatos($sql_factura_exenta);
 
-	$sql_boleta = "SELECT envio_dte.*,boleta.folio_boleta as folio FROM envio_dte INNER JOIN boleta ON envio_dte.id_envio_dte = boleta.id_envio_dte_fk ORDER BY id_envio_dte DESC LIMIT 200";
+	$sql_boleta = "SELECT envio_dte.*,boleta.folio_boleta as folio FROM envio_dte INNER JOIN boleta ON envio_dte.id_envio_dte = boleta.id_envio_dte_fk ORDER BY id_envio_dte DESC LIMIT 2000";
 	$datos_boleta = $conexion->obtenerDatos($sql_boleta);
 
 	$sql_boleta_exenta = "SELECT envio_dte.*,boleta_exenta.folio_boleta_exenta as folio FROM envio_dte INNER JOIN boleta_exenta ON envio_dte.id_envio_dte = boleta_exenta.id_envio_dte_fk ORDER BY id_envio_dte DESC LIMIT 200";
@@ -251,6 +251,9 @@ function enviarSobre($id,$rutEmisor,$rutEmpresa){
 	}else{
 
 	$response_xml = file_get_contents('http://192.168.1.9:90/WebServiceEnvioDTE/EnvioSobreDTE.asmx/enviarSobreSII?archivo='.$datos[0]['rutaxml_envio_dte'].'&rutEmisor=6402678-k&rutEmpresa=76958430-7');
+
+	
+
 	$xml = new SimpleXMLElement($response_xml);
 	$track_id = (string) $xml[0];
 

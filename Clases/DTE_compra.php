@@ -225,6 +225,8 @@ function crearPDF($folio,$tipo_dte,$rut){
 		$curl = curl_init();
 		$data = json_encode("{\"path\": \"".$ruta_sobre."\",\"tipo_dte\": \"".$tipo_dte."\",\"compra_dte\": \"compra\",\"folio\": \"".$folio."\" }");
 
+	
+
 		
 		
 

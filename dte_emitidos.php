@@ -1073,7 +1073,7 @@
                     url: "Clases/DTE.php?funcion=cargarDatosReferenciaEmitidos",
                     success:function(data){
                         console.log("data");
-                        console.log(data[0].estado);
+                        //console.log(data[0].estado);
 
                         if (data.length == 0) {
                             //NO TIENE REFERENCIA
@@ -1682,7 +1682,7 @@
 
                                                 success: function(data) {
 
-                                                    swal.close(); 
+                                                    //swal.close(); 
 
                                                     console.log(data);
                                                     var dataJson = $.parseJSON(data);
